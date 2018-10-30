@@ -1,0 +1,79 @@
+<style lang="less">
+.body{
+  background-color: var(--colorGreenGD);
+}
+.btnLogin {
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 30%;
+
+  .btn2 {
+    display: flex;
+    flex-direction: column;
+    color: white;
+    p {
+      font-size: 40rpx;
+      font-weight: 300;
+    }
+  }
+}
+</style>
+<template>
+  <view class="container">
+    <header></header>
+    <view class="body">
+      <wux-button class="btnLogin" block outline  type="balanced" open-type="getUserInfo" bindgetuserinfo="onGotUserInfo">
+        <view class="btn2">
+          <wux-icon type="ios-beer" color="white" size="64" />
+          <view>Go Party</view>
+        </view>
+      </wux-button>
+      <!-- <button open-type="getUserInfo" lang="zh_CN" bindgetuserinfo="onGotUserInfo">Go Party</button> -->
+    </view>
+  </view>
+</template>
+<script>
+import wepy from 'wepy';
+import Header from '@/components/header'; // alias example
+// import { $wuxBackdrop } from '../wux/index'
+let balanceI;
+
+export default class Login extends wepy.page {
+  components = {
+    header: Header
+  };
+  config = {
+    usingComponents: {
+      'wux-button': '../wux/button/index',
+      'wux-icon': '../wux/icon/index',
+      'wux-wing-blank': '../wux/wing-blank/index',
+      'wux-white-space': '../wux/white-space/index',
+      'wux-row': '../wux/row/index',
+      'wux-col': '../wux/col/index',
+      'wux-qrcode': '../wux/qrcode/index'
+    }
+  };
+  components = {};
+  data = {
+    userInfo: {},
+    qrCodeUrl: '.',
+    qrCodeData: 'no data',
+    qrCodeColor: '#1ab16c',
+    isIPX: false
+  };
+  methods = {
+    goBack() {
+      console.log('go back');
+      // this.$redirect('./index');
+    },
+    onGotUserInfo(e) {
+      console.log(e.detail.errMsg);
+      console.log(e.detail.userInfo);
+      console.log(e.detail.rawData);
+      this.$redirect('./index');
+    }
+  };
+
+  onLoad(parm, data) {}
+}
+</script>

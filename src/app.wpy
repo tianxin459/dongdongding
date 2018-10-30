@@ -1,0 +1,158 @@
+<style lang="less">
+@import "theme.less";
+@import "ipx.less";
+
+
+.wux-tabbar--bottom{
+  bottom: 50rpx;
+  border: 1px solid gold;
+}
+
+.container {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  box-sizing: border-box;
+}
+
+.header{
+  height: 10vh;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--colorGrey);
+  color: white;
+}
+.body{
+  width: 100%;
+  height: 100%;
+  padding: 5rpx;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-content: center;
+  > view{
+    align-self: center;
+  }
+}
+.footer{
+  border: 1rpx solid var(--colorGrey);
+  width: 100%;
+  min-height: 250rpx;
+  align-self: flex-end;
+  display: flex;
+  flex-direction: column;
+}
+.btn-group{
+  display: flex;
+  flex-direction: row;
+}
+.userinfo{
+  width: 100%;
+}
+
+</style>
+
+<script>
+import wepy from 'wepy'
+import 'wepy-async-function'
+
+import { setStore } from 'wepy-redux'
+import configStore from './store'
+
+// console.log(MdTabs);
+const store = configStore()
+setStore(store)
+
+export default class extends wepy.app {
+  config = {
+    pages: [
+      'pages/preload',
+      'pages/login',
+      'pages/index',
+      'pages/qrcode',
+      'pages/transfer',
+      'pages/transferSuccess',
+      'pages/transactionHistory',
+    ],
+    window: {
+      backgroundTextStyle: 'light',
+      navigationBarBackgroundColor: '#485860',
+      navigationBarTitleText: 'GD 2019',
+      navigationBarTextStyle: 'white'
+    }
+  }
+
+  globalData = {
+    userInfo: null,
+    user:{
+      balance:9
+    },
+    isIpx:false,
+    isDebug:true,
+    qrCodeUrl:'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data='
+  }
+
+  constructor () {
+    super()
+    this.use('requestfix')
+  }
+
+  onLaunch() {
+    // this.testAsync()
+    this.getSystemInfo();
+    // this.getUserInfo();
+  }
+
+  sleep (s) {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        resolve('promise resolved')
+      }, s * 1000)
+    })
+  }
+
+  async testAsync () {
+    const data = await this.sleep(3)
+    console.log(data)
+  }
+
+  getUserInfo(cb,cberror) {
+    const that = this;
+    console.log('this.globalData.userInfo',!!this.globalData.userInfo);
+    if (!!this.globalData.userInfo) {
+      cb && cb(this.globalData.userInfo);
+      // return this.globalData.userInfo;
+    }
+    wepy.getUserInfo({
+      success (res) {
+        that.globalData.userInfo = res.userInfo
+        console.log(that.globalData.userInfo);
+        cb && cb(res.userInfo)
+      },
+      fail(err)
+      {
+        console.log('fail');
+        cberror(err);
+      }
+    })
+  }
+  getSystemInfo(){
+    const that = this
+    wepy.getSystemInfo({
+      success: function(res) {
+            //model中包含着设备信息
+            console.log(res.model)
+            var model = res.model
+            if (model.search('IphoneX') != -1 || model.search('iPhone X') != -1){
+              that.globalData.isIpx = true;
+            }else{
+              that.globalData.isIpx = false;
+            }
+        }
+      });
+  }
+}
+</script>

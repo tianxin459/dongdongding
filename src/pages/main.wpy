@@ -1,0 +1,118 @@
+<style>
+.userinfo{
+  display:flex;
+  flex-direction: row;
+  background-color: #3e8bf8;
+}
+.userinfo image{
+  height: 50rpx;
+  width: 50rpx;
+  border-radius: 50%;
+}
+.userinfo p{
+
+}
+
+.qrCode{
+  height: 200rpx;
+  width: 200rpx;
+}
+</style>
+
+<template>
+  <view>
+    <panel class="userinfo">
+      <image class="userinfo-avatar" src="{{userInfo.avatarUrl}}"></image>
+      <p class="user-name">{{userInfo.nickName}}</p>
+    </panel>
+    <view>
+      <image class="qrCode" src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=Example"></image>
+    </view>
+    <view>
+      <p>{{msg}}</p>
+    </view>
+    <panel>
+      <button @tap='scanQRCode'>Scan QR</button>
+    <button @tap='getRequest'>click</button>
+    <button @tap='postRequest'>post</button>
+    <button @tap='getQRCode'>QRCode</button>
+    </panel>
+  </view>
+</template>
+<script>
+
+  import wepy from 'wepy'
+
+  export default class Main extends wepy.page{
+    components={}
+    data={
+      userInfo:{},
+      msg:"---"
+    }
+    methods={
+      onClick(){
+        console.log('on click');
+        this.msg="666";
+      },
+      getRequest(){
+        var self = this;
+        wepy.request({
+            url: 'http://httpbin.org/get',
+            success: function (resp) {
+              console.log(resp);
+              self.msg = resp.data.url;
+              self.$apply()
+            }
+          })
+      },
+      postRequest(){
+        var self = this;
+        wepy.request({
+            url: 'http://httpbin.org/post',
+            method:'POST',
+            header: {
+              'content-type': 'application/json' // 默认值
+            },
+            success: function (resp) {
+              console.log(resp);
+              self.msg = resp.data.url;
+              self.$apply()
+            }
+          })
+      },
+      getQRCode(){
+        var self = this;
+        wepy.request({
+          url:'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=Example',
+          method:'GET',
+          success:function(resp){
+            console.log(resp);
+          }
+        });
+      },
+      scanQRCode(){
+        var self = this;
+        wepy.scanCode({
+          success:function(resp){
+            console.log(resp);
+            self.msg = resp.result;
+            self.$apply();
+          },
+          fail:function(err){
+            console.error("err");
+            console.error("err",err);
+          }
+        })
+      }
+    }
+    onLoad(){
+      var self=this;
+      this.$parent.getUserInfo(info=>{
+        self.userInfo = info;
+        self.msg = "###";
+        console.log(info);
+        self.$apply();
+      });
+    }
+  }
+</script>

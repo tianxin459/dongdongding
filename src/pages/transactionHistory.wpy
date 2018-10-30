@@ -1,0 +1,91 @@
+<style lang="less">
+.userinfo {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  image {
+    align-self: center;
+    height: 200rpx;
+    width: 200rpx;
+    border-radius: 50%;
+    margin-right: 5rpx;
+  }
+  p {
+    font-size: 50rpx;
+    align-self: center;
+  }
+}
+
+.amount {
+  display: flex;
+  flex-direction: row;
+  .txt-amount {
+    font-size: 40rpx;
+    height: 60rpx;
+    border-bottom: 1px solid black;
+  }
+}
+
+.add{
+  color:red;
+  .wux-cell__ft{
+    color:navy;
+  }
+}
+.minus{
+  color:green;
+  .wux-cell__ft{
+    color:navy;
+  }
+}
+</style>
+<template>
+  <view class="container">
+    <header></header>
+
+    <view class="body">
+      <wux-cell-group  title="Transaction History">
+
+        <wux-cell title="Initial" extra="+10" class="add"></wux-cell>
+        <wux-cell title="SomeThing1" extra="-2" class="minus"></wux-cell>
+        <wux-cell title="SomeThing1" extra="-5" class="minus"></wux-cell>
+        <wux-cell thumb="https://wx.qlogo.cn/mmopen/vi_32/Q0j4TwGTfTL3Oaibx…icoIhZWPOERJmgagnUhqcmhMLH3tH1nHfAg7VmNXZbzpQ/132" title="SomeThing1" extra="-1" class="minus"></wux-cell>
+
+      </wux-cell-group>
+    </view>
+  </view>
+</template>
+<script>
+import wepy from 'wepy';
+import Header from '@/components/header';
+
+export default class TransferHistory extends wepy.page {
+  components = {
+    header: Header
+  };
+  config = {
+    usingComponents: {
+      'wux-cell-group': '../wux/cell-group/index',
+      'wux-cell': '../wux/cell/index'
+    }
+  };
+  components = {};
+  data = {
+    msg: '',
+    buttons: [
+      {
+        type: 'balanced',
+        block: true,
+        text: 'OK'
+      }
+    ]
+  };
+  methods = {
+    onClick() {
+      var self = this;
+      this.$redirect('./index');
+    }
+  };
+  onLoad(parms, data) {}
+}
+</script>

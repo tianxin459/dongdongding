@@ -1,0 +1,150 @@
+<style lang="less">
+.userinfo{
+  display:flex;
+  flex-direction: column;
+  justify-content: center;
+  image {
+    align-self: center;
+    height: 200rpx;
+    width: 200rpx;
+    border-radius: 50%;
+    margin-right: 5rpx;
+  }
+  p{
+    font-size: 50rpx;
+    align-self: center;
+  }
+}
+
+.amount{
+  display: flex;
+  flex-direction: row;
+  .txt-amount{
+    font-size: 40rpx;
+    height: 60rpx;
+    border-bottom: 1px solid black;
+  }
+}
+</style>
+<template>
+  <view class="container">
+      <view class="header">
+        <wux-wing-blank size="default">
+          <view><span class="color-outline">G</span>reen<span class="color-outline">D</span>ot SH <span>2019</span>
+          {{msg}}</view>
+          <wux-row>
+              <!-- <wux-col span="2" offset="10">
+                <view class="userinfo">
+                  <image class="userinfo-avatar" src="{{userInfo.avatarUrl}}"></image>
+                  <p class="user-name">{{userInfo.nickName}}</p>
+                </view>
+              </wux-col> -->
+          </wux-row>
+        </wux-wing-blank>
+      </view>
+      <view class="body">
+        <view class="userinfo">
+            <image class="userinfo-avatar" src="{{target.avatarUrl}}" ></image>
+              <p class="user-name">{{target.nickName}}</p>
+        </view>
+        <view class="amount">
+          <label>G:</label>
+          <input class="txt-amount" type="number" @input="amountChange" value="{{amount}}" placeholder="Transfer Amount"/>
+        </view>
+        <wux-white-space size="large" />
+        <wux-wing-blank size="large">
+          <wux-button disable="{{amount==0}}" block type="balanced" @tap="transfer">Transfer</wux-button>
+        </wux-wing-blank>
+      </view>
+  </view>
+</template>
+<script>
+
+  import wepy from 'wepy'
+
+  export default class Transfer extends wepy.page{
+    config={
+      usingComponents:{
+        "wux-input-number": "../wux/input-number/index",
+        'wux-button':'../wux/button/index',
+        "wux-icon": "../wux/icon/index",
+        "wux-badge": "../wux/badge/index",
+        "wux-tabbar": "../wux/tabbar/index",
+        "wux-tabbar-item": "../wux/tabbar-item/index",
+        "wux-wing-blank": "../wux/wing-blank/index",
+        "wux-white-space": "../wux/white-space/index",
+        "wux-row": "../wux/row/index",
+        "wux-col": "../wux/col/index",
+        "wux-qrcode": "../wux/qrcode/index",
+        "wux-grids": "../wux/grids/index",
+        "wux-grid": "../wux/grid/index",
+         "wux-animation-group": "../wux/animation-group/index",
+        "wux-backdrop": "../wux/backdrop/index"
+      }
+    }
+    components={}
+    data={
+        target:{
+          avatarUrl:'https://wx.qlogo.cn/mmopen/vi_32/Q0j4TwGTfTL3Oaibx…icoIhZWPOERJmgagnUhqcmhMLH3tH1nHfAg7VmNXZbzpQ/132',
+          nickName:'Ellis'
+        },
+        userInfo:{},
+        msg:'',
+        amount:'',
+        transferDisable:true
+    }
+    methods={
+      amountChange(e){
+        console.log( e.detail.value);
+        this.amount = e.detail.value;
+      },
+      transfer(){
+        let self = this;
+        if(this.$parent.globalData.isDebug)
+        {
+          self.$parent.globalData.user.balance = self.$parent.globalData.user.balance-self.amount;
+          console.log(self.$parent.globalData.user.balance)
+          self.$redirect('./transfer-success');
+          return;
+        }
+
+        if(self.amount==0)
+        {
+          return;
+        }
+        wepy.request({
+            url: 'https://httpbin.org/post',
+            method:'POST',
+            header: {
+              'content-type': 'application/json' // 默认值
+            },
+            success: function (resp) {
+              console.log('transfer success');
+              self.$redirect('./transfer-success');
+            },
+            fail:function(err){
+              console.error(err);
+              self.msg=err;
+              // self.$redirect('./transfer-fail');
+            }
+          })
+      }
+    }
+    onLoad(parms,data){
+      console.log(parms);
+      if(!!parms)
+      {
+        this.target = parms;
+        this.userInfo = data.userInfo;
+      }
+
+      // var self = this;
+      // this.$parent.getUserInfo(info=>{
+      //   console.log('load userinfo');
+      //   self.target = info;
+      //   self.$apply();
+      // });
+      // console.log(this.target);
+    }
+  }
+  </script>
