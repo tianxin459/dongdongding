@@ -100,34 +100,44 @@
       },
       transfer(){
         let self = this;
-        if(this.$parent.globalData.isDebug)
-        {
-          self.$parent.globalData.user.balance = self.$parent.globalData.user.balance-self.amount;
-          console.log(self.$parent.globalData.user.balance)
-          self.$redirect('./transfer-success');
-          return;
-        }
+        // if(this.$parent.globalData.isDebug)
+        // {
+        //   self.$parent.globalData.user.balance = self.$parent.globalData.user.balance-self.amount;
+        //   console.log(self.$parent.globalData.user.balance)
+        //   self.$redirect('./transfer-success');
+        //   return;
+        // }
 
         if(self.amount==0)
         {
           return;
         }
+        let url = 'https://wtf.chinacloudsites.cn/api/transaction';
+        let transferData={
+          fromUser:self.$parent.globalData.userInfo.nickName,
+          toUser:self.target.nickName==self.$parent.globalData.userInfo.nickName?'ellistest':self.target.nickName,
+          amount:self.amount
+        }
         wepy.request({
-            url: 'https://httpbin.org/post',
+            url: url,
             method:'POST',
+            data:transferData,
             header: {
               'content-type': 'application/json' // 默认值
             },
             success: function (resp) {
-              console.log('transfer success');
-              self.$redirect('./transfer-success');
+              console.log(resp);
+              if(resp.data.isSuccess)
+                self.$redirect('./transfer-success');
+              else
+                console.error(resp);
             },
             fail:function(err){
               console.error(err);
               self.msg=err;
               // self.$redirect('./transfer-fail');
             }
-          })
+          });
       }
     }
     onLoad(parms,data){

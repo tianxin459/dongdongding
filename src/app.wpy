@@ -92,7 +92,8 @@ export default class extends wepy.app {
     },
     isIpx:false,
     isDebug:true,
-    qrCodeUrl:'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data='
+    qrCodeUrl:'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=',
+    baseurlTransaction:'https://wtf.chinacloudsites.cn/'
   }
 
   constructor () {

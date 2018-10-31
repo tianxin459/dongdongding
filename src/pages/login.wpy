@@ -1,5 +1,5 @@
 <style lang="less">
-.body{
+.body {
   background-color: var(--colorGreenGD);
 }
 .btnLogin {
@@ -22,7 +22,7 @@
   <view class="container">
     <header></header>
     <view class="body">
-      <wux-button class="btnLogin" block outline  type="balanced" open-type="getUserInfo" bindgetuserinfo="onGotUserInfo">
+      <wux-button class="btnLogin" block outline type="balanced" open-type="getUserInfo" bindgetuserinfo="onGotUserInfo">
         <view class="btn2">
           <wux-icon type="ios-beer" color="white" size="64" />
           <view>Go Party</view>
@@ -70,6 +70,29 @@ export default class Login extends wepy.page {
       console.log(e.detail.errMsg);
       console.log(e.detail.userInfo);
       console.log(e.detail.rawData);
+      let self = this;
+      let url = `https://wtf.chinacloudsites.cn/api/WxUser/register`
+      // let url = `https://wtf.chinacloudsites.cn/api/WxUser/register?nickname=${e.detail.userInfo.nickName}&avatarUrl=${e.detail.userInfo.avatarUrl}`;
+      console.log(url);
+      let loginData = e.detail.userInfo;
+      console.log(loginData);
+      wepy.request({
+        url: url,
+        method: 'POST',
+        data: loginData,
+        header: {
+          'content-type': 'application/json' // 默认值
+        },
+        success: function(resp) {
+          console.log('login/refill succes');
+          self.$redirect('./index');
+        },
+        fail: function(err) {
+          console.error(err);
+          self.msg = err;
+          // self.$redirect('./transfer-fail');
+        }
+      });
       this.$redirect('./index');
     }
   };

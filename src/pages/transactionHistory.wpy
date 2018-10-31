@@ -26,16 +26,16 @@
   }
 }
 
-.add{
-  color:red;
-  .wux-cell__ft{
-    color:navy;
+.add {
+  color: red;
+  .wux-cell__ft {
+    color: navy;
   }
 }
-.minus{
-  color:green;
-  .wux-cell__ft{
-    color:navy;
+.minus {
+  color: green;
+  .wux-cell__ft {
+    color: navy;
   }
 }
 </style>
@@ -44,13 +44,14 @@
     <header></header>
 
     <view class="body">
-      <wux-cell-group  title="Transaction History">
-
-        <wux-cell title="Initial" extra="+10" class="add"></wux-cell>
+      <wux-cell-group title="Transaction History">
+        <repeat for="{{transactionList}}" key="index" index="index" item="item">
+          <wux-cell title="{{userInfo.nickName==item.toUser?item.fromUser:item.toUser}}" extra="{{userInfo.nickName==item.toUser?'+':'-'}}{{item.amount}}" class="{{userInfo.nickName==item.toUser?'add':'minus'}}"></wux-cell>
+        </repeat>
+        <!-- <wux-cell title="Initial" extra="+10" class="add"></wux-cell>
         <wux-cell title="SomeThing1" extra="-2" class="minus"></wux-cell>
         <wux-cell title="SomeThing1" extra="-5" class="minus"></wux-cell>
-        <wux-cell thumb="https://wx.qlogo.cn/mmopen/vi_32/Q0j4TwGTfTL3Oaibx…icoIhZWPOERJmgagnUhqcmhMLH3tH1nHfAg7VmNXZbzpQ/132" title="SomeThing1" extra="-1" class="minus"></wux-cell>
-
+        <wux-cell thumb="https://wx.qlogo.cn/mmopen/vi_32/Q0j4TwGTfTL3Oaibx…icoIhZWPOERJmgagnUhqcmhMLH3tH1nHfAg7VmNXZbzpQ/132" title="SomeThing1" extra="-1" class="minus"></wux-cell> -->
       </wux-cell-group>
     </view>
   </view>
@@ -78,7 +79,9 @@ export default class TransferHistory extends wepy.page {
         block: true,
         text: 'OK'
       }
-    ]
+    ],
+    userInfo: {},
+    transactionList: []
   };
   methods = {
     onClick() {
@@ -86,6 +89,29 @@ export default class TransferHistory extends wepy.page {
       this.$redirect('./index');
     }
   };
-  onLoad(parms, data) {}
+  onLoad(parms, data) {
+    console.log('history page');
+    let self = this;
+    console.log(url);
+    self.userInfo = this.$parent.globalData.userInfo;
+    console.log(self.userInfo);
+
+    let url =
+      'https://wtf.chinacloudsites.cn/api/transaction/' +
+      self.userInfo.nickName;
+    wepy.request({
+      url: url,
+      method: 'GET',
+      success: function(resp) {
+        self.transactionList = resp.data.item;
+        console.log(self.transactionList);
+        // self.msg = resp.data.item.notificationContent;
+        self.$apply();
+      },
+      fail: function(err) {
+        self.$redirect('./transfer-fail');
+      }
+    });
+  }
 }
 </script>
