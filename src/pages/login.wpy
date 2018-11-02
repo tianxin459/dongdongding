@@ -34,9 +34,7 @@
 </template>
 <script>
 import wepy from 'wepy';
-import Header from '@/components/header'; // alias example
-// import { $wuxBackdrop } from '../wux/index'
-let balanceI;
+import Header from '@/components/header';
 
 export default class Login extends wepy.page {
   components = {
@@ -49,8 +47,7 @@ export default class Login extends wepy.page {
       'wux-wing-blank': '../wux/wing-blank/index',
       'wux-white-space': '../wux/white-space/index',
       'wux-row': '../wux/row/index',
-      'wux-col': '../wux/col/index',
-      'wux-qrcode': '../wux/qrcode/index'
+      'wux-col': '../wux/col/index'
     }
   };
   components = {};

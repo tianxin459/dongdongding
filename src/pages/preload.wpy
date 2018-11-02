@@ -1,8 +1,8 @@
 <style lang="less">
-.loading{
-  margin-left:auto;
-margin-right:auto;
-margin-top:40%;
+.loading {
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 40%;
 }
 </style>
 <template>
@@ -10,52 +10,70 @@ margin-top:40%;
     <header></header>
     <view class="body">
       <!-- <wux-loading id="wux-loading" /> -->
-        <wux-spin class="loading" wux-class="spin" size="large" />
+      <wux-spin class="loading" wux-class="spin" size="large" />
     </view>
   </view>
 </template>
 <script>
-import wepy from 'wepy';
-import Header from '@/components/header'; // alias example
+import wepy from 'wepy'
+import Header from '@/components/header' // alias example
 import { $wuxLoading } from '../wux/index'
 // import { $wuxBackdrop } from '../wux/index'
-let balanceI;
+let balanceI
 
 export default class PreLoad extends wepy.page {
   components = {
     header: Header
-  };
+  }
   config = {
     usingComponents: {
-        "wux-loading": "../wux/loading/index",
-        "wux-spin": "../wux/spin/index"
+      'wux-loading': '../wux/loading/index',
+      'wux-spin': '../wux/spin/index'
     }
-  };
-  components = {};
-  data = {};
-  methods = {};
+  }
+  components = {}
+  data = {}
+  methods = {}
 
   onLoad(parm, data) {
     // this.$wuxLoading = $wuxLoading();
     // this.$wuxLoading.show({
     //         text: 'loading...',
     //     })
-    let self = this;
-    console.log('app pre-load', !this.$parent.globalData.userInfo);
-    console.log(this.$parent.globalData.userInfo);
-    this.$parent.getUserInfo(info => {
-      this.$redirect('./index');
-      if (self.$parent.globalData.userInfo == null) {
-        self.$redirect('./login');
-      } else {
-        self.$redirect('./index');
+    let self = this
+    console.log('app pre-load', !this.$parent.globalData.userInfo)
+    console.log(this.$parent.globalData.userInfo)
+    wepy.login({
+      success(res) {
+        console.log('wx.login', res)
+        if (res.code) {
+          //发起网络请求
+          // wx.request({
+          //   url: 'https://test.com/onLogin',
+          //   data: {
+          //     code: res.code
+          //   }
+          // })
+        } else {
+          console.log('登录失败！' + res.errMsg)
+        }
       }
-    },
-    err=>{
-      console.error(err);
-        self.$redirect('./login');
-    }
-    );
+    })
+
+    this.$parent.getUserInfo(
+      info => {
+        this.$redirect('./index')
+        if (self.$parent.globalData.userInfo == null) {
+          self.$redirect('./login')
+        } else {
+          self.$redirect('./index')
+        }
+      },
+      err => {
+        console.error(err)
+        self.$redirect('./login')
+      }
+    )
   }
 }
 </script>

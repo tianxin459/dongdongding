@@ -1,4 +1,16 @@
 <style lang="less">
+// --colorBackgrounda:#007a00;
+// --colorBackgroundb:#58BD51;
+// --colorHeader:#7cbf4b;
+
+.header {
+  height: 10vh;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  background-color: #7cbf4b;
+  color: white;
+}
 .userinfo {
   display: flex;
   flex-direction: row;
@@ -40,7 +52,7 @@
 }
 
 .balance-bar {
-  background-color: var(--colorBackgrounda);
+  background-color: #1f2c2e;
   color: white;
   width: 100%;
   font-weight: 900;
@@ -106,7 +118,7 @@
 }
 
 .btn-bar {
-  background-color: var(--colorBackgroundb);
+  background-color: #444f51;
   height: 15vh;
   display: flex;
   flex-direction: row;
@@ -127,7 +139,7 @@
   }
   .item-middle {
     display: flex;
-    // display: none;
+    display: none;
     width: 120px;
     height: 90px;
     margin-top: -20rpx;
@@ -181,17 +193,13 @@
             <wux-icon wux-class="icon" type="ios-qr-scanner" size="30" slot="icon-on" />
             <text>Transaction History</text>
           </view>
-          <view class="item" @tap="goReg">
+          <view class="item">
             <wux-icon wux-class="icon" type="ios-qr-scanner" size="30" slot="icon-on" />
-            <text>Register for Party</text>
+            <text>Information</text>
           </view>
           <view class="item" @tap='goLogin'>
             <wux-icon wux-class="icon" type="ios-qr-scanner" size="30" slot="icon-on" />
             <text>Refill Balance</text>
-          </view>
-           <view class="item" @tap='goShake'>
-            <wux-icon wux-class="icon" type="ios-qr-scanner" size="30" slot="icon-on" />
-            <text>Shake ~ Shake</text>
           </view>
         </view>
       </view>
@@ -207,7 +215,7 @@ let balanceI
 let notificationI
 let urlNotification = 'https://wtf.chinacloudsites.cn/api/notification'
 
-export default class Index extends wepy.page {
+export default class Index3 extends wepy.page {
   components = {
     header: Header
   }
@@ -279,19 +287,11 @@ export default class Index extends wepy.page {
     },
     myQRCode() {
       var self = this
-      self.$navigate('./qrcode')
+      self.$redirect('./qrcode')
     },
     goHistory() {
       let self = this
       self.$navigate('./transactionHistory')
-    },
-    goReg() {
-      let self = this
-      self.$navigate('./register')
-    },
-    goShake() {
-      let self = this
-      self.$navigate('./shake')
     },
     goLogin() {
       let self = this
@@ -350,7 +350,7 @@ export default class Index extends wepy.page {
         let balance = self.$parent.globalData.user.balance
         self.balance = balance
         self.percent = (self.balance / 10) * 10
-        // console.log('balance', balance)
+        console.log('balance', balance)
         self.$apply()
       },
       fail: function(err) {

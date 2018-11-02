@@ -1,0 +1,142 @@
+<style lang="less">
+.body {
+  background-color: var(--colorGreenGD);
+  color: white;
+}
+
+.title {
+  width: 100%;
+  font-weight: 200;
+}
+
+.input-container {
+  width: 100%;
+}
+
+.ratio {
+    border-bottom: 2px solid green;
+}
+
+.input {
+  // border: 1px solid green;
+  width: 100%;
+  .input-label {
+  }
+  input {
+    // border: 1px solid green;
+    height: 4ex;
+    border-bottom: 2px solid green;
+  }
+}
+</style>
+<template>
+  <view class="container">
+    <header></header>
+    <view class="body">
+      <view class="title">
+        <wux-white-space size="large" />
+        <wux-row>
+          <wux-col span="10" offset="1">
+            <text>Please fill in the information for GD 2019 Annual Party</text>
+          </wux-col>
+        </wux-row>
+      </view>
+      <view class="input-container">
+        <wux-white-space size="large" />
+        <wux-row>
+          <wux-col span="10" offset="1">
+            <view class="input">
+              <view class="input-label">
+                <text>Company Email</text>
+              </view>
+              <input type="input-txt" @change="onEmailChange" placeholder="Sixteen@greendotcorp.com" />
+            </view>
+          </wux-col>
+        </wux-row>
+        <wux-white-space size="large" />
+        <wux-white-space size="large" />
+        <wux-row>
+          <wux-col span="10" offset="1">
+            <view class="input">
+              <view class="input-label">
+                <text>English Name</text>
+              </view>
+              <input type="input-txt" @change="onEnglishNameChange" placeholder="Sixteen Liu" />
+            </view>
+            <!-- <wux-input placeholder="English Name" bind:change="onEnglishNameChange" placeholder="Six Liu" /> -->
+          </wux-col>
+        </wux-row>
+        <wux-white-space size="large" />
+        <wux-white-space size="large" />
+        <wux-white-space size="large" />
+        <wux-white-space size="large" />
+        <!-- <wux-row>
+          <wux-col span="10" offset="1">
+            <view class="ratio">
+                <text>Would you bring your family?</text>
+              <picker bindchange="onNumPeopleChange" value="{{numPeople}}" range="{{numPeopleList}}">
+                <view class="picker">
+                  I will {{numPeopleList[numPeople]}}
+                </view>
+              </picker>
+            </view>
+
+          </wux-col>
+        </wux-row> -->
+      </view>
+    </view>
+    <view class="footer">
+      <wux-wing-blank size="default">
+        <wux-button class="btnLogin" block outline type="balanced" @tap="submit">Submit</wux-button>
+      </wux-wing-blank>
+    </view>
+  </view>
+</template>
+<script>
+import wepy from 'wepy'
+import Header from '@/components/header' // alias example
+// import { $wuxBackdrop } from '../wux/index'
+export default class Register extends wepy.page {
+  components = {
+    header: Header
+  }
+  config = {
+    usingComponents: {
+      'wux-wing-blank': '../wux/wing-blank/index',
+      'wux-white-space': '../wux/white-space/index',
+      'wux-row': '../wux/row/index',
+      'wux-col': '../wux/col/index',
+      'wux-button': '../wux/button/index',
+      'wux-cell-group': '../wux/cell-group/index',
+      'wux-cell': '../wux/cell/index',
+      'wux-input': '../wux/input/index',
+      'wux-radio-group': '../wux/radio-group/index',
+      'wux-radio': '../wux/radio/index'
+    }
+  }
+  components = {}
+  data = {
+    email: '',
+    englishName: '',
+    numPeople: 0,
+    numPeopleList: ['...', 'come along', 'bring 1 family member']
+  }
+  methods = {
+    onEmailChange(e) {
+      this.email = e.detail.value
+    },
+    onEnglishNameChange(e) {
+      this.englishName = e.detail.value
+    },
+    onNumPeopleChange(e) {
+      this.numPeople = e.detail.value
+      console.log(e.detail.value)
+    },
+    submit() {
+      console.log(this.data)
+    }
+  }
+
+  onLoad(parm, data) {}
+}
+</script>
