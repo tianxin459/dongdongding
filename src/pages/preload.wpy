@@ -32,14 +32,37 @@ export default class PreLoad extends wepy.page {
     }
   }
   components = {}
-  data = {}
+  data = {
+    code: ''
+  }
   methods = {}
 
+  Login() {
+    let self = this
+    let url = `https://wtf.chinacloudsites.cn/api/WxUser/register`
+    let loginData = self.userInfo
+    loginData.code = self.code
+    console.log('loginData', loginData)
+    wepy.request({
+      url: url,
+      method: 'POST',
+      data: loginData,
+      header: {
+        'content-type': 'application/json' // 默认值
+      },
+      success: function(resp) {
+        console.log('login/refill succes')
+        self.$redirect('./index')
+      },
+      fail: function(err) {
+        console.error(err)
+        self.msg = err
+        // self.$redirect('./transfer-fail');
+      }
+    })
+  }
+
   onLoad(parm, data) {
-    // this.$wuxLoading = $wuxLoading();
-    // this.$wuxLoading.show({
-    //         text: 'loading...',
-    //     })
     let self = this
     console.log('app pre-load', !this.$parent.globalData.userInfo)
     console.log(this.$parent.globalData.userInfo)
@@ -47,33 +70,27 @@ export default class PreLoad extends wepy.page {
       success(res) {
         console.log('wx.login', res)
         if (res.code) {
-          //发起网络请求
-          // wx.request({
-          //   url: 'https://test.com/onLogin',
-          //   data: {
-          //     code: res.code
-          //   }
-          // })
+          self.code = res.code
+          self.$parent.getUserInfo(
+            info => {
+              if (self.$parent.globalData.userInfo == null) {
+                self.$redirect('./login')
+              } else {
+                self.userInfo = info
+                //login with wx code
+                self.Login()
+              }
+            },
+            err => {
+              console.error(err)
+              self.$redirect('./login')
+            }
+          )
         } else {
           console.log('登录失败！' + res.errMsg)
         }
       }
     })
-
-    this.$parent.getUserInfo(
-      info => {
-        this.$redirect('./index')
-        if (self.$parent.globalData.userInfo == null) {
-          self.$redirect('./login')
-        } else {
-          self.$redirect('./index')
-        }
-      },
-      err => {
-        console.error(err)
-        self.$redirect('./login')
-      }
-    )
   }
 }
 </script>

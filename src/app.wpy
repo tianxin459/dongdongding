@@ -124,7 +124,6 @@ export default class extends wepy.app {
 
   getUserInfo(cb, cberror) {
     const that = this
-    console.log('this.globalData.userInfo', !!this.globalData.userInfo)
     if (!!this.globalData.userInfo) {
       cb && cb(this.globalData.userInfo)
       // return this.globalData.userInfo;
