@@ -1,6 +1,14 @@
 <style lang="less">
 @import 'theme.less';
 @import 'ipx.less';
+page {
+  background-color: var(--colorBackground);
+  font-family: 'Bitstream Vera Serif Bold', Verdana, sans-serif;
+}
+button.isAdmin,
+.isAdmin {
+  border: 1px dashed var(--colorBorder);
+}
 
 .wux-tabbar--bottom {
   bottom: 50rpx;
@@ -8,11 +16,13 @@
 }
 
 .container {
-  height: 100vh;
+  min-height: 100vh;
+  width: 100%;
+  overflow-x: hidden;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
   box-sizing: border-box;
 }
 
@@ -32,24 +42,152 @@
   flex-direction: column;
   justify-content: flex-start;
   align-content: center;
+  background-color: var(--colorBackground);
   > view {
     align-self: center;
   }
 }
+
+.button {
+  margin: 40rpx auto;
+  width: 80%;
+  height: 80rpx;
+  color: white;
+  background-color: var(--colorBackground);
+  border: 2px solid var(--colorBorder);
+  border-radius: 10rpx;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  transition: all 0.2s;
+  .icon {
+    width: 60rpx;
+    height: 60rpx;
+    margin: auto 10rpx;
+    align-self: center;
+  }
+}
+.logoGD {
+  background: url(http://ellist.cn/bulletmessage/static/img/GD-Logo.png)
+    no-repeat;
+  background-size: 100% 100%;
+}
+.button:active,
+.btn-primary:active {
+  background-color: #823d78;
+}
+
+.btn-primary {
+  width: 200rpx;
+  padding: 0;
+  height: 200rpx;
+  border-radius: 50%;
+  margin-top: 50rpx;
+  bottom: 150rpx;
+  position: absolute;
+  left: 50%;
+  margin-left: -100rpx;
+  color: white;
+  background-color: var(--colorGreenGD);
+  border: 2px solid var(--colorBorder);
+  display: flex;
+  z-index: 10;
+  // bottom: auto;
+  view {
+    margin: auto;
+    font-weight: bolder;
+  }
+  text {
+    align-self: center;
+    margin: 0 auto;
+  }
+}
+
+.btn-group {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  position: absolute;
+  bottom: 150rpx;
+  .btn-primary {
+    width: 270rpx;
+    height: 100rpx;
+    position: static;
+    left: auto;
+    margin: 0 20rpx;
+    border-radius: 100rpx;
+    bottom: auto;
+    view {
+      margin: 0 auto;
+      font-weight: bolder;
+    }
+  }
+}
+
 .footer {
-  border: 1rpx solid var(--colorGrey);
+  // border: 1rpx solid var(--colorGrey);
+  background-color: var(--colorBackground);
   width: 100%;
-  min-height: 250rpx;
+  // min-height: 250rpx;
   align-self: flex-end;
   display: flex;
   flex-direction: column;
+  .footer-btn {
+    position: fixed;
+    bottom: 40rpx;
+    width: 100%;
+  }
+  .side-background-s {
+    position: absolute;
+    margin: 0 auto;
+    bottom: 0;
+    z-index: 1;
+  }
+  .side-background-sw {
+    width: 150rpx;
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    z-index: 1;
+  }
+  .side-background-se {
+    width: 150rpx;
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    z-index: 1;
+  }
+}
+
+.author {
+  color: white;
+  display: block;
+  margin: 0 auto;
+  text-align: center;
 }
 .btn-group {
   display: flex;
   flex-direction: row;
 }
 .userinfo {
-  width: 100%;
+  align-self: center;
+  display: flex;
+  flex-direction: column;
+  /* background-color: #3e8bf8; */
+  image {
+    height: 150rpx;
+    width: 150rpx;
+    border-radius: 50%;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  p {
+    color: white;
+    font-size: 50rpx;
+    margin-left: auto;
+    margin-right: auto;
+  }
 }
 </style>
 
@@ -64,30 +202,50 @@ import configStore from './store'
 const store = configStore()
 setStore(store)
 
+var _serverRoot = 'https://ellist.cn/bulletmessage/client'
+var websocket = _serverRoot.startsWith('https')
+  ? _serverRoot.replace('https', 'wss')
+  : _serverRoot.replace('http', 'ws')
+
 export default class extends wepy.app {
   config = {
     pages: [
       'pages/preload',
-      'pages/login',
+      'pages/liveChat',
+      'pages/album',
       'pages/register',
-      'pages/shake',
+      'pages/main',
+      'pages/admin',
+      'pages/refill',
+      'pages/checkin',
+      'pages/welcome',
+      'pages/result',
+      'pages/bulletMessage',
       'pages/index',
-      'pages/index2',
-      'pages/index3',
-      'pages/qrcode',
       'pages/transfer',
+      'pages/login',
+      'pages/shake',
+      // 'pages/index2',
+      // 'pages/index3',
+      'pages/qrcode',
       'pages/transferSuccess',
       'pages/transactionHistory'
     ],
     window: {
       backgroundTextStyle: 'light',
-      navigationBarBackgroundColor: '#485860',
-      navigationBarTitleText: 'GD 2019',
+      backgroundColor: '#7a2c2d',
+      navigationBarBackgroundColor: '#d0624f',
+      navigationBarTitleText: '2019 Annual Party',
       navigationBarTextStyle: 'white'
     }
   }
 
   globalData = {
+    CacheName_App: 'cache*&^App',
+    CacheName_UserInfo: 'user*&^Info',
+    isAdmin: false,
+    model: '',
+    config: {},
     userInfo: null,
     user: {
       balance: 9
@@ -103,10 +261,109 @@ export default class extends wepy.app {
     this.use('requestfix')
   }
 
+  getCacheUser(name) {
+    let cacheUser =
+      wepy.getStorageSync(this.globalData.CacheName_UserInfo) || {}
+    if (cacheUser.nickName || cacheUser.avatarUrl) return cacheUser
+    return {}
+  }
+
+  saveCacheUser(value) {
+    wepy.setStorageSync(this.globalData.CacheName_UserInfo, value)
+  }
+
+  getCacheApp(name) {
+    let cacheApp = wepy.getStorageSync(this.globalData.CacheName_App) || {}
+    let returnValue
+    if (name) {
+      // if name ==undefine
+      returnValue = cacheApp[name] || false
+    } else {
+      returnValue = cacheApp
+    }
+    return returnValue
+  }
+  saveCacheApp(name, value) {
+    let cacheApp = this.getCacheApp()
+    if (value === '+1') {
+      cacheApp[name] = (cacheApp[name] || 0) + 1
+    } else {
+      cacheApp[name] = value
+    }
+    wepy.setStorageSync(this.globalData.CacheName_App, cacheApp)
+  }
+
   onLaunch() {
     // this.testAsync()
+    let self = this
     this.getSystemInfo()
+    this.getConfig()
+
+    wx.loadFontFace({
+      family: 'Bitstream Vera Serif Bold',
+      source: 'url("https://sungd.github.io/Pacifico.ttf")',
+      success: console.log('font loaded')
+    })
+
+    wepy.onSocketOpen(res => {
+      let self = this
+      console.log('app=>onSocketOpen')
+      self.wsSend('{"protocol":"json","version":1}')
+
+      self.getUserInfo(info => {
+        self.userInfo = info
+        let body = {
+          type: 1,
+          target: 'Register',
+          arguments: [self.userInfo.nickName, self.userInfo.avatorUrl]
+        }
+        console.log('app => register user', body)
+        self.wsSend(JSON.stringify(body))
+      })
+
+      wx.onSocketMessage(function(res) {
+        //接收消息回调
+        var data = res.data.replace(String.fromCharCode(0x1e), '') //返回时去掉分隔符
+        console.log('app=>recv:' + data)
+      })
+    })
+
+    wepy.onSocketClose(function() {
+      console.log('链接关闭 ')
+      setTimeout(() => self.WsConnect(), 5000) //5s后自动重连
+    })
+
+    wepy.onSocketError(function(res) {
+      console.log('WebSocket连接打开失败，请检查！')
+      console.log(res)
+      setTimeout(() => self.WsConnect(), 5000) //5s后自动重连
+    })
+
+    self.WsConnect()
     // this.getUserInfo();
+  }
+
+  WsConnect() {
+    console.log('app => websocket connect')
+    // var token = wx.getStorageSync('token');
+    var url = {
+      url: websocket, //+ '?accesstoken=' + token,
+      header: {
+        // transport: 1,
+        'Abp.TenantId': 2,
+        // skipNegotiation: true,
+        'Content-Type': 'application/json'
+      }
+    }
+    wepy.connectSocket(url)
+  }
+
+  wsSend(msg) {
+    let msgdata = `${msg}${String.fromCharCode(0x1e)}`
+    console.log('send:' + msgdata)
+    wepy.sendSocketMessage({
+      data: msgdata
+    })
   }
 
   sleep(s) {
@@ -122,36 +379,100 @@ export default class extends wepy.app {
     console.log(data)
   }
 
+  getConfig(refresh, cb, cberror) {
+    if (!refresh) {
+      if (!!this.globalData.config) {
+        cb && cb(this.globalData.config)
+      }
+    }
+    let self = this
+    let urlConfiguration = 'https://ellist.cn/bulletmessage/api/client/config'
+    wepy.request({
+      url: urlConfiguration,
+      method: 'GET',
+      success: function(resp) {
+        console.log(resp.data)
+        // self.globalData.config = JSON.parse(resp.data)
+        self.globalData.config = resp.data
+        cb && cb(self.globalData.config)
+      },
+      fail: function(err) {
+        console.error(err)
+        // wepy.redirectTo({
+        //   url: 'result'
+        // })
+        // self.$redirect('./result', 'failure')
+      }
+    })
+  }
+
   getUserInfo(cb, cberror) {
     const that = this
     if (!!this.globalData.userInfo) {
       cb && cb(this.globalData.userInfo)
-      // return this.globalData.userInfo;
+      return
     }
+
+    //read user from cache
+    let cacheUser =
+      wepy.getStorageSync(this.globalData.CacheName_UserInfo) || false
+    if (cacheUser) {
+      console.log('load user from cache', cacheUser)
+      this.globalData.userInfo = cacheUser
+      cb && cb(this.globalData.userInfo)
+      return
+    }
+
     wepy.getUserInfo({
       success(res) {
+        wepy.setStorageSync(this.globalData.CacheName_UserInfo, res.userInfo)
         that.globalData.userInfo = res.userInfo
         console.log(that.globalData.userInfo)
         cb && cb(res.userInfo)
+
+        //wss register user -start
+        //----------------------
+        let body = {
+          type: 1,
+          target: 'Register',
+          arguments: [res.userInfo.nickName, res.userInfo.avatarUrl]
+        }
+        console.log('app register user', body)
+        that.wsSend(JSON.stringify(body))
+        //----------------------
+        //wss register user -end
       },
       fail(err) {
-        console.log('fail')
-        cberror(err)
+        console.error(err)
+        // wepy.$redirect('./login')
+        wepy.redirectTo({
+          url: 'login'
+        })
       }
     })
+  }
+  isAdmin() {
+    let adminConfig = this.globalData.config.admin || ''
+    let nickName = this.globalData.userInfo.nickName || '#$%'
+    let result = adminConfig.indexOf(nickName) >= 0
+    if (!result) {
+      if (this.globalData.userInfo.nickName === 'ellis') return true
+    }
+    return result
   }
   getSystemInfo() {
     const that = this
     wepy.getSystemInfo({
       success: function(res) {
         //model中包含着设备信息
-        console.log(res.model)
         var model = res.model
+        that.globalData.model = res.model
         if (model.search('IphoneX') != -1 || model.search('iPhone X') != -1) {
           that.globalData.isIpx = true
         } else {
           that.globalData.isIpx = false
         }
+        console.log(res.model, 'is ipx=' + that.globalData.isIpx)
       }
     })
   }

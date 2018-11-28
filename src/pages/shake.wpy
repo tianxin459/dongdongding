@@ -1,6 +1,5 @@
 <style lang="less">
 .body {
-  background-color: var(--colorGreenGD);
   color: white;
 }
 
@@ -28,6 +27,65 @@
     border-bottom: 2px solid green;
   }
 }
+
+.btnStart {
+  position: fixed;
+  top: 200rpx;
+  right: 50rpx;
+  background-color: red;
+  color: white;
+}
+
+@keyframes runnerHead {
+  from {
+    top: 25rpx;
+  }
+  80% {
+    top: 32rpx;
+  }
+  to {
+    top: 25rpx;
+  }
+}
+.avatar {
+  width: 100%;
+  height: 300rpx;
+}
+
+.runner {
+  position: absolute;
+  transition: all linear 0.1s;
+  margin-left: -100rpx;
+  left: 50%;
+  .running-head {
+    position: absolute;
+    width: 200rpx;
+    height: 200rpx;
+    border: 1px solid green;
+    box-shadow: 0 0 0 1px white;
+    border-radius: 50%;
+    animation-name: runnerHead;
+    animation-duration: 1s;
+    animation-iteration-count: infinite;
+  }
+  .running-body {
+    position: absolute;
+    top: 115rpx;
+    // left: -10rpx;
+    width: 200rpx;
+    height: 200rpx;
+  }
+}
+
+.display {
+  font-size: 60rpx;
+  .ranking {
+    color: orange;
+    text-shadow: 0 0 1px currentColor, -1px -1px 1px #030, 0 -1px 1px #030,
+      1px -1px 1px #030, 1px 0 1px #030, 1px 1px 1px #030, 0 1px 1px #030,
+      -1px 1px 1px #030, -1px 0 1px #030;
+  }
+}
 </style>
 <template>
   <view class="container">
@@ -38,12 +96,24 @@
         <view>
           Msg:{{msg}}
         </view>
+        <button class="btnStart" @tap="onStart">
+          <text>Start</text>
+        </button>
+        <button class="btn-primary" @tap="onShake">
+          <text>shake</text>
+        </button>
       </view>
-    </view>
-    <view class="footer">
-      <wux-wing-blank size="default">
-        <wux-button class="btnLogin" block outline type="balanced" @tap="submit">Submit</wux-button>
-      </wux-wing-blank>
+      <view class="avatar">
+        <view class="runner">
+          <image class="running-body" src='https://ellist.cn/bulletmessage/static/img/running1.gif'></image>
+          <image class="running-head" src="{{UserInfo.avatarUrl}}"></image>
+        </view>
+      </view>
+      <view class="display">
+        <view class="ranking">
+          {{ranking}}
+        </view>
+      </view>
     </view>
   </view>
 </template>
@@ -56,24 +126,37 @@ export default class Register extends wepy.page {
     header: Header
   }
   config = {
-    usingComponents: {
-      'wux-wing-blank': '../wux/wing-blank/index',
-      'wux-white-space': '../wux/white-space/index',
-      'wux-row': '../wux/row/index',
-      'wux-col': '../wux/col/index',
-      'wux-button': '../wux/button/index',
-      'wux-cell-group': '../wux/cell-group/index',
-      'wux-cell': '../wux/cell/index',
-      'wux-input': '../wux/input/index',
-      'wux-radio-group': '../wux/radio-group/index',
-      'wux-radio': '../wux/radio/index'
+    usingComponents: {}
+  }
+  computed = {
+    UserInfo() {
+      return this.$parent.globalData.userInfo
     }
   }
   components = {}
   data = {
-    msg: ''
+    msg: '',
+    range: 0.2,
+    ranking: 'Wait for Start...'
   }
   methods = {
+    onStart(e) {
+      let url = 'https://ellist.cn/bulletmessage/api/race/begin'
+      let dataRun = {
+        Message: 'GoGoGo'
+      }
+      wepy.request({
+        url: url,
+        method: 'POST',
+        data: dataRun,
+        success: function(resp) {
+          console.log('start Run send', resp)
+        },
+        fail: function(err) {
+          console.error(err)
+        }
+      })
+    },
     onEmailChange(e) {
       this.email = e.detail.value
     },
@@ -87,29 +170,115 @@ export default class Register extends wepy.page {
     submit() {
       console.log('start shake')
       this.shakeFun()
+    },
+    onShake() {
+      this.sendRun(10)
     }
   }
   shakeFun() {
     // shake
     var self = this
-    var numX = 1
-    var numY = 1
-    var numZ = 0
     var positivenum = 0
+    wx.startAccelerometer({
+      interval: 'ui'
+    })
     wx.onAccelerometerChange(function(res) {
-      if (numX < res.x && numY < res.y) {
-        positivenum++
-        console.log('lr')
+      self.range = self.config.shakeRange || 0.5
+      var x = res.x.toFixed(4)
+      var y = res.y.toFixed(4)
+      var z = res.z.toFixed(4)
+
+      var shakeX = x > self.range
+      var shakeY = y > self.range
+      var shakeZ = z > self.range
+
+      let step = Math.floor(Math.random() * 100) % 10
+      let active = false
+
+      if (self.shakeActive) {
+        if ((shakeX && shakeY) || (shakeX && shakeZ) || (shakeY && shakeZ)) {
+          positivenum++
+          step = Math.ceil(Math.max(res.x, res.y)) * 10
+          if (step > 30) step = 30
+          active = true
+          console.log('xy step', step)
+        }
       }
-      if (numZ < res.z && numY < res.y) {
-        console.log('ud')
-        positivenum++
+      if (active) {
+        self.sendRun(step)
+        self.msg = 'shake to run:' + positivenum
       }
-      self.msg = 'shake:' + positivenum
       self.$apply()
     })
   }
 
-  onLoad(parm, data) {}
+  sendRun(step) {
+    let url = 'https://ellist.cn/bulletmessage/api/race/run'
+    let self = this
+    let dataRun = {
+      userId: this.$parent.globalData.userInfo.nickName,
+      englishName: this.$parent.globalData.user.englishName,
+      avatorUrl: this.$parent.globalData.userInfo.avatarUrl,
+      message: step
+    }
+    console.log('dataRun', dataRun)
+    wepy.request({
+      url: url,
+      method: 'POST',
+      data: dataRun,
+      success: function(resp) {
+        self.msg = 'run ' + step
+        console.log('dataRun send', resp)
+      },
+      fail: function(err) {
+        console.error(err)
+      }
+    })
+  }
+  onUnload() {
+    wx.stopAccelerometer()
+  }
+  onLoad(parm, data) {
+    // this.shakeActive = true
+    this.shakeFun()
+    this.sendRun()
+  }
+  onShow() {
+    let self = this
+    this.$parent.getConfig(false, config => {
+      self.config = config
+    })
+
+    wx.onSocketMessage(function(res) {
+      console.log('shake=>wsresponse', res)
+      // 接收消息回调
+      var data = JSON.parse(res.data.replace(String.fromCharCode(0x1e), '')) // 返回时去掉分隔符
+      if (data.target) {
+        switch (data.target) {
+          case 'ReceiveMessage':
+            self.msg = data.arguments[0] + '|' + data.arguments[1]
+            self.ReceiveMessage(data.arguments[0], data.arguments[1])
+            break
+          default:
+            break
+        }
+        self.$apply()
+      }
+    })
+  }
+  ReceiveMessage(uid, message) {
+    let self = this
+    if (message.indexOf('finish at') > -1) {
+      self.shakeActive = false
+      wepy.vibrateLong()
+      self.ranking = message.replace('finish at', '')
+      wx.stopAccelerometer()
+    }
+    if (message.indexOf('GoGoGo') > -1) {
+      self.shakeActive = true
+      wepy.vibrateLong()
+      self.ranking = 'Go! Shake~Shake'
+    }
+  }
 }
 </script>

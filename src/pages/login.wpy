@@ -1,6 +1,6 @@
 <style lang="less">
 .body {
-  background-color: var(--colorGreenGD);
+  // background-color: var(--colorGreenGD);
 }
 .btnLogin {
   margin-left: auto;
@@ -25,7 +25,7 @@
       <wux-button class="btnLogin" block outline type="balanced" open-type="getUserInfo" bindgetuserinfo="onGotUserInfo">
         <view class="btn2">
           <wux-icon type="ios-beer" color="white" size="64" />
-          <view>Go Party</view>
+          <view>Authorize the App</view>
         </view>
       </wux-button>
       <!-- <button open-type="getUserInfo" lang="zh_CN" bindgetuserinfo="onGotUserInfo">Go Party</button> -->
@@ -33,66 +33,50 @@
   </view>
 </template>
 <script>
-import wepy from 'wepy';
-import Header from '@/components/header';
+import wepy from 'wepy'
+import Header from '@/components/header'
 
 export default class Login extends wepy.page {
   components = {
     header: Header
-  };
+  }
   config = {
     usingComponents: {
       'wux-button': '../wux/button/index',
       'wux-icon': '../wux/icon/index',
       'wux-wing-blank': '../wux/wing-blank/index',
-      'wux-white-space': '../wux/white-space/index',
-      'wux-row': '../wux/row/index',
-      'wux-col': '../wux/col/index'
+      'wux-white-space': '../wux/white-space/index'
+      // 'wux-row': '../wux/row/index',
+      // 'wux-col': '../wux/col/index'
     }
-  };
-  components = {};
+  }
+  components = {}
   data = {
     userInfo: {},
     qrCodeUrl: '.',
     qrCodeData: 'no data',
     qrCodeColor: '#1ab16c',
     isIPX: false
-  };
+  }
   methods = {
     goBack() {
-      console.log('go back');
+      console.log('go back')
       // this.$redirect('./index');
     },
     onGotUserInfo(e) {
-      console.log(e.detail.errMsg);
-      console.log(e.detail.userInfo);
-      console.log(e.detail.rawData);
-      let self = this;
+      console.log(e.detail.errMsg)
+      console.log(e.detail.userInfo)
+      console.log(e.detail.rawData)
+      wepy.setStorageSync(this.globalData.CacheName_UserInfo, e.detail.userInfo)
+      let self = this
       let url = `https://wtf.chinacloudsites.cn/api/WxUser/register`
       // let url = `https://wtf.chinacloudsites.cn/api/WxUser/register?nickname=${e.detail.userInfo.nickName}&avatarUrl=${e.detail.userInfo.avatarUrl}`;
-      console.log(url);
-      let loginData = e.detail.userInfo;
-      console.log(loginData);
-      wepy.request({
-        url: url,
-        method: 'POST',
-        data: loginData,
-        header: {
-          'content-type': 'application/json' // 默认值
-        },
-        success: function(resp) {
-          console.log('login/refill succes');
-          self.$redirect('./index');
-        },
-        fail: function(err) {
-          console.error(err);
-          self.msg = err;
-          // self.$redirect('./transfer-fail');
-        }
-      });
-      this.$redirect('./index');
+      console.log(url)
+      let loginData = e.detail.userInfo
+      console.log(loginData)
+      this.$redirect('./preload')
     }
-  };
+  }
 
   onLoad(parm, data) {}
 }

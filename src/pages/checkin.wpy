@@ -1,0 +1,136 @@
+<style lang="less">
+.body {
+  .main-bg-image {
+    margin: 0 auto;
+    height: 800rpx;
+    width: 400rpx;
+    position: relative;
+    left: 60rpx;
+  }
+  .btn-primary {
+  }
+}
+.btnLogin {
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 30%;
+
+  .btn2 {
+    display: flex;
+    flex-direction: column;
+    color: white;
+    p {
+      font-size: 40rpx;
+      font-weight: 300;
+    }
+  }
+}
+</style>
+<template>
+  <view class="container">
+    <header></header>
+    <view class="body">
+      <image class="main-bg-image" src="http://ellist.cn/bulletmessage/static/img/h5-16.png"></image>
+      <button class="btn-primary" @tap="reFill">
+        <view>Checkin</view>
+      </button>
+      <!-- <button open-type="getUserInfo" lang="zh_CN" bindgetuserinfo="onGotUserInfo">Go Party</button> -->
+    </view>
+  </view>
+</template>
+<script>
+import wepy from 'wepy'
+import Header from '@/components/header'
+
+export default class CheckIn extends wepy.page {
+  components = {
+    header: Header
+  }
+  config = {
+    usingComponents: {}
+  }
+  components = {}
+  data = {
+    config: {},
+    userInfo: {},
+    qrCodeUrl: '.',
+    qrCodeData: 'no data',
+    qrCodeColor: '#1ab16c',
+    isIPX: false
+  }
+  methods = {
+    reFill() {
+      let self = this
+      wepy.scanCode({
+        success: function(resp) {
+          // console.log(resp.result)
+          self.msg = resp.result
+          if (self.msg != 'checkin for party') {
+            wepy.showToast({
+              title: 'Invalid QR Code',
+              icon: 'none',
+              duration: 2000
+            })
+            return
+          }
+          console.log('scan qr result', resp)
+
+          let url = `https://wtf.chinacloudsites.cn/api/Transaction/refill`
+          console.log(url)
+          let refillData = {
+            nickName: self.userInfo.nickName,
+            amount: self.config.initialFun || 10
+          }
+
+          wepy.request({
+            url: url,
+            method: 'POST',
+            data: refillData,
+            header: {
+              'content-type': 'application/json' // 默认值
+            },
+            success: function(resp) {
+              console.log('checkin/refill succes', refillData)
+              self.$parent.saveCacheApp('isCheckedIn', true)
+              self.$redirect('./index')
+            },
+            fail: function(err) {
+              console.error(err)
+              self.msg = err
+              // self.$redirect('./transfer-fail');
+            }
+          })
+        },
+        fail: function(err) {
+          console.error('err', err)
+        }
+      })
+    },
+    goBack() {
+      console.log('go back')
+      // this.$redirect('./index');
+    },
+    onGotUserInfo(e) {
+      console.log(e.detail.errMsg)
+      console.log(e.detail.userInfo)
+      console.log(e.detail.rawData)
+    }
+  }
+
+  onLoad(parm, data) {
+    let self = this
+    this.$parent.getUserInfo(info => {
+      self.userInfo = info
+      self.msg =
+        'here will display public notice information: blah...blah...blah...'
+      self.$apply()
+    })
+  }
+  onShow() {
+    let self = this
+    this.$parent.getConfig(false, config => {
+      self.config = config
+    })
+  }
+}
+</script>

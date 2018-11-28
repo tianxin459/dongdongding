@@ -1,160 +1,189 @@
 <style lang="less">
-.userinfo{
-  display:flex;
+.body {
+  color: var(--colorFont);
+
+  // .button:after {
+  //   content: '';
+  //   background: #823d78;
+  //   display: block;
+  //   position: absolute;
+  //   padding-top: 300%;
+  //   padding-left: 350%;
+  //   margin-left: -20px !important;
+  //   margin-top: -120%;
+  //   opacity: 0;
+  //   transition: all 0.8s;
+  // }
+
+  // .button:active:after {
+  //   padding: 0;
+  //   margin: 0;
+  //   opacity: 1;
+  //   transition: 0s;
+  // }
+}
+.userinfo {
+  display: flex;
   flex-direction: column;
   justify-content: center;
+  color: white;
+  font-size: bolder;
   image {
     align-self: center;
-    height: 200rpx;
-    width: 200rpx;
+    height: 150rpx;
+    width: 150rpx;
     border-radius: 50%;
     margin-right: 5rpx;
   }
-  p{
+  p {
     font-size: 50rpx;
     align-self: center;
   }
 }
-
-.amount{
+.amount-label {
+  width: 80%;
+  margin: 20rpx;
+}
+.amount {
   display: flex;
   flex-direction: row;
-  .txt-amount{
+  width: 80%;
+  border-bottom: 2px solid var(--colorBorder);
+  .txt-amount {
     font-size: 40rpx;
-    height: 60rpx;
-    border-bottom: 1px solid black;
+    border: 0px;
+    margin-left: 10rpx;
+    color: white;
+    font-weight: bolder;
+    // height: 60rpx;
+    // border-bottom: 1px solid black;
+  }
+}
+
+.footer {
+  .side-background-sw {
+    width: 400rpx;
   }
 }
 </style>
 <template>
   <view class="container">
-      <view class="header">
-        <wux-wing-blank size="default">
-          <view><span class="color-outline">G</span>reen<span class="color-outline">D</span>ot SH <span>2019</span>
-          {{msg}}</view>
-          <wux-row>
-              <!-- <wux-col span="2" offset="10">
-                <view class="userinfo">
-                  <image class="userinfo-avatar" src="{{userInfo.avatarUrl}}"></image>
-                  <p class="user-name">{{userInfo.nickName}}</p>
-                </view>
-              </wux-col> -->
-          </wux-row>
-        </wux-wing-blank>
+    <header></header>
+    <view class="body">
+      <view class="userinfo">
+        <image class="userinfo-avatar" src="{{target.avatarUrl}}"></image>
+        <!-- <p class="user-name">{{target.nickName}}</p> -->
+        <p class="user-name">{{target.englishName}}</p>
       </view>
-      <view class="body">
-        <view class="userinfo">
-            <image class="userinfo-avatar" src="{{target.avatarUrl}}" ></image>
-              <p class="user-name">{{target.nickName}}</p>
-        </view>
-        <view class="amount">
-          <label>G:</label>
-          <input class="txt-amount" type="number" @input="amountChange" value="{{amount}}" placeholder="Transfer Amount"/>
-        </view>
-        <wux-white-space size="large" />
-        <wux-wing-blank size="large">
-          <wux-button disable="{{amount==0}}" block type="balanced" @tap="transfer">Transfer</wux-button>
-        </wux-wing-blank>
+      <view class="amount-label">Transfer Amount</view>
+      <view class="amount">
+        <text>G:</text>
+        <input class="txt-amount" focus="true" type="number" @input="amountChange" value="{{amount}}" disable="{{enableAmount}}" />
       </view>
+      <!-- <wux-white-space size="large" /> -->
+      <!-- <view class="btn-transfer item" @tap="transfer"><text>Transfer</text></view> -->
+      <button class="button" disable="{{amount==0}}" @tap="transfer">Transfer</button>
+    </view>
+    <view class="footer">
+      <image class="side-background-sw" src="http://ellist.cn/bulletmessage/static/img/h5-19.png"></image>
+    </view>
   </view>
 </template>
 <script>
+import wepy from 'wepy'
+import Header from '@/components/header'
 
-  import wepy from 'wepy'
+export default class Transfer extends wepy.page {
+  config = {
+    usingComponents: {}
+  }
+  components = {
+    header: Header
+  }
+  data = {
+    target: {
+      avatarUrl:
+        'https://wx.qlogo.cn/mmopen/vi_32/Q0j4TwGTfTL3Oaibx…icoIhZWPOERJmgagnUhqcmhMLH3tH1nHfAg7VmNXZbzpQ/132',
+      nickName: 'Ellis',
+      amount: 0
+    },
+    enableAmount: true,
+    userInfo: {},
+    msg: '',
+    amount: '',
+    transferDisable: true
+  }
+  methods = {
+    amountChange(e) {
+      console.log(e.detail.value)
+      this.amount = e.detail.value
+    },
+    transfer() {
+      let self = this
+      // if(this.$parent.globalData.isDebug)
+      // {
+      //   self.$parent.globalData.user.balance = self.$parent.globalData.user.balance-self.amount;
+      //   console.log(self.$parent.globalData.user.balance)
+      //   self.$redirect('./transfer-success');
+      //   return;
+      // }
 
-  export default class Transfer extends wepy.page{
-    config={
-      usingComponents:{
-        "wux-input-number": "../wux/input-number/index",
-        'wux-button':'../wux/button/index',
-        "wux-icon": "../wux/icon/index",
-        "wux-badge": "../wux/badge/index",
-        "wux-tabbar": "../wux/tabbar/index",
-        "wux-tabbar-item": "../wux/tabbar-item/index",
-        "wux-wing-blank": "../wux/wing-blank/index",
-        "wux-white-space": "../wux/white-space/index",
-        "wux-row": "../wux/row/index",
-        "wux-col": "../wux/col/index",
-        "wux-qrcode": "../wux/qrcode/index",
-        "wux-grids": "../wux/grids/index",
-        "wux-grid": "../wux/grid/index",
-         "wux-animation-group": "../wux/animation-group/index",
-        "wux-backdrop": "../wux/backdrop/index"
+      if (self.amount === 0) {
+        wepy.showToast({
+          title: 'Please enter the transfer amount',
+          icon: 'none',
+          duration: 2000
+        })
+        return
       }
-    }
-    components={}
-    data={
-        target:{
-          avatarUrl:'https://wx.qlogo.cn/mmopen/vi_32/Q0j4TwGTfTL3Oaibx…icoIhZWPOERJmgagnUhqcmhMLH3tH1nHfAg7VmNXZbzpQ/132',
-          nickName:'Ellis'
+      let url = 'https://wtf.chinacloudsites.cn/api/Transaction/addtransaction'
+      let transferData = {
+        fromUser: self.$parent.globalData.userInfo.nickName,
+        toUser:
+          self.target.nickName === self.$parent.globalData.userInfo.nickName
+            ? 'ellistest'
+            : self.target.nickName,
+        amount: self.amount
+      }
+      console.log('add transaction', transferData)
+      wepy.request({
+        url: url,
+        method: 'POST',
+        data: transferData,
+        header: {
+          'content-type': 'application/json' // 默认值
         },
-        userInfo:{},
-        msg:'',
-        amount:'',
-        transferDisable:true
-    }
-    methods={
-      amountChange(e){
-        console.log( e.detail.value);
-        this.amount = e.detail.value;
-      },
-      transfer(){
-        let self = this;
-        // if(this.$parent.globalData.isDebug)
-        // {
-        //   self.$parent.globalData.user.balance = self.$parent.globalData.user.balance-self.amount;
-        //   console.log(self.$parent.globalData.user.balance)
-        //   self.$redirect('./transfer-success');
-        //   return;
-        // }
-
-        if(self.amount==0)
-        {
-          return;
+        success: function(resp) {
+          console.log(resp)
+          if (resp.data.isSuccess) self.$redirect('./result')
+          else console.error(resp)
+        },
+        fail: function(err) {
+          console.error(err)
+          self.msg = err
+          // self.$redirect('./transfer-fail');
         }
-        let url = 'https://wtf.chinacloudsites.cn/api/transaction';
-        let transferData={
-          fromUser:self.$parent.globalData.userInfo.nickName,
-          toUser:self.target.nickName==self.$parent.globalData.userInfo.nickName?'ellistest':self.target.nickName,
-          amount:self.amount
-        }
-        wepy.request({
-            url: url,
-            method:'POST',
-            data:transferData,
-            header: {
-              'content-type': 'application/json' // 默认值
-            },
-            success: function (resp) {
-              console.log(resp);
-              if(resp.data.isSuccess)
-                self.$redirect('./transfer-success');
-              else
-                console.error(resp);
-            },
-            fail:function(err){
-              console.error(err);
-              self.msg=err;
-              // self.$redirect('./transfer-fail');
-            }
-          });
-      }
-    }
-    onLoad(parms,data){
-      console.log(parms);
-      if(!!parms)
-      {
-        this.target = parms;
-        this.userInfo = data.userInfo;
-      }
-
-      // var self = this;
-      // this.$parent.getUserInfo(info=>{
-      //   console.log('load userinfo');
-      //   self.target = info;
-      //   self.$apply();
-      // });
-      // console.log(this.target);
+      })
     }
   }
-  </script>
+  onLoad(parms, data) {
+    console.log(parms)
+    if (!!parms) {
+      this.target = parms
+      // this.userInfo = data.userInfo
+    }
+
+    if (parms.amount && parms.amount > 0) {
+      this.enableAmount = false
+    }
+
+    var self = this
+    this.$parent.getUserInfo(info => {
+      console.log('load userinfo')
+      self.userInfo = info
+      self.$apply()
+    })
+    console.log(this.target)
+  }
+}
+</script>

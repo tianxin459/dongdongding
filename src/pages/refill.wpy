@@ -1,0 +1,244 @@
+<style lang="less">
+.body {
+  .amount {
+    text-align: center;
+    font-weight: bolder;
+    font-size: 400rpx;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
+  #btnShake {
+    bottom: 400rpx;
+  }
+}
+.btnLogin {
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 30%;
+
+  .btn2 {
+    display: flex;
+    flex-direction: column;
+    color: white;
+    p {
+      font-size: 40rpx;
+      font-weight: 300;
+    }
+  }
+}
+
+.unit {
+  font-size: 40rpx;
+  margin-left: 150rpx;
+  position: absolute;
+  margin-top: 400rpx;
+  align-self: center;
+}
+
+#btnConfirm {
+  left: 100rpx;
+  margin-left: 0;
+  background-color: var(--colorButtona);
+}
+#btnAgain {
+  right: 100rpx;
+  left: auto;
+  background-color: var(--colorButtonb);
+}
+</style>
+<template>
+  <view class="container">
+    <header></header>
+    <view class="body">
+      <view class="amount">
+        {{amount}}
+        <span class="unit">G</span>
+      </view>
+      <button id="btnShake" class="btn-primary isAdmin" @tap="shake" wx:if="{{isAdmin}}">
+        <view>shake</view>
+      </button>
+      <button wx:if="{{showStart}}" class="btn-primary" @tap="startShake">
+        <view>Start</view>
+      </button>
+      <!-- wx:if="{{showRefill}}" -->
+
+      <button wx:if="{{showRefill}}" id="btnConfirm" class="btn-primary" @tap="confirmRefill">
+        <view>Charge</view>
+      </button>
+      <button wx:if="{{showRefill}}" id="btnAgain" class="btn-primary" @tap="tryAgain">
+        <view>Try Again</view>
+      </button>
+      <!-- <view class="btn-group">
+      </view> -->
+    </view>
+  </view>
+</template>
+<script>
+import wepy from 'wepy'
+import Header from '@/components/header'
+const innerAudioContext = wx.createInnerAudioContext()
+let vtimout
+export default class Refill extends wepy.page {
+  components = {
+    header: Header
+  }
+  config = {
+    usingComponents: {}
+  }
+  computed = {
+    isAdmin() {
+      return this.$parent.isAdmin()
+    }
+  }
+  components = {}
+  data = {
+    showStart: true,
+    showRefill: false,
+    shakeData: {},
+    range: 0.5,
+    config: {},
+    audioCtx: {},
+    userInfo: {},
+    amount: 0,
+    isIPX: false
+  }
+  methods = {
+    confirmRefill(e) {
+      let self = this
+      // ----------------- refill api ----------------
+      let url = `https://wtf.chinacloudsites.cn/api/Transaction/refill`
+      console.log(url)
+      let refillData = {
+        nickName: self.userInfo.nickName,
+        amount: self.amount || 0
+      }
+      wepy.request({
+        url: url,
+        method: 'POST',
+        data: refillData,
+        header: {
+          'content-type': 'application/json' // 默认值
+        },
+        success: function(resp) {
+          self.$parent.saveCacheApp('refill', '+1')
+          self.$redirect('./index')
+        },
+        fail: function(err) {
+          console.error(err)
+          self.msg = err
+          // self.$redirect('./transfer-fail');
+        }
+      })
+      // ----------------- refill api -----------------
+    },
+    tryAgain(e) {
+      let self = this
+      self.showStart = true
+      self.showRefill = false
+      self.amount = 0
+    },
+    startShake(e) {
+      wepy.vibrateLong()
+      let self = this
+      self.showStart = false
+      self.showRefill = false
+      console.log('start shake')
+      self.shakeActive = true
+      self.shakeToFill()
+      self.$apply()
+
+      let timeOut = (this.$parent.globalData.config.shakeTime || 10) * 1000
+      vtimout = setTimeout(() => {
+        console.log('----timeout----', self.amount)
+        wepy.vibrateLong()
+        self.shakeActive = false
+        self.showStart = false
+        self.showRefill = true
+        wx.stopAccelerometer()
+
+        self.$apply()
+      }, timeOut)
+    },
+    shake() {
+      let self = this
+      console.log(innerAudioContext)
+      if (self.shakeActive) {
+        self.amount++
+        self.audioPlay()
+      }
+      self.$apply()
+    }
+  }
+  shakeToFill() {
+    // shake
+    var self = this
+    self.range = self.config.shakeRange || 0.5
+    wx.startAccelerometer({
+      interval: 'ui'
+    })
+  }
+  onUnload() {}
+  onLoad(parm, data) {
+    let self = this
+    let shakeW = 0
+    innerAudioContext.autoplay = false
+    innerAudioContext.src = 'http://ellist.cn/bulletmessage/static/coin2.mp3'
+    innerAudioContext.onPlay(() => {
+      console.log('start play')
+    })
+    innerAudioContext.onError(res => {
+      console.log(res.errMsg)
+      console.log(res.errCode)
+    })
+    wx.onAccelerometerChange(function(res) {
+      var x = res.x.toFixed(4)
+      var y = res.y.toFixed(4)
+      var z = res.z.toFixed(4)
+
+      var shakeX = x > self.range
+      var shakeY = y > self.range
+      var shakeZ = z > self.range
+
+      console.log('shakeData', self.shakeData)
+
+      if (self.shakeActive) {
+        if ((shakeX && shakeY) || (shakeX && shakeZ) || (shakeY && shakeZ)) {
+          console.log('isShake', self.amount)
+          shakeW++
+          self.amount = self.amount + (shakeW % 2)
+          if (shakeW % 2 === 1) {
+            self.audioPlay()
+            self.$apply()
+          }
+        }
+      }
+    })
+  }
+  onShow() {
+    let self = this
+    this.$parent.getConfig(false, config => {
+      self.config = config
+    })
+    this.$parent.getUserInfo(info => {
+      self.userInfo = info
+    })
+  }
+
+  onHide() {
+    clearTimeout(vtimout)
+  }
+  audioPlay() {
+    innerAudioContext.seek(0)
+    innerAudioContext.play()
+  }
+  audioPause() {
+    innerAudioContext.pause()
+  }
+  onReady() {
+    console.log('onready')
+    this.audioCtx = wx.createAudioContext('myAudio')
+  }
+}
+</script>

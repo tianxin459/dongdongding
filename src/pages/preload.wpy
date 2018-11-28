@@ -9,26 +9,29 @@
   <view class="container">
     <header></header>
     <view class="body">
+      <loading></loading>
       <!-- <wux-loading id="wux-loading" /> -->
-      <wux-spin class="loading" wux-class="spin" size="large" />
+      <!-- <wux-spin class="loading" wux-class="spin" size="large" /> -->
     </view>
   </view>
 </template>
 <script>
 import wepy from 'wepy'
 import Header from '@/components/header' // alias example
-import { $wuxLoading } from '../wux/index'
+import Loading from '@/components/loading' // alias example
+// import { $wuxLoading } from '../wux/index'
 // import { $wuxBackdrop } from '../wux/index'
 let balanceI
 
 export default class PreLoad extends wepy.page {
   components = {
-    header: Header
+    header: Header,
+    loading: Loading
   }
   config = {
     usingComponents: {
-      'wux-loading': '../wux/loading/index',
-      'wux-spin': '../wux/spin/index'
+      // 'wux-loading': '../wux/loading/index',
+      // 'wux-spin': '../wux/spin/index'
     }
   }
   components = {}
@@ -37,29 +40,64 @@ export default class PreLoad extends wepy.page {
   }
   methods = {}
 
-  Login() {
+  Login(userInfo) {
     let self = this
-    let url = `https://wtf.chinacloudsites.cn/api/WxUser/register`
-    let loginData = self.userInfo
-    loginData.code = self.code
-    console.log('loginData', loginData)
+    var url = 'https://wtf.chinacloudsites.cn/api/WxUser/' + userInfo.nickName
+    console.log('balanceurl', url)
     wepy.request({
       url: url,
-      method: 'POST',
-      data: loginData,
-      header: {
-        'content-type': 'application/json' // 默认值
-      },
+      method: 'GET',
       success: function(resp) {
-        console.log('login/refill succes')
-        self.$redirect('./index')
+        console.log(resp)
+        if (!resp.data.item[0]) {
+          console.error('balance have no item, go to registration')
+          self.$redirect('./register')
+        } else {
+          self.$parent.saveCacheApp('isRegisted', true) // cache isRegisted
+          self.$parent.globalData.user.balance = resp.data.item[0].balance
+          self.$parent.globalData.user.englishName =
+            resp.data.item[0].englishName
+
+          let redirectData = userInfo
+          redirectData.balance = resp.data.item[0].balance
+          redirectData.englishName = resp.data.item[0].englishName
+          self.goNextBaseOnConfiguration(true)
+          // self.$redirect('./index', redirectData)
+        }
       },
       fail: function(err) {
         console.error(err)
-        self.msg = err
-        // self.$redirect('./transfer-fail');
+        self.$redirect('./transfer-fail')
       }
     })
+  }
+
+  goNextBaseOnConfiguration(isRegistered) {
+    let self = this
+    this.$parent.getConfig(false, config => {
+      self.handleConfiguration(config, isRegistered)
+    })
+  }
+
+  handleConfiguration(config, isRegistered) {
+    let self = this
+    if (config.debug) {
+      console.log('debug')
+    } else {
+      console.log(config)
+    }
+    switch (config.stage) {
+      case '1':
+        if (isRegistered) self.$redirect('./welcome')
+        else self.$redirect('./register')
+        break
+      case '2':
+        self.$redirect('./index')
+        break
+      default:
+        self.$redirect('./index')
+        break
+    }
   }
 
   onLoad(parm, data) {
@@ -73,17 +111,18 @@ export default class PreLoad extends wepy.page {
           self.code = res.code
           self.$parent.getUserInfo(
             info => {
+              console.log('preload=>getuserinfo', info)
               if (self.$parent.globalData.userInfo == null) {
-                self.$redirect('./login')
+                self.$redirect('./register')
               } else {
                 self.userInfo = info
-                //login with wx code
-                self.Login()
+                // login with wx code
+                self.Login(info)
               }
             },
             err => {
-              console.error(err)
-              self.$redirect('./login')
+              console.error('get userinfo failure', err)
+              self.$redirect('./register')
             }
           )
         } else {

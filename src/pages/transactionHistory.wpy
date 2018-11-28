@@ -38,39 +38,83 @@
     color: navy;
   }
 }
+
+.body {
+  color: white;
+  .title {
+    color: var(--colorFontb);
+    font-weight: bolder;
+    text-align: center;
+  }
+  .transactionHistory {
+    width: 80%;
+    z-index: 5;
+    .transaction-item {
+      display: flex;
+      border-bottom: 1px solid var(--colorBorder);
+      justify-content: space-between;
+      .name {
+        color: var(--colorFont);
+      }
+      .amount {
+        font-weight: bolder;
+      }
+    }
+  }
+}
+
+.footer {
+  .side-background-s {
+    width: 80vw;
+    left: 10vw;
+    height: 40vh;
+  }
+}
 </style>
 <template>
   <view class="container">
     <header></header>
 
     <view class="body">
-      <wux-cell-group title="Transaction History">
+      <view class="title">
+        TRANSFER RECORD
+      </view>
+      <view class="transactionHistory">
         <repeat for="{{transactionList}}" key="index" index="index" item="item">
+          <view class="transaction-item">
+            <text class="name">
+              Transfer-{{userInfo.nickName==item.toUser?item.fromUser:item.toUser}}</text>
+            <text class="amount">
+              {{userInfo.nickName==item.toUser?'+':'-'}}{{item.amount}}
+            </text>
+          </view>
+        </repeat>
+      </view>
+      <!-- <wux-cell-group title="Transaction History">
+        <repeat for="{{transactionList}}" key="index" index="index" item="item">
+
           <wux-cell title="{{userInfo.nickName==item.toUser?item.fromUser:item.toUser}}" extra="{{userInfo.nickName==item.toUser?'+':'-'}}{{item.amount}}" class="{{userInfo.nickName==item.toUser?'add':'minus'}}"></wux-cell>
         </repeat>
-        <!-- <wux-cell title="Initial" extra="+10" class="add"></wux-cell>
-        <wux-cell title="SomeThing1" extra="-2" class="minus"></wux-cell>
-        <wux-cell title="SomeThing1" extra="-5" class="minus"></wux-cell>
-        <wux-cell thumb="https://wx.qlogo.cn/mmopen/vi_32/Q0j4TwGTfTL3Oaibx…icoIhZWPOERJmgagnUhqcmhMLH3tH1nHfAg7VmNXZbzpQ/132" title="SomeThing1" extra="-1" class="minus"></wux-cell> -->
-      </wux-cell-group>
+
+      </wux-cell-group> -->
+    </view>
+    <view class="footer">
+      <image class="side-background-s" src="https://ellist.cn/bulletmessage/static/img/H5-14.png"></image>
     </view>
   </view>
 </template>
 <script>
-import wepy from 'wepy';
-import Header from '@/components/header';
+import wepy from 'wepy'
+import Header from '@/components/header'
 
 export default class TransferHistory extends wepy.page {
   components = {
     header: Header
-  };
+  }
   config = {
-    usingComponents: {
-      'wux-cell-group': '../wux/cell-group/index',
-      'wux-cell': '../wux/cell/index'
-    }
-  };
-  components = {};
+    usingComponents: {}
+  }
+  components = {}
   data = {
     msg: '',
     buttons: [
@@ -82,36 +126,35 @@ export default class TransferHistory extends wepy.page {
     ],
     userInfo: {},
     transactionList: []
-  };
+  }
   methods = {
     onClick() {
-      var self = this;
-      this.$redirect('./index');
+      var self = this
+      this.$redirect('./index')
     }
-  };
+  }
   onLoad(parms, data) {
-    console.log('history page');
-    let self = this;
-    console.log(url);
-    self.userInfo = this.$parent.globalData.userInfo;
-    console.log(self.userInfo);
+    console.log('history page')
+    let self = this
+    console.log(url)
+    self.userInfo = this.$parent.globalData.userInfo
+    console.log(self.userInfo)
 
     let url =
-      'https://wtf.chinacloudsites.cn/api/transaction/' +
-      self.userInfo.nickName;
+      'https://wtf.chinacloudsites.cn/api/transaction/' + self.userInfo.nickName
     wepy.request({
       url: url,
       method: 'GET',
       success: function(resp) {
-        self.transactionList = resp.data.item;
-        console.log(self.transactionList);
+        self.transactionList = resp.data.item
+        console.log(self.transactionList)
         // self.msg = resp.data.item.notificationContent;
-        self.$apply();
+        self.$apply()
       },
       fail: function(err) {
-        self.$redirect('./transfer-fail');
+        self.$redirect('./transfer-fail')
       }
-    });
+    })
   }
 }
 </script>

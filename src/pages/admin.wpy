@@ -1,0 +1,102 @@
+<style lang="less">
+.body {
+  input {
+    border: 1px solid var(--colorFont);
+  }
+  .config-container {
+    width: 100%;
+    .config-item {
+      display: flex;
+      padding: 40rpx;
+      color: white;
+      .config-key {
+        width: 40%;
+      }
+      .config-val {
+        // width: 50%;
+      }
+    }
+  }
+}
+</style>
+<template>
+  <view class="container">
+    <header></header>
+    <view class="body">
+      <view class="config-container">
+        <!-- <repeat for="{{Object.keys(config)}}" key="index" index="index" item="c"> -->
+        <!-- <view wx:for="{{config}}" wx:for-index="index" wx:for-item="item">
+          {{index}}、{{config[index]}}
+        </view> -->
+        <repeat for="{{config}}" key="index" index="key" item="val">
+          <view class="config-item">
+            <text class="config-key">{{key}}</text>
+            <input class="config-val" type="text" @input="onConfigChange" data-key="{{key}}" data-val="{{val}}" value="{{config[key]}}" />
+          </view>
+        </repeat>
+      </view>
+      <button class="btn-primary" @tap="onClick">
+        <text>Submit</text>
+      </button>
+    </view>
+    <view class="footer">
+    </view>
+  </view>
+</template>
+<script>
+import wepy from 'wepy'
+import Header from '@/components/header'
+
+export default class Admin extends wepy.page {
+  config = {
+    usingComponents: {}
+  }
+  components = {
+    header: Header
+  }
+  data = {
+    config: {},
+    configList: []
+  }
+  methods = {
+    onConfigChange(e) {
+      console.log('e.target.key', e.target.dataset.key)
+      this.config[e.target.dataset.key] = e.detail.value
+      console.log('e.target.dataset', e.target)
+    },
+    onClick() {
+      let self = this
+      console.log(this.config)
+      console.log(JSON.stringify(this.config))
+
+      let url = `https://ellist.cn/bulletmessage/api/client/config`
+      console.log(url)
+      let configData = { configurationJson: JSON.stringify(this.config) }
+      console.log('configData', configData)
+      wepy.request({
+        url: url,
+        method: 'POST',
+        data: configData,
+        header: {
+          'content-type': 'application/json' // 默认值
+        },
+        success: function(resp) {
+          console.log('redirect to preload')
+          wepy.reLaunch({ url: './preload' })
+        }
+      })
+    }
+  }
+  onLoad(parms, data) {}
+  onShow() {
+    let self = this
+    this.$parent.getConfig(false, config => {
+      self.config = config
+      // for (var k in config) {
+      //   self.configList.push({ k: config[k] })
+      // }
+      // console.log(self.configList)
+    })
+  }
+}
+</script>

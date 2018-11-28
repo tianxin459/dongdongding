@@ -1,0 +1,315 @@
+<style lang="less">
+.body {
+  height: 80vh;
+  input {
+    border: 1px solid var(--colorFont);
+  }
+  .chat-container {
+    overflow-y: scroll;
+    display: flex;
+    justify-content: flex-start;
+    flex-wrap: nowrap;
+
+    height: 100%;
+    width: 95%;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    justify-items: space-between;
+    justify-content: space-around;
+    .message-container {
+      height: 100%;
+      // background-color: gainsboro;
+      border: 1px solid var(--colorBorder);
+    }
+    .chatView {
+      height: 100%;
+    }
+    .chat {
+      width: 100%;
+      color: white;
+      display: flex;
+      .avatar {
+        width: 60rpx;
+        height: 60rpx;
+        border-radius: 50%;
+      }
+      .message,
+      .messageIcon {
+        border: 1px solid gold;
+        padding: 10rpx;
+        margin: 10rpx;
+        justify-self: center;
+        border-radius: 10rpx;
+        background-color: #a2e563;
+        color: black;
+      }
+      .messageIcon {
+        width: 60rpx;
+        height: 60rpx;
+      }
+    }
+  }
+}
+.input-container {
+  width: 90%;
+  .input-text {
+    display: flex;
+    justify-content: center;
+    input {
+      align-self: center;
+      height: 80rpx;
+    }
+    button {
+      margin: 0;
+      background-color: var(--colorBackgound);
+      height: 90rpx;
+      padding: auto 10rpx;
+      border: 1px solid var(--colorBorder);
+      color: white;
+      font-weight: bolder;
+    }
+    button:active {
+      background-color: #823d78;
+    }
+  }
+}
+.bulletShortcut {
+  display: flex;
+  color: var(--colorFont);
+  width: 80%;
+  flex-direction: row;
+  flex-wrap: wrap;
+  margin: 0 auto;
+  margin-bottom: 60rpx;
+  button.button {
+    font-weight: bolder;
+    color: white;
+    // background-color: transparent;
+    width: 30%;
+    margin: 1%;
+    height: 100rpx;
+    // border: 1px solid white;
+    // border-radius: 5px;
+    image {
+      height: 90%;
+      width: 90%;
+      margin: 0 auto;
+    }
+  }
+  button.button:active {
+    background-color: #823d78;
+  }
+}
+</style>
+<template>
+  <view class="container">
+    <header></header>
+    <view class="body">
+      <view class="chat-container">
+        <view class="message-container">
+          <scroll-view scroll-y="true" class="chatView" scroll-top="{{scrollTop}}" lower-threshold="1px">
+            <repeat for="{{chatList}}" key="index" index="key" item="val">
+              <view class="chat">
+                <image class="avatar" src="{{val.avatarUrl}}"></image>
+                <!-- <view class="nickName">{{val.nickName}}</view> -->
+                <view wx:if="{{val.type==0}}" class="message">{{val.msg}}</view>
+                <image wx:if="{{val.type==1}}" class="messageIcon" src="https://ellist.cn/bulletmessage/static/icon/{{val.msg}}.png"></image>
+                <image wx:if="{{val.type==2}}" class="message" src="https://ellist.cn/bulletmessage/static/icon/{{val.msg}}.png"></image>
+              </view>
+            </repeat>
+          </scroll-view>
+        </view>
+      </view>
+      <view class="input-container">
+        <view class="input-text">
+          <input type="text" class="txt" value="{{bulletMessage}}" @input="bulletMessageInput" />
+          <button @tap="onClick">
+            <text>Submit</text>
+          </button>
+        </view>
+        <view class="bulletShortcut">
+          <button class="button" data-tag="clap" @tap="sendBulletShortcut">
+            <!-- <image src="../static/img/clapping.png"></image> -->
+            <image src="https://ellist.cn/bulletmessage/static/icon/H5Icon-13.png"></image>
+          </button>
+          <button class="button" data-tag="like" @tap="sendBulletShortcut">
+            <!-- <image src="../static/img/like.png"></image> -->
+            <image src="https://ellist.cn/bulletmessage/static/icon/H5Icon-14.png"></image>
+          </button>
+          <button class="button" data-tag="star" @tap="sendBulletShortcut">
+            <!-- <image src="../static/img/star.png"></image> -->
+            <image src="https://ellist.cn/bulletmessage/static/icon/H5Icon-16.png"></image>
+          </button>
+          <button class="button" data-tag="cheers" @tap="sendBulletShortcut">
+            <!-- <image src="../static/img/star.png"></image> -->
+            <image src="https://ellist.cn/bulletmessage/static/icon/H5Icon-15.png"></image>
+          </button>
+          <button class="button" data-tag="horn" @tap="sendBulletShortcut">
+            <!-- <image src="../static/img/star.png"></image> -->
+            <image src="https://ellist.cn/bulletmessage/static/icon/H5Icon-17.png"></image>
+          </button>
+          <button class="button" data-tag="money" @tap="sendBulletShortcut">
+            <!-- <image src="../static/img/star.png"></image> -->
+            <image src="https://ellist.cn/bulletmessage/static/icon/H5Icon-18.png"></image>
+          </button>
+        </view>
+      </view>
+    </view>
+    <view class="footer">
+    </view>
+  </view>
+</template>
+<script>
+import wepy from 'wepy'
+import Header from '@/components/header'
+let prefixIcon = '#$%'
+let prefixImg = 'img=>'
+
+export default class Album extends wepy.page {
+  config = {
+    usingComponents: {},
+    enablePullDownRefresh: true
+  }
+  components = {
+    header: Header
+  }
+  data = {
+    msg: '',
+    chatList: [],
+    bulletMessage: '',
+    scrollTop: 1000
+  }
+  methods = {
+    bulletMessageInput(e) {
+      this.bulletMessage = e.detail.value
+    },
+    sendBulletShortcut(e) {
+      let shortcut = e.target.dataset.tag
+      console.log(shortcut)
+      this.sendBulletMessage(prefixIcon + shortcut)
+      this.bulletMessage = ''
+      this.$apply()
+    },
+    onClick(e) {
+      console.log('bulletMessage', this.bulletMessage)
+
+      // let body = {
+      //   type: 1,
+      //   target: 'SendMessage',
+      //   arguments: ['all', this.bulletMessage]
+      // }
+      // this.$parent.wsSend(JSON.stringify(body))
+      this.sendBulletMessage(this.bulletMessage)
+      this.bulletMessage = ''
+      this.scrollTop = 1000 * this.chatList.length
+      console.log('this.chatList.count()', this.chatList.length)
+      this.$apply()
+    }
+    // sendBulletShortcut(e) {
+    //   console.log('sendBulletShortcut')
+    // }
+  }
+  registerSocketMessage() {
+    let self = this
+    console.log('liveChat=>onload')
+    wx.onSocketMessage(function(res) {
+      var data = JSON.parse(res.data.replace(String.fromCharCode(0x1e), ''))
+      console.log('liveChat=>wsresponse', data)
+      if (data.target) {
+        switch (data.target) {
+          case 'ReceiveMessage':
+            // self.msg = data.arguments[0] + '|' + data.arguments[1]
+            if (!data.arguments[1]) return // handle the heartbeat ping
+            let messagType = 0
+            let msg = data.arguments[1]
+            // if (msg.indexOf(prefixIcon) > -1) {
+            //   messagType = 1 // icon
+            //   msg = msg.replace(prefixIcon, '')
+            // } else if (msg.indexOf(prefixImg) > -1) {
+            //   messagType = 2 // image
+            //   msg = msg.replace(prefixImg, '')
+            // }
+            let line = {
+              avatarUrl: data.arguments[0],
+              msg: data.arguments[1], // msg,
+              nickName: data.arguments[2],
+              type: messagType
+            }
+            self.makeMessage(line)
+            console.log('line', line)
+            self.chatList.push(line)
+            self.$apply()
+            break
+          default:
+            break
+        }
+        self.$apply()
+      }
+    })
+  }
+  sendBulletMessage(txt) {
+    let self = this
+    if (!txt) return
+    let url = 'https://ellist.cn/bulletmessage/api/bullet'
+    let dataBullet = {
+      nickName: this.$parent.globalData.userInfo.nickName,
+      Id: this.$parent.globalData.userInfo.avatarUrl,
+      Message: txt
+    }
+    wepy.request({
+      url: url,
+      method: 'POST',
+      data: dataBullet,
+      success: function(resp) {
+        console.log('message send', resp)
+        // wepy.showToast({
+        //   title: 'Message sent',
+        //   icon: 'none',
+        //   duration: 2000
+        // })
+
+        self.scrollTop = self.chatList.length * 100
+        self.$apply()
+      },
+      fail: function(err) {
+        console.error(err)
+      }
+    })
+  }
+  onLoad(parms, data) {
+    this.registerSocketMessage()
+  }
+  makeMessage(lineObj) {
+    lineObj.type = 0
+    if (lineObj.msg.indexOf(prefixIcon) > -1) {
+      lineObj.type = 1 // icon
+      lineObj.msg = lineObj.msg.replace(prefixIcon, '')
+    } else if (lineObj.msg.indexOf(prefixImg) > -1) {
+      lineObj.type = 2 // image
+      lineObj.msg = lineObj.msg.replace(prefixImg, '')
+    }
+  }
+  onShow() {
+    let self = this
+    let url = 'https://ellist.cn/bulletmessage/api/bullet/messagehistory'
+    wepy.request({
+      url: url,
+      method: 'GET',
+      success: function(resp) {
+        console.log('message send', resp)
+        self.chatList = resp.data
+        for (let l of self.chatList) {
+          self.makeMessage(l)
+        }
+        // console.log('self.chatList', self.chatList)
+        self.scrollTop = self.chatList.length * 100
+        self.$apply()
+      },
+      fail: function(err) {
+        console.error(err)
+      }
+    })
+  }
+}
+</script>

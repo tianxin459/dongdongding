@@ -13,7 +13,7 @@
   display: flex;
   justify-content: flex-start;
   flex-direction: column;
-  background-color: var(--colorGreenGD);
+  // background-color: var(--colorGreenGD);
   .qrCode-frame {
     align-self: center;
     height: 800rpx;
@@ -21,7 +21,11 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
-    background-color: var(--colorGreenGD);
+    // background-color: var(--colorGreenGD);
+    .txt-recieve {
+      color: var(--colorFontb);
+      text-align: center;
+    }
     .userinfo {
       align-self: center;
       display: flex;
@@ -42,10 +46,21 @@
       }
     }
     .qrCode {
+      border: 5px solid var(--colorBorder);
+      margin: 20rpx;
       align-self: center;
-      height: 400rpx;
-      width: 400rpx;
+      height: 200px;
+      width: 200px;
     }
+  }
+}
+
+.footer {
+  .side-background-s {
+    width: 200rpx;
+    height: 200rpx;
+    margin-left: -100rpx;
+    left: 50%;
   }
 }
 </style>
@@ -57,14 +72,16 @@
         <view class="qrCode-frame">
           <view class="userinfo">
             <image class="userinfo-avatar" src="{{userInfo.avatarUrl}}"></image>
-            <p class="user-name">{{userInfo.nickName}}</p>
+            <p class="user-name">{{userInfo.englishName}}</p>
+            <!-- <p class="user-name">{{userInfo.nickName}}</p> -->
           </view>
           <view class="qrCode">
             <wux-qrcode data="{{ qrCodeData }}" fg-color="#485860" width="200" height="200" />
           </view>
           <wux-white-space size="large" />
           <wux-wing-blank size="large">
-            <wux-button block type="balanced" @tap="goBack">Go Back</wux-button>
+            <view class='txt-recieve'>Recieve</view>
+            <!-- <wux-button block type="balanced" @tap="goBack">Go Back</wux-button> -->
           </wux-wing-blank>
         </view>
       </view>
@@ -74,51 +91,60 @@
         </wux-wing-blank>
       </view> -->
     </view>
+    <view class="footer">
+      <image class="side-background-s" src="http://ellist.cn/bulletmessage/static/img/H5-17.png"></image>
+    </view>
   </view>
 </template>
 <script>
-import wepy from 'wepy';
-import Header from '@/components/header'; // alias example
+import wepy from 'wepy'
+import Header from '@/components/header' // alias example
 // import { $wuxBackdrop } from '../wux/index'
-let balanceI;
+let balanceI
 
 export default class Index extends wepy.page {
   components = {
     header: Header
-  };
+  }
   config = {
     usingComponents: {
       'wux-button': '../wux/button/index',
       'wux-icon': '../wux/icon/index',
       'wux-wing-blank': '../wux/wing-blank/index',
       'wux-white-space': '../wux/white-space/index',
-      'wux-row': '../wux/row/index',
-      'wux-col': '../wux/col/index',
+      // 'wux-row': '../wux/row/index',
+      // 'wux-col': '../wux/col/index',
       'wux-qrcode': '../wux/qrcode/index'
     }
-  };
-  components = {};
+  }
+  components = {}
   data = {
     userInfo: {},
     qrCodeUrl: '.',
     qrCodeData: 'no data',
     qrCodeColor: '#1ab16c',
     isIPX: false
-  };
+  }
   methods = {
     goBack() {
-      console.log('go back');
-      this.$redirect('./index');
+      console.log('go back')
+      this.$redirect('./index')
     }
-  };
+  }
 
   onLoad(parm, data) {
-    var self = this;
+    var self = this
     //   console.log(data.$data);
-    self.userInfo = this.$parent.globalData.userInfo;
-    var { nickName, avatarUrl } = self.userInfo;
-    var qrdata = { nickName, avatarUrl };
-    self.qrCodeData = JSON.stringify(qrdata);
+    self.userInfo = this.$parent.globalData.userInfo
+    self.userInfo.englishName = self.$parent.globalData.user.englishName
+    // console.log('qruserInfo', self.userInfo)
+    // var { nickName, avatarUrl } = self.userInfo
+    var qrdata = {}
+    qrdata.nickName = self.userInfo.nickName
+    qrdata.avatarUrl = self.userInfo.avatarUrl
+    qrdata.englishName = self.$parent.globalData.user.englishName
+    // console.log('qrdata', qrdata)
+    self.qrCodeData = JSON.stringify(qrdata)
     //   self.isIPX = this.$parent.globalData.isIpx;
     //   console.log(this.$parent.globalData.isIpx);
     //   this.$parent.getUserInfo(info=>{
