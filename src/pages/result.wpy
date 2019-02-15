@@ -1,17 +1,19 @@
 <style lang="less">
+@import '../theme.less';
+// @import '../app.less';
 .userinfo {
   display: flex;
   flex-direction: column;
   justify-content: center;
   image {
     align-self: center;
-    height: 200rpx;
-    width: 200rpx;
+    height: 100px;
+    width: 100px;
     border-radius: 50%;
-    margin-right: 5rpx;
+    margin-right: 2.5px;
   }
   p {
-    font-size: 50rpx;
+    font-size: 25px;
     align-self: center;
   }
 }
@@ -20,9 +22,21 @@
   display: flex;
   flex-direction: row;
   .txt-amount {
-    font-size: 40rpx;
-    height: 60rpx;
+    font-size: 20px;
+    height: 30px;
     border-bottom: 1px solid black;
+  }
+}
+.transferResult {
+  color: @colorFontb;
+  .amountText {
+    color: white;
+    font-size: 35px;
+    // text-shadow: 0 0 1px currentColor, -1px -1px 1px @colorFontBorder,
+    //   0 -1px 1px @colorFontBorder, 1px -1px 1px @colorFontBorder,
+    //   1px 0 1px @colorFontBorder, 1px 1px 1px @colorFontBorder,
+    //   0 1px 1px @colorFontBorder, -1px 1px 1px @colorFontBorder,
+    //   -1px 0 1px @colorFontBorder;
   }
 }
 
@@ -36,14 +50,13 @@
     }
   }
   .btn-primary {
-    bottom: rpx;
   }
 }
 
 .footer {
   .side-background-s {
     width: 100%;
-    height: 900rpx;
+    height: 450px;
     z-index: 1;
   }
 }
@@ -52,24 +65,38 @@
   <view class="container">
     <header></header>
     <view class="body">
-      <view class="success">
+      <view wx:if="{{!isError}}" class="success">
         <wux-icon class="iconSuccess" wux-class="icon" color="#EFA75A" type="ios-checkmark-circle-outline" size="150" slot="icon-on" />
-        <view>
+        <view wx:if="{{!isTransferResult}}">
           Success
+        </view>
+        <view wx:if="{{isTransferResult}}" class="transferResult">
+          <view>{{transferData.toUser}}</view>
+          <view><span class="amountText">{{transferData.amount}}</span></view>
         </view>
       </view>
       <button class="btn-primary" @tap="onClick">
         <text>OK</text>
       </button>
     </view>
-    <view class="footer">
-      <image class="side-background-s" src="http://ellist.cn/bulletmessage/static/img/h5-20.png"></image>
+    <view wx:if="{{isError}}" class="success">
+      <wux-icon class="iconSuccess" wux-class="icon" color="#EFA75A" type="ios-alert" size="150" slot="icon-on" />
+      <view>
+        {{msg}}
+      </view>
     </view>
+    <button class="btn-primary" @tap="onClick">
+      <text>OK</text>
+    </button>
+  </view>
+  <view class="footer">
+    <image class="side-background-s" src="http://ellist.cn/bulletmessage/static/img/h5-20.png"></image>
+  </view>
   </view>
 </template>
 <script>
-import wepy from 'wepy'
-import Header from '@/components/header'
+import wepy from 'wepy';
+import Header from '@/components/header';
 
 export default class Result extends wepy.page {
   config = {
@@ -77,12 +104,19 @@ export default class Result extends wepy.page {
       // 'wux-result': '../wux/result/index'
       'wux-icon': '../wux/icon/index'
     }
-  }
+  };
   components = {
     header: Header
-  }
+  };
+  computed = {
+    isTransferResult() {
+      return !!this.transferData.toUser && !!this.transferData.amount;
+    }
+  };
   data = {
     msg: '',
+    isError: false,
+    transferData: {},
     buttons: [
       {
         type: 'balanced',
@@ -90,13 +124,18 @@ export default class Result extends wepy.page {
         text: 'OK'
       }
     ]
-  }
+  };
   methods = {
     onClick() {
-      console.log('ok click')
-      this.$redirect('./index')
+      console.log('ok click');
+      wepy.reLaunch({ url: './index' });
     }
+  };
+  onLoad(parms, data) {
+    this.isError = parms.error === 'false' ? false : true;
+    this.msg = parms.msg;
+    this.transferData = parms;
+    console.log(parms);
   }
-  onLoad(parms, data) {}
 }
 </script>

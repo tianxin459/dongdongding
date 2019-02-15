@@ -1,16 +1,18 @@
 <style lang="less">
+@import '../theme.less';
+
 .body {
   .amount {
     text-align: center;
     font-weight: bolder;
-    font-size: 400rpx;
+    font-size: 200px;
     color: white;
     display: flex;
     flex-direction: column;
     width: 100%;
   }
   #btnShake {
-    bottom: 400rpx;
+    bottom: 200px;
   }
 }
 .btnLogin {
@@ -23,29 +25,71 @@
     flex-direction: column;
     color: white;
     p {
-      font-size: 40rpx;
+      font-size: 20px;
       font-weight: 300;
+    }
+  }
+}
+.msg {
+  position: absolute;
+  top: 100px;
+  width: 90%;
+  color: orange;
+  text-shadow: 0 0 1px currentColor, -1px -1px 1px @colorFontBorder,
+    0 -1px 1px @colorFontBorder, 1px -1px 1px @colorFontBorder,
+    1px 0 1px @colorFontBorder, 1px 1px 1px @colorFontBorder,
+    0 1px 1px @colorFontBorder, -1px 1px 1px @colorFontBorder,
+    -1px 0 1px @colorFontBorder;
+  p {
+    margin: 5px 0;
+    display: block;
+    .big {
+      font-size: 30px;
     }
   }
 }
 
 .unit {
-  font-size: 40rpx;
-  margin-left: 150rpx;
+  font-size: 20px;
+  margin-left: 75px;
   position: absolute;
-  margin-top: 400rpx;
+  margin-top: 200px;
   align-self: center;
 }
 
 #btnConfirm {
-  left: 100rpx;
+  left: 50px;
   margin-left: 0;
   background-color: var(--colorButtona);
 }
 #btnAgain {
-  right: 100rpx;
+  right: 35px;
   left: auto;
-  background-color: var(--colorButtonb);
+  background-color: @colorButtonb;
+}
+
+.countDown {
+  font-size: 35px;
+  color: white;
+  text-shadow: 0 0 1px currentColor, -1px -1px 1px @colorFontBorder,
+    0 -1px 1px @colorFontBorder, 1px -1px 1px @colorFontBorder,
+    1px 0 1px @colorFontBorder, 1px 1px 1px @colorFontBorder,
+    0 1px 1px @colorFontBorder, -1px 1px 1px @colorFontBorder,
+    -1px 0 1px @colorFontBorder;
+  .c1,
+  .c2,
+  .c3,
+  .c4,
+  .c5,
+  .c6,
+  .c7,
+  .c8,
+  .c9,
+  .c10,
+  .cf {
+    // display: none;
+    transition: all 1s;
+  }
 }
 </style>
 <template>
@@ -56,64 +100,110 @@
         {{amount}}
         <span class="unit">G</span>
       </view>
-      <button id="btnShake" class="btn-primary isAdmin" @tap="shake" wx:if="{{isAdmin}}">
+      <view wx:if="{{!isShowStart&&!isCountDown}}" class="countDown">
+        <view class="c1">Click to Start</view>
+      </view>
+      <view wx:if="{{isShowStart}}" class="countDown">
+        <view wx:if="{{countDown==4}}" class="c1">Ready~~~</view>
+        <view wx:if="{{countDown==3}}" class="c2">Ready~~</view>
+        <view wx:if="{{countDown==2}}" class="c3">Ready~</view>
+        <view wx:if="{{countDown==1}}" class="cf">Shake!</view>
+        <view wx:if="{{countDown==0}}" class="cf">~</view>
+      </view>
+
+      <view wx:if="{{isCountDown}}" class="countDown">
+        <view wx:if="{{countDown==10}}" class="c1">10</view>
+        <view wx:if="{{countDown==9}}" class="c2">9</view>
+        <view wx:if="{{countDown==8}}" class="c3">8</view>
+        <view wx:if="{{countDown==7}}" class="c4">7</view>
+        <view wx:if="{{countDown==6}}" class="c5">6</view>
+        <view wx:if="{{countDown==5}}" class="c6">5</view>
+        <view wx:if="{{countDown==4}}" class="c7">4</view>
+        <view wx:if="{{countDown==3}}" class="c8">3</view>
+        <view wx:if="{{countDown==2}}" class="c9">2</view>
+        <view wx:if="{{countDown==1}}" class="c10">1</view>
+        <view wx:if="{{countDown==0}}" class="cf">Stop~~</view>
+      </view>
+      <!-- <button id="btnShake" class="btn-primary isAdmin" @tap="shake" wx:if="{{isAdmin}}">
         <view>shake</view>
-      </button>
+      </button> -->
       <button wx:if="{{showStart}}" class="btn-primary" @tap="startShake">
         <view>Start</view>
       </button>
       <!-- wx:if="{{showRefill}}" -->
 
       <button wx:if="{{showRefill}}" id="btnConfirm" class="btn-primary" @tap="confirmRefill">
-        <view>Charge</view>
+        <view>Deposit</view>
       </button>
       <button wx:if="{{showRefill}}" id="btnAgain" class="btn-primary" @tap="tryAgain">
         <view>Try Again</view>
       </button>
       <!-- <view class="btn-group">
       </view> -->
+      <view class="msg" wx:if="{{showMsg}}" @tap="msgTap">
+        <p>click the "Start" button, and then shake the phone for recharge.</p>
+        <p>there is <span class="big">{{shakeTime}}</span> seconds count down,</p>
+        <p>when the result come out, if you are not satisfy with the result, you can try again, but please be aware that you only have <span class="big">1</span> change for recharge, and this function will be close after the recharge.</p>
+      </view>
     </view>
   </view>
 </template>
 <script>
-import wepy from 'wepy'
-import Header from '@/components/header'
-const innerAudioContext = wx.createInnerAudioContext()
-let vtimout
+import wepy from 'wepy';
+import Header from '@/components/header';
+const innerAudioContext = wx.createInnerAudioContext();
+let vtimout;
 export default class Refill extends wepy.page {
   components = {
     header: Header
-  }
+  };
   config = {
     usingComponents: {}
-  }
+  };
   computed = {
     isAdmin() {
-      return this.$parent.isAdmin()
+      return this.$parent.isAdmin();
     }
-  }
-  components = {}
+  };
+  components = {};
   data = {
     showStart: true,
     showRefill: false,
+    showMsg: false,
     shakeData: {},
-    range: 0.5,
+    range: 1,
     config: {},
     audioCtx: {},
     userInfo: {},
     amount: 0,
-    isIPX: false
-  }
+    shakeTime: 10,
+    isIPX: false,
+    shakeSteps: 0,
+    countDown: 4,
+    isShowStart: false,
+    isCountDown: false
+  };
   methods = {
+    msgTap(e) {
+      this.showMsg = false;
+      this.$apply();
+    },
     confirmRefill(e) {
-      let self = this
+      let self = this;
       // ----------------- refill api ----------------
-      let url = `https://wtf.chinacloudsites.cn/api/Transaction/refill`
-      console.log(url)
+      let url = `https://wtf.chinacloudsites.cn/api/Transaction/refill`;
+      console.log(url);
       let refillData = {
-        nickName: self.userInfo.nickName,
+        WxOpenId: self.userInfo.openid,
         amount: self.amount || 0
-      }
+      };
+
+      self.showStart = false;
+      self.showRefill = false;
+
+      wx.showLoading({
+        title: 'Charging...'
+      });
       wepy.request({
         url: url,
         method: 'POST',
@@ -122,123 +212,189 @@ export default class Refill extends wepy.page {
           'content-type': 'application/json' // 默认值
         },
         success: function(resp) {
-          self.$parent.saveCacheApp('refill', '+1')
-          self.$redirect('./index')
+          wx.hideLoading();
+          self.$parent.saveCacheApp('refill', '+1');
+
+          self.showStart = true;
+          self.showRefill = false;
+          self.amount = 0;
+          self.$apply();
+          wepy.reLaunch({ url: './index' });
         },
         fail: function(err) {
-          console.error(err)
-          self.msg = err
-          // self.$redirect('./transfer-fail');
+          wx.hideLoading();
+          console.error(err);
+          self.msg = err;
         }
-      })
+      });
       // ----------------- refill api -----------------
     },
     tryAgain(e) {
-      let self = this
-      self.showStart = true
-      self.showRefill = false
-      self.amount = 0
+      let self = this;
+      self.showStart = true;
+      self.showRefill = false;
+      self.amount = 0;
     },
     startShake(e) {
-      wepy.vibrateLong()
-      let self = this
-      self.showStart = false
-      self.showRefill = false
-      console.log('start shake')
-      self.shakeActive = true
-      self.shakeToFill()
-      self.$apply()
+      // wepy.vibrateLong();
+      let self = this;
+      self.showStart = false;
+      self.showRefill = false;
+      console.log('start shake');
+      self.shakeActive = true;
+      self.countDown = 5;
+      // self.shakeToFill();
+      self.$apply();
 
-      let timeOut = (this.$parent.globalData.config.shakeTime || 10) * 1000
-      vtimout = setTimeout(() => {
-        console.log('----timeout----', self.amount)
-        wepy.vibrateLong()
-        self.shakeActive = false
-        self.showStart = false
-        self.showRefill = true
-        wx.stopAccelerometer()
+      let si = setInterval(() => {
+        self.isShowStart = true;
+        self.isCountDown = false;
+        console.log('countI', self.countDown);
+        self.countDown = self.countDown - 1;
+        self.$apply();
+        if (self.countDown === 0) {
+          self.isShowStart = false;
+          clearInterval(si);
+          // timeout stop refill
+          let timeOut = (this.$parent.globalData.config.shakeTime || 10) * 1000;
+          vtimout = setTimeout(() => {
+            console.log('----timeout----', self.amount);
+            wepy.vibrateLong();
+            self.shakeActive = false;
+            self.showStart = false;
+            self.showRefill = true;
+            wx.stopAccelerometer();
 
-        self.$apply()
-      }, timeOut)
+            self.$apply();
+          }, timeOut);
+
+          wepy.vibrateLong();
+          self.shakeToFill();
+          console.log('gogogo');
+        }
+      }, 1000);
     },
     shake() {
-      let self = this
-      console.log(innerAudioContext)
+      let self = this;
+      console.log(innerAudioContext);
       if (self.shakeActive) {
-        self.amount++
-        self.audioPlay()
+        self.amount++;
+        self.audioPlay();
       }
-      self.$apply()
+      self.$apply();
     }
-  }
+  };
+
+  // startShaking(e) {
+  //   wepy.vibrateLong();
+  //   let self = this;
+  //   self.showStart = false;
+  //   self.showRefill = false;
+  //   console.log('start shake');
+  //   self.shakeActive = true;
+  //   self.shakeToFill();
+  //   self.$apply();
+
+  //   let timeOut = (this.$parent.globalData.config.shakeTime || 10) * 1000;
+  //   vtimout = setTimeout(() => {
+  //     console.log('----timeout----', self.amount);
+  //     wepy.vibrateLong();
+  //     self.shakeActive = false;
+  //     self.showStart = false;
+  //     self.showRefill = true;
+  //     wx.stopAccelerometer();
+
+  //     self.$apply();
+  //   }, timeOut);
+  // }
   shakeToFill() {
     // shake
-    var self = this
-    self.range = self.config.shakeRange || 0.5
+    var self = this;
+    self.isCountDown = true;
+    self.range = self.config.shakeRange || 0.5;
     wx.startAccelerometer({
       interval: 'ui'
-    })
+    });
+    let timeOut = this.$parent.globalData.config.shakeTime || 10;
+    self.countDown = timeOut;
+    let si2 = setInterval(() => {
+      // self.isShowStart = true;
+      console.log('countI', self.countDown);
+      self.countDown = self.countDown - 1;
+      self.$apply();
+      if (self.countDown === 0) {
+        self.isCountDown = false;
+        clearInterval(si2);
+      }
+    }, 1000);
+
+    self.$apply();
+  }
+  onAccelerometerChange(res) {
+    console.log('refill===>onAccelerometerChange');
+    let self = this;
+    var x = res.x.toFixed(4);
+    var y = res.y.toFixed(4);
+    var z = res.z.toFixed(4);
+
+    var shakeX = x > self.range;
+    var shakeY = y > self.range;
+    var shakeZ = z > self.range;
+
+    console.log('shakeData', self.shakeData);
+
+    if (self.shakeActive) {
+      if ((shakeX && shakeY) || (shakeX && shakeZ) || (shakeY && shakeZ)) {
+        console.log('isShake', self.amount);
+        self.shakeSteps++;
+        // self.amount = self.amount + (shakeW % 2);
+        if (self.shakeSteps % 4 === 1) {
+          self.amount++;
+          self.audioPlay();
+          self.$apply();
+        }
+      }
+    }
   }
   onUnload() {}
   onLoad(parm, data) {
-    let self = this
-    let shakeW = 0
-    innerAudioContext.autoplay = false
-    innerAudioContext.src = 'http://ellist.cn/bulletmessage/static/coin2.mp3'
+    let self = this;
+    let shakeW = 0;
+    this.shakeTime = this.$parent.globalData.config.shakeTime;
+    innerAudioContext.autoplay = false;
+    innerAudioContext.src = 'http://ellist.cn/bulletmessage/static/coin2.mp3';
     innerAudioContext.onPlay(() => {
-      console.log('start play')
-    })
+      console.log('start play');
+    });
     innerAudioContext.onError(res => {
-      console.log(res.errMsg)
-      console.log(res.errCode)
-    })
-    wx.onAccelerometerChange(function(res) {
-      var x = res.x.toFixed(4)
-      var y = res.y.toFixed(4)
-      var z = res.z.toFixed(4)
-
-      var shakeX = x > self.range
-      var shakeY = y > self.range
-      var shakeZ = z > self.range
-
-      console.log('shakeData', self.shakeData)
-
-      if (self.shakeActive) {
-        if ((shakeX && shakeY) || (shakeX && shakeZ) || (shakeY && shakeZ)) {
-          console.log('isShake', self.amount)
-          shakeW++
-          self.amount = self.amount + (shakeW % 2)
-          if (shakeW % 2 === 1) {
-            self.audioPlay()
-            self.$apply()
-          }
-        }
-      }
-    })
+      console.log(res.errMsg);
+      console.log(res.errCode);
+    });
+    // wx.onAccelerometerChange();
   }
   onShow() {
-    let self = this
+    let self = this;
     this.$parent.getConfig(false, config => {
-      self.config = config
-    })
+      self.config = config;
+    });
     this.$parent.getUserInfo(info => {
-      self.userInfo = info
-    })
+      self.userInfo = info;
+    });
   }
 
   onHide() {
-    clearTimeout(vtimout)
+    clearTimeout(vtimout);
   }
   audioPlay() {
-    innerAudioContext.seek(0)
-    innerAudioContext.play()
+    innerAudioContext.seek(0);
+    innerAudioContext.play();
   }
   audioPause() {
-    innerAudioContext.pause()
+    innerAudioContext.pause();
   }
   onReady() {
-    console.log('onready')
-    this.audioCtx = wx.createAudioContext('myAudio')
+    console.log('onready');
+    this.audioCtx = wx.createAudioContext('myAudio');
   }
 }
 </script>

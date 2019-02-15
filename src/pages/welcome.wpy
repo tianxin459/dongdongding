@@ -1,4 +1,6 @@
 <style lang="less">
+@import '../theme.less';
+// @import '../app.less';
 .container {
   height: auto;
 }
@@ -12,7 +14,6 @@
     line-height: 0px;
   }
 }
-
 .input {
   // border: 1px solid green;
   width: 100%;
@@ -24,16 +25,15 @@
     border-bottom: 2px solid green;
   }
 }
-
 .location {
   width: 90%;
-  color: var(--colorFontb);
+  color: @colorFontb;
   text-align: center;
   font-weight: bolder;
-  height: 75vh;
+  // height: 75vh;
   image {
-    height: 700rpx;
-    width: 600rpx;
+    height: 600rpx;
+    width: 550rpx;
     display: block;
     margin: 15rpx auto;
     border: 1px solid yellow;
@@ -45,19 +45,34 @@
   .datetime {
     font-size: small;
     color: white;
-    margin-bottom: 40rpx;
+    width: 80%;
+    margin: 0 auto;
+    margin-bottom: 30rpx;
     p {
       display: block;
     }
   }
 }
-
+.dresscode {
+  width: 90%;
+  text-align: center;
+  font-weight: bolder;
+  .dresscodeText {
+    font-size: small;
+    color: white;
+    width: 80%;
+    margin: 0 auto;
+    margin-bottom: 30rpx;
+    p {
+      display: block;
+    }
+  }
+}
 .info {
   min-height: 70vh;
   margin: 90rpx;
   margin-bottom: 300rpx;
-  color: var(--colorFontb);
-  // display: flex;
+  color: @colorFontb; // display: flex;
   flex-direction: column;
   justify-content: center;
   text-align: center;
@@ -68,8 +83,7 @@
   }
   .detail {
     view.rowHead {
-      color: var(--colorFont);
-      // font-size: 50rpx;
+      color: @colorFont; // font-size: 50rpx;
     }
     .row {
       color: white;
@@ -86,7 +100,6 @@
     }
   }
 }
-
 .author {
   position: fixed;
   bottom: 10rpx;
@@ -95,49 +108,58 @@
   font-style: italic;
 }
 
-.floating-btn {
-  position: absolute;
-  background-color: transparent;
-  top: 10vh;
-  right: 10rpx;
-  z-index: 99;
-  .button-icon {
-    width: 80rpx;
-    height: 80rpx;
-    background-color: transparent;
-    padding: 0;
-    color: white;
-    font-weight: bold;
-    margin: 20rpx 0;
-    .icon {
-      width: 100%;
-      height: 100%;
-    }
-    .label {
-      position: absolute;
-      font-size: 40rpx;
-    }
-  }
+.underline {
+  text-decoration: underline;
+}
+.link {
+  text-decoration: underline;
+  color: #ffffff;
+}
+image.icon {
+  height: 30rpx;
+  width: 30rpx;
+  display: inline-block;
+  border: 0px;
+  margin: 0;
+  box-shadow: 0 0;
+  padding: 0;
 }
 </style>
+
 <template>
   <view class="container">
     <header></header>
     <view class="body">
+      <!-- <view class="gallary">
+        <block
+          wx:for-items="{{ urls }}"
+          wx:key="{{ index }}"
+        >
+          <view
+            class="weui-uploader__file"
+            bindtap="previewImage"
+            data-current="{{ item }}"
+          >
+            <image
+              class="weui-uploader__img"
+              src="{{ item }}"
+            />
+          </view>
+        </block>
+      </view> -->
       <view class="floating-btn">
-        <button
+        <!-- <button
           class="button-icon"
           session-from="{{userInfoS}}"
           open-type="contact"
-          bindcontact="handleContact"
         >
           <image
             class="icon"
             src="https://ellist.cn/bulletmessage/static/icon/customerService.png"
           ></image>
           <view class="label">Talk to Us</view>
-        </button>
-        <button
+        </button> -->
+        <!-- <button
           class='button-icon'
           id="shareBtn"
           open-type="share"
@@ -148,27 +170,29 @@
           >
           </image>
           <view class="label">Share</view>
-        </button>
+        </button> -->
       </view>
-      <view
-        class="location"
-        @tap='openLocation'
-      >
+      <view class="location" @tap='openLocation'>
         <view class="datetime">
           <p>时间: 2019-1-10 17:30-21:20 </p>
         </view>
         HOTEL MAP
         <image src="http://ellist.cn/bulletmessage/static/img/location.png"></image>
         <view class="addressText">
-          <p>地址：上海卓美亚喜马拉雅酒店 欢·宴会厅 3楼 </p>
-          <p>浦东新区梅花路1108号 (近芳甸路)</p>
+          <p class="underline">
+            <image class="icon" src="https://ellist.cn/bulletmessage/static/icon/loc6.png"></image>上海卓美亚喜马拉雅酒店 欢·宴会厅 3楼
+          </p>
+          <p class="underline">浦东新区梅花路1108号 (近芳甸路)</p>
+        </view>
+
+      </view>
+      <view class="dresscode">
+        <view class="dresscodeText">
+          <p>着装要求：Shanghai Style <span class="link" @tap="previewImage">(Example)</span></p>
+          <p>（现场设最佳着装奖） </p>
         </view>
       </view>
-
-      <view
-        class='info isAdmin'
-        wx:if="{{isAdmin}}"
-      >
+      <view class='info isAdmin' wx:if="{{isAdmin}}">
         <view class='title'>PROGRAM</view>
         <view class='detail'>
           <view class='row rowHead'>
@@ -183,7 +207,6 @@
             <view>18:30</view>
             <view>Doors open, guests to be seated</view>
           </view>
-
           <view class='row'>
             <view>18:30 - 18:32</view>
             <view>Opening video</view>
@@ -212,7 +235,6 @@
             <view>19:20 - 19:30</view>
             <view>Staff Performance</view>
           </view>
-
           <view class='row'>
             <view>19:30 - 19:40</view>
             <view>Interactive Game</view>
@@ -260,41 +282,39 @@
         </view>
         <view class="endOfView"></view>
       </view>
-
+      <!-- <wux-gallery id="wux-gallery" /> -->
     </view>
-
     <!-- ----------------------- footer ----------------------- -->
     <view class="footer">
-      <!-- <button class="button" session-from="{{userInfoStr}}" open-type="contact" bindcontact="handleContact">
-        <text>Talk to Us</text>
+      <button class="button-icon" session-from="{{userInfoS}}" open-type="contact">
+        <image class="icon" src="https://ellist.cn/bulletmessage/static/icon/customerService.png"></image>
+        <view class="label">Talk to Us</view>
       </button>
-      <button class="button-contactUs" session-from="{{userInfoS}}" open-type="contact">
-        Talk to Us
-      </button> -->
+      <!-- <button class="button" session-from="{{userInfoStr}}" open-type="contact" bindcontact="handleContact">
+              <text>Talk to Us</text>
+            </button>
+            <button class="button-contactUs" session-from="{{userInfoS}}" open-type="contact">
+              Talk to Us
+            </button> -->
       <!-- <button class="button" session-from='{"kefu":["126","127"],"nickName":"{{userInfo.nickName}}","avatarUrl":"{{userInfo.avatarUrl}}"}' open-type="contact">
-        Talk to Us #2
-      </button> -->
-      <view
-        class="footer-btn"
-        wx:if="{{isAdmin}}"
-      >
-        <button
-          class="button isAdmin"
-          data-url='./index'
-          @tap='nav'
-        >
+              Talk to Us #2
+            </button> -->
+      <view class="footer-btn" wx:if="{{isAdmin}}">
+        <button class="isAdmin button button-3d button-caution" data-url='./index' @tap='nav'>
           <text>Go To Home Page</text>
         </button>
       </view>
-      <view class="author">
+      <!-- <view class="author">
         By Ellis & Edi
-      </view>
+      </view> -->
     </view>
   </view>
 </template>
+
 <script>
 import wepy from 'wepy';
 import Header from '@/components/header'; // alias example
+// import { $wuxGallery } from '../wux/index';
 // import Hub from '@/utils/miniProgramSignalr.js'
 var hub = require('../utils/miniProgramSignalr.js');
 // import { $wuxBackdrop } from '../wux/index'
@@ -307,6 +327,16 @@ export default class Welcome extends wepy.page {
   };
   components = {};
   data = {
+    urls: [
+      'https://ellist.cn/bulletmessage/static/dresscode/img8.jpg',
+      'https://ellist.cn/bulletmessage/static/dresscode/img7.jpg',
+      'https://ellist.cn/bulletmessage/static/dresscode/img6.jpg',
+      'https://ellist.cn/bulletmessage/static/dresscode/img5.jpg',
+      'https://ellist.cn/bulletmessage/static/dresscode/img4.jpg',
+      'https://ellist.cn/bulletmessage/static/dresscode/img3.jpg',
+      'https://ellist.cn/bulletmessage/static/dresscode/img2.jpg',
+      'https://ellist.cn/bulletmessage/static/dresscode/img1.jpg'
+    ],
     msg: '',
     hubConnect: {},
     openIndex: false,
@@ -325,6 +355,16 @@ export default class Welcome extends wepy.page {
     }
   };
   methods = {
+    previewImage(e) {
+      // const { current } = e.currentTarget.dataset;
+      const { urls } = this.data;
+      let current = urls[0];
+      console.log('this.data', current);
+      wx.previewImage({
+        current,
+        urls
+      });
+    },
     handleContact(e) {
       console.log(e.path);
       console.log(e.query);
@@ -351,14 +391,12 @@ export default class Welcome extends wepy.page {
   onShow() {
     this.goNextBaseOnConfiguration(true);
   }
-
   goNextBaseOnConfiguration(isRegistered) {
     let self = this;
     this.$parent.getConfig(true, config => {
       self.handleConfiguration(config, isRegistered);
     });
   }
-
   handleConfiguration(config, isRegistered) {
     let self = this;
     switch (config.stage) {
@@ -374,7 +412,7 @@ export default class Welcome extends wepy.page {
   onShareAppMessage() {
     console.log('on share');
     return {
-      title: 'Greendot',
+      title: '2019 Annual Party',
       path: '/pages/preload',
       imageUrl: 'https://ellist.cn/bulletmessage/static/gd-logo.png'
     };

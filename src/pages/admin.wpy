@@ -1,13 +1,14 @@
 <style lang="less">
+@import '../theme.less';
 .body {
   input {
-    border: 1px solid var(--colorFont);
+    border: 1px solid @colorFont;
   }
   .config-container {
     width: 100%;
     .config-item {
       display: flex;
-      padding: 40rpx;
+      padding: 20px;
       color: white;
       .config-key {
         width: 40%;
@@ -15,6 +16,14 @@
       .config-val {
         // width: 50%;
       }
+    }
+  }
+  .bgChange {
+    border: 1px solid white;
+    margin: 20px auto;
+    input {
+      margin: 5px;
+      color: white;
     }
   }
 }
@@ -35,44 +44,100 @@
           </view>
         </repeat>
       </view>
-      <button class="btn-primary" @tap="onClick">
+      <view>
+        <button class="button button-3d button-caution" @tap="onClick">更改配置</button>
+      </view>
+      <view class="bgChange">
+        <button class="button button-3d button-caution" @tap="onScreenImgChange">设定主屏背景</button>
+      </view>
+
+      <view class="bgChange">
+        <input class="input" type="text" @change="bgChange" />
+        <button class="button button-3d button-caution" @tap="onScreenChange">更改背景图</button>
+      </view>
+
+      <!-- <button
+        class="btn-primary"
+        @tap="onClick"
+      >
         <text>Submit</text>
-      </button>
+      </button> -->
     </view>
     <view class="footer">
     </view>
   </view>
 </template>
 <script>
-import wepy from 'wepy'
-import Header from '@/components/header'
+import wepy from 'wepy';
+import Header from '@/components/header';
 
 export default class Admin extends wepy.page {
   config = {
     usingComponents: {}
-  }
+  };
   components = {
     header: Header
-  }
+  };
   data = {
     config: {},
-    configList: []
-  }
+    configList: [],
+    bgIndex: '1',
+    userInfo: {}
+  };
   methods = {
     onConfigChange(e) {
-      console.log('e.target.key', e.target.dataset.key)
-      this.config[e.target.dataset.key] = e.detail.value
-      console.log('e.target.dataset', e.target)
+      console.log('e.target.key', e.target.dataset.key);
+      this.config[e.target.dataset.key] = e.detail.value;
+      console.log('e.target.dataset', e.target);
+    },
+    bgChange(e) {
+      this.bgIndex = e.detail.value;
+    },
+    onScreenImgChange(e) {
+      let self = this;
+      wx.chooseImage({
+        sizeType: ['original', 'compressed'],
+        sourceType: ['album', 'camera'],
+        success: res => {
+          console.log(res.tempFilePaths);
+          self.upload(res.tempFilePaths[0]);
+        }
+      });
+    },
+    onScreenChange() {
+      let self = this;
+      // console.log(this.config);
+      // console.log(JSON.stringify(this.config));
+
+      let url = `https://ellist.cn/bulletmessage/api/bullet/changebg`;
+      console.log(url);
+      let bgData = {
+        Id: 'admin',
+        Message: this.bgIndex
+      };
+      // console.log('configData', bgData);
+      wepy.request({
+        url: url,
+        method: 'POST',
+        data: bgData,
+        header: {
+          'content-type': 'application/json' // 默认值
+        },
+        success: function(resp) {
+          console.log('bg change', resp);
+        }
+      });
     },
     onClick() {
-      let self = this
-      console.log(this.config)
-      console.log(JSON.stringify(this.config))
+      let self = this;
+      console.log(this.config);
+      console.log(JSON.stringify(this.config));
 
-      let url = `https://ellist.cn/bulletmessage/api/client/config`
-      console.log(url)
-      let configData = { configurationJson: JSON.stringify(this.config) }
-      console.log('configData', configData)
+      let url = `https://ellist.cn/bulletmessage/api/client/config`;
+      console.log(url);
+      // this.config.onSiteReg = true;
+      let configData = { configurationJson: JSON.stringify(this.config) };
+      console.log('configData', configData);
       wepy.request({
         url: url,
         method: 'POST',
@@ -81,22 +146,63 @@ export default class Admin extends wepy.page {
           'content-type': 'application/json' // 默认值
         },
         success: function(resp) {
-          console.log('redirect to preload')
-          wepy.reLaunch({ url: './preload' })
+          console.log('redirect to preload');
+          wepy.reLaunch({ url: './preload' });
         }
-      })
+      });
     }
+  };
+  // -------------------- upload image start --------------------
+  upload(path) {
+    var self = this;
+    wx.showToast({
+      icon: 'loading',
+      title: 'uploading...'
+    });
+    let url = 'https://ellist.cn/bulletmessage/api/bullet/uploadbg';
+    wx.uploadFile({
+      url: url,
+      filePath: path,
+      name: 'file',
+      header: { 'Content-Type': 'multipart/form-data' },
+      formData: {
+        nickName: self.userInfo.nickName,
+        avatarUrl: self.userInfo.avatarUrl,
+        englishName: this.$parent.globalData.user.englishName,
+        openid: this.$parent.globalData.userInfo.openid
+      },
+      success: function(res) {
+        wepy.showToast({
+          title: 'background changed',
+          icon: 'none',
+          duration: 2000
+        });
+      },
+      fail: function(e) {
+        wx.showModal({
+          title: 'fail',
+          content: 'upload failure',
+          showCancel: false
+        });
+      }
+    });
   }
-  onLoad(parms, data) {}
+  // -------------------- upload image end --------------------
+  onLoad(parms, data) {
+    let self = this;
+    this.$parent.getUserInfo(info => {
+      self.userInfo = info;
+    });
+  }
   onShow() {
-    let self = this
+    let self = this;
     this.$parent.getConfig(false, config => {
-      self.config = config
+      self.config = config;
       // for (var k in config) {
       //   self.configList.push({ k: config[k] })
       // }
       // console.log(self.configList)
-    })
+    });
   }
 }
 </script>

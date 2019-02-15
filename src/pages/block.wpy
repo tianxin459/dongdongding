@@ -1,0 +1,121 @@
+
+<style lang="less">
+@import '../theme.less';
+.body {
+  color: orange;
+  .msg {
+    top: 100px;
+    display: flex;
+    flex-direction: column;
+    .icon-face {
+      align-self: center;
+      height: 200px;
+      width: 200px;
+    }
+    .text {
+      display: block;
+      margin: 20px;
+      .strong {
+        font-size: bold;
+        text-shadow: 0 0 1px currentColor, -1px -1px 1px red, 0 -1px 1px red,
+          1px -1px 1px red, 1px 0 1px red, 1px 1px 1px red, 0 1px 1px red,
+          -1px 1px 1px red, -1px 0 1px red;
+      }
+    }
+  }
+}
+.footer {
+  image {
+    width: 100%;
+  }
+  .button-icon {
+    bottom: 250px;
+  }
+}
+</style>
+<template>
+  <view class="container">
+    <header></header>
+    <view class="body">
+      <view class="msg">
+        <image wx:if="{{!showReg}}" class="icon-face" src="https://ellist.cn/bulletmessage/static/icon/sad.png"></image>
+        <view class="text">Sorry, the registration is now closed</view>
+        <view wx:if="{{showReg}}" class="text">Please contact <span class="strong">Joyce Pan</span> to scan the registration QR Code to register</view>
+
+      </view>
+    </view>
+
+    <button wx:if="{{showReg}}" class="btn-primary2 button-raised button-action button-circle" @tap="scanToRegister">
+      <text>Scan</text>
+    </button>
+  </view>
+  <view class="footer">
+    <button class="button-icon" wx:if="{{showReg}}" session-from="{{userInfoS}}" open-type="contact">
+      <image class="icon" src="https://ellist.cn/bulletmessage/static/icon/customerService.png"></image>
+      <view class="label">Talk to Us</view>
+    </button>
+    <image class="side-background-s" src="http://ellist.cn/bulletmessage/static/img/h5-20.png"></image>
+  </view>
+  </view>
+</template>
+<script>
+import wepy from 'wepy';
+import Header from '@/components/header';
+
+export default class Block extends wepy.page {
+  config = {
+    usingComponents: {}
+  };
+  components = {
+    header: Header
+  };
+  computed = {
+    showReg() {
+      return this.config.onSiteReg == 'true';
+    },
+    AvatarUrl() {
+      return this.$parent.globalData.userInfo.avatarUrl;
+    },
+    userInfoS() {
+      return `{"nickName":"${
+        this.$parent.globalData.userInfo.nickName
+      }","avatarUrl":"${this.$parent.globalData.userInfo.avatarUrl}"}`;
+    }
+  };
+  data = {
+    config: {}
+  };
+  methods = {
+    scanToRegister() {
+      let self = this;
+      wepy.scanCode({
+        success: function(resp) {
+          // console.log(resp.result)
+          self.msg = resp.result;
+          console.log('scan QR', resp.result);
+          if (self.msg != 'yes, there is nothing in the code') {
+            wepy.showToast({
+              title: 'Invalid QR Code',
+              icon: 'none',
+              duration: 2000
+            });
+            return;
+          }
+          self.$redirect('./register');
+        },
+        fail: function(err) {
+          console.error('err', err);
+        }
+      });
+    }
+  };
+  onLoad(parms, data) {}
+  onShow() {
+    let self = this;
+    this.$parent.getConfig(false, config => {
+      self.config = config;
+    });
+    console.log('this.data.config', this.config);
+  }
+}
+</script>

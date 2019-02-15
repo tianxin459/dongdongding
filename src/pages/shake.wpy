@@ -1,4 +1,6 @@
 <style lang="less">
+@import '../theme.less';
+// @import '../buttons.less';
 .body {
   color: white;
 }
@@ -30,37 +32,37 @@
 
 .btnStart {
   position: fixed;
-  top: 200rpx;
-  right: 50rpx;
+  top: 100px;
+  right: 25px;
   background-color: red;
   color: white;
 }
 
 @keyframes runnerHead {
   from {
-    top: 25rpx;
+    top: 12.5px;
   }
   80% {
-    top: 32rpx;
+    top: 16px;
   }
   to {
-    top: 25rpx;
+    top: 12.5px;
   }
 }
 .avatar {
   width: 100%;
-  height: 300rpx;
+  height: 150px;
 }
 
 .runner {
   position: absolute;
   transition: all linear 0.1s;
-  margin-left: -100rpx;
+  margin-left: -50px;
   left: 50%;
   .running-head {
     position: absolute;
-    width: 200rpx;
-    height: 200rpx;
+    width: 100px;
+    height: 100px;
     border: 1px solid green;
     box-shadow: 0 0 0 1px white;
     border-radius: 50%;
@@ -70,20 +72,21 @@
   }
   .running-body {
     position: absolute;
-    top: 115rpx;
+    top: 57.5px;
     // left: -10rpx;
-    width: 200rpx;
-    height: 200rpx;
+    width: 100px;
+    height: 100px;
   }
 }
 
 .display {
-  font-size: 60rpx;
+  font-size: 30px;
   .ranking {
+    max-width: 100vw;
     color: orange;
-    text-shadow: 0 0 1px currentColor, -1px -1px 1px #030, 0 -1px 1px #030,
-      1px -1px 1px #030, 1px 0 1px #030, 1px 1px 1px #030, 0 1px 1px #030,
-      -1px 1px 1px #030, -1px 0 1px #030;
+    // text-shadow: 0 0 1px currentColor, -1px -1px 1px #030, 0 -1px 1px #030,
+    //   1px -1px 1px #030, 1px 0 1px #030, 1px 1px 1px #030, 0 1px 1px #030,
+    //   -1px 1px 1px #030, -1px 0 1px #030;
   }
 }
 </style>
@@ -92,15 +95,19 @@
     <header></header>
     <view class="body">
       <view>
-        Shake ~ Shake
-        <view>
+        <view>{{Lang.shake.Url}}</view>
+        {{Lang.shake.Desc1}}
+        <!-- <view>
           Msg:{{msg}}
-        </view>
-        <button class="btnStart" @tap="onStart">
-          <text>Start</text>
+        </view> -->
+        <button class="button button-3d button-caution" @tap="onStart" wx:if="{{true||isAdmin}}">
+          <text>{{Lang.shake.BtnStart}}</text>
         </button>
-        <button class="btn-primary" @tap="onShake">
-          <text>shake</text>
+        <!-- <button class="button button-3d button-caution" @tap="testRun" wx:if="{{isAdmin}}">
+          <text>test run</text>
+        </button> -->
+        <button class="btn-primary2 button-raised button-action button-circle" @tap="onShake" wx:if="{{showButton}}">
+          <text>{{Lang.shake.BtnReady}}</text>
         </button>
       </view>
       <view class="avatar">
@@ -118,166 +125,214 @@
   </view>
 </template>
 <script>
-import wepy from 'wepy'
-import Header from '@/components/header' // alias example
+import wepy from 'wepy';
+import Header from '@/components/header'; // alias example
+import TextMixin from '@/mixins/text';
 // import { $wuxBackdrop } from '../wux/index'
 export default class Register extends wepy.page {
   components = {
     header: Header
-  }
+  };
+  mixins = [TextMixin];
   config = {
     usingComponents: {}
-  }
+  };
   computed = {
     UserInfo() {
-      return this.$parent.globalData.userInfo
+      return this.$parent.globalData.userInfo;
+    },
+    isAdmin() {
+      return this.$parent.isAdmin();
     }
-  }
-  components = {}
+  };
+  components = {};
   data = {
     msg: '',
-    range: 0.2,
-    ranking: 'Wait for Start...'
-  }
+    range: 1,
+    showButton: true,
+    ranking: 'Click to ready',
+    shakeActive: true,
+    shakeSteps: 0
+  };
   methods = {
+    testRun(e) {
+      this.sendRun(50);
+      console.log('send test run 50');
+    },
     onStart(e) {
-      let url = 'https://ellist.cn/bulletmessage/api/race/begin'
+      let url = 'https://ellist.cn/bulletmessage/api/race/begin';
       let dataRun = {
         Message: 'GoGoGo'
-      }
+      };
       wepy.request({
         url: url,
         method: 'POST',
         data: dataRun,
         success: function(resp) {
-          console.log('start Run send', resp)
+          console.log('start Run send', resp);
         },
         fail: function(err) {
-          console.error(err)
+          console.error(err);
         }
-      })
+      });
     },
     onEmailChange(e) {
-      this.email = e.detail.value
+      this.email = e.detail.value;
     },
     onEnglishNameChange(e) {
-      this.englishName = e.detail.value
+      this.englishName = e.detail.value;
     },
     onNumPeopleChange(e) {
-      this.numPeople = e.detail.value
-      console.log(e.detail.value)
+      this.numPeople = e.detail.value;
+      console.log(e.detail.value);
     },
     submit() {
-      console.log('start shake')
-      this.shakeFun()
+      console.log('start shake');
+      // this.shakeFun();
+      // this.sendRun();
     },
     onShake() {
-      this.sendRun(10)
+      let self = this;
+      self.showButton = false;
+      self.ranking = self.Lang.shake.WaitSignal; //'Wait for Start Signal...';
+      this.shakeFun();
+      this.sendRun();
+      this.sendRun(10);
+      self.$apply();
     }
+  };
+  onAccelerometerChange(res) {
+    let self = this;
+    // self.range = self.config.shakeRange || self.range;
+    // self.range = self.config.shakeRange || self.range;
+    var x = res.x.toFixed(2);
+    var y = res.y.toFixed(2);
+    var z = res.z.toFixed(2);
+
+    var shakeX = x > self.range;
+    var shakeY = y > self.range;
+    var shakeZ = z > self.range;
+
+    let step = 5; //Math.floor(Math.random() * 100) % 10;
+    let active = false;
+
+    if (self.shakeActive) {
+      if ((shakeX && shakeY) || (shakeX && shakeZ) || (shakeY && shakeZ)) {
+        self.shakeSteps++;
+        step = Math.ceil(Math.max(x, y, z)) * 10;
+
+        //reduce the shake step
+        if (self.shakeSteps % 4 === 1) {
+          // self.shakeSteps = 1;
+          if (step > 50) step += Math.floor(Math.random() * 10) * 2;
+          active = true;
+          self.sendRun(step);
+          self.msg = 'shake to run:' + step;
+          // self.ranking = self.shakeSteps + '=|' + x + '|' + y + '|' + z + '|';
+          self.ranking = 'run ' + step;
+          console.log('xy step', step);
+        } else {
+          active = false;
+        }
+      }
+    }
+    // if (active) {
+    //   self.sendRun(step);
+    //   self.msg = 'shake to run:' + step;
+    //   // console.log(self.msg);
+    // }
+    self.$apply();
   }
   shakeFun() {
     // shake
-    var self = this
-    var positivenum = 0
+    var self = this;
+    // var positivenum = 0;
     wx.startAccelerometer({
       interval: 'ui'
-    })
-    wx.onAccelerometerChange(function(res) {
-      self.range = self.config.shakeRange || 0.5
-      var x = res.x.toFixed(4)
-      var y = res.y.toFixed(4)
-      var z = res.z.toFixed(4)
-
-      var shakeX = x > self.range
-      var shakeY = y > self.range
-      var shakeZ = z > self.range
-
-      let step = Math.floor(Math.random() * 100) % 10
-      let active = false
-
-      if (self.shakeActive) {
-        if ((shakeX && shakeY) || (shakeX && shakeZ) || (shakeY && shakeZ)) {
-          positivenum++
-          step = Math.ceil(Math.max(res.x, res.y)) * 10
-          if (step > 30) step = 30
-          active = true
-          console.log('xy step', step)
-        }
-      }
-      if (active) {
-        self.sendRun(step)
-        self.msg = 'shake to run:' + positivenum
-      }
-      self.$apply()
-    })
+    });
+    // self.ranking = 'Wait for Start Signal...';
+    // wx.onAccelerometerChange(onAccelerometerChange);
+    self.$apply();
   }
 
   sendRun(step) {
-    let url = 'https://ellist.cn/bulletmessage/api/race/run'
-    let self = this
+    let url = 'https://ellist.cn/bulletmessage/api/race/run';
+    let self = this;
     let dataRun = {
-      userId: this.$parent.globalData.userInfo.nickName,
+      userId: this.$parent.globalData.userInfo.openid,
       englishName: this.$parent.globalData.user.englishName,
       avatorUrl: this.$parent.globalData.userInfo.avatarUrl,
+      gender: this.$parent.globalData.userInfo.gender,
       message: step
-    }
-    console.log('dataRun', dataRun)
+    };
+    console.log('dataRun', dataRun);
     wepy.request({
       url: url,
       method: 'POST',
       data: dataRun,
       success: function(resp) {
-        self.msg = 'run ' + step
-        console.log('dataRun send', resp)
+        self.msg = 'run ' + step;
+        console.log('dataRun send', resp);
       },
       fail: function(err) {
-        console.error(err)
+        console.error(err);
       }
-    })
+    });
   }
   onUnload() {
-    wx.stopAccelerometer()
+    wx.stopAccelerometer();
   }
   onLoad(parm, data) {
+    let self = this;
+    self.showButton = true;
     // this.shakeActive = true
-    this.shakeFun()
-    this.sendRun()
+  }
+  onHide() {
+    let self = this;
+    self.showButton = true;
+    self.ranking = '';
+    // self.$apply();
   }
   onShow() {
-    let self = this
+    let self = this;
+    self.ranking = self.Lang.shake.ClickReady;
     this.$parent.getConfig(false, config => {
-      self.config = config
-    })
-
-    wx.onSocketMessage(function(res) {
-      console.log('shake=>wsresponse', res)
-      // 接收消息回调
-      var data = JSON.parse(res.data.replace(String.fromCharCode(0x1e), '')) // 返回时去掉分隔符
-      if (data.target) {
-        switch (data.target) {
-          case 'ReceiveMessage':
-            self.msg = data.arguments[0] + '|' + data.arguments[1]
-            self.ReceiveMessage(data.arguments[0], data.arguments[1])
-            break
-          default:
-            break
-        }
-        self.$apply()
+      self.config = config;
+    });
+    // this.shakeFun();
+    // console.log('start shakefun');
+    // this.sendRun();
+  }
+  onSocketMessage(res) {
+    let self = this;
+    console.log('shake=>wsresponse', res);
+    // 接收消息回调
+    var data = JSON.parse(res.data.replace(String.fromCharCode(0x1e), '')); // 返回时去掉分隔符
+    if (data.target) {
+      switch (data.target) {
+        case 'ReceiveMessage':
+          self.msg = data.arguments[0] + '|' + data.arguments[1];
+          self.ReceiveMessage(data.arguments[0], data.arguments[1]);
+          break;
+        default:
+          break;
       }
-    })
+      self.$apply();
+    }
   }
   ReceiveMessage(uid, message) {
-    let self = this
+    let self = this;
+    if (!message) return;
     if (message.indexOf('finish at') > -1) {
-      self.shakeActive = false
-      wepy.vibrateLong()
-      self.ranking = message.replace('finish at', '')
-      wx.stopAccelerometer()
+      self.shakeActive = false;
+      wepy.vibrateLong();
+      self.ranking = 'Competition ranking:' + message.replace('finish at', '');
+      wx.stopAccelerometer();
     }
     if (message.indexOf('GoGoGo') > -1) {
-      self.shakeActive = true
-      wepy.vibrateLong()
-      self.ranking = 'Go! Shake~Shake'
+      self.shakeActive = true;
+      wepy.vibrateLong();
+      self.ranking = 'Go! Shake~Shake';
     }
   }
 }

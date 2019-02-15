@@ -1,8 +1,21 @@
 <style lang="less">
+@import '../theme.less';
+// @import '../app.less';
+// @import '../buttons.less';
+
+@colorName1: #263238;
+@colorMsg1: black;
+@colorMsgBg1: #76ff03;
+@colorName2: #f5f5f5;
+@colorMsg2: white;
+@colorMsgBg2: #3d5afe;
+page {
+  font-family: Verdana;
+}
 .body {
   height: 80vh;
   input {
-    border: 1px solid var(--colorFont);
+    border: 1px solid @colorFont;
   }
   .chat-container {
     overflow-y: scroll;
@@ -18,9 +31,9 @@
     justify-items: space-between;
     justify-content: space-around;
     .message-container {
-      height: 100%;
+      height: 95%;
       // background-color: gainsboro;
-      border: 1px solid var(--colorBorder);
+      border: 1px solid @colorBorder;
     }
     .chatView {
       height: 100%;
@@ -30,76 +43,148 @@
       color: white;
       display: flex;
       .avatar {
-        width: 60rpx;
-        height: 60rpx;
+        width: 30px;
+        height: 30px;
         border-radius: 50%;
       }
       .message,
+      .messageImage,
       .messageIcon {
         border: 1px solid gold;
-        padding: 10rpx;
-        margin: 10rpx;
+        padding: 5px;
+        margin: 5px;
         justify-self: center;
-        border-radius: 10rpx;
-        background-color: #a2e563;
-        color: black;
+        border-radius: 5px;
+        background-color: @colorMsgBg1;
+        color: @colorMsg1;
+        max-width: 270px;
+        min-width: 100px;
+        display: flex;
+        flex-direction: column;
+        .englishName {
+          height: 20px;
+          color: @colorName1;
+          font-size: 15px;
+          border-bottom: 1px solid #33691e;
+        }
+        .msg {
+        }
       }
       .messageIcon {
-        width: 60rpx;
-        height: 60rpx;
+        height: 50px;
+        .msg {
+          height: 30px;
+          width: 30px;
+        }
+      }
+      .messageImage {
+        .msg {
+          width: 50px;
+          height: 50px;
+          align-self: center;
+        }
+      }
+    }
+
+    view.isMe {
+      flex-direction: row-reverse;
+      width: 100%;
+      display: flex;
+      .avatar {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+      }
+      .englishName {
+        color: @colorName2 !important;
+        border-bottom: 1px solid white !important;
+      }
+      .message,
+      .messageIcon {
+        background-color: @colorMsgBg2;
+        color: @colorName2;
+      }
+      .messageImage {
+        background-color: @colorMsgBg2;
+        color: @colorName2;
+      }
+      .messageIcon {
       }
     }
   }
 }
 .input-container {
   width: 90%;
+  position: relative;
   .input-text {
     display: flex;
-    justify-content: center;
+    justify-content: flex-start;
+    overflow: hidden;
     input {
       align-self: center;
-      height: 80rpx;
+      height: 40px;
+      width: 80%;
+      color: white;
+      padding: 0 5px;
     }
     button {
+      // background-color: purple;
+      padding: 0;
+      position: absolute;
+      right: 0;
+      width: 20%;
+      border-radius: 0;
       margin: 0;
-      background-color: var(--colorBackgound);
-      height: 90rpx;
-      padding: auto 10rpx;
-      border: 1px solid var(--colorBorder);
-      color: white;
-      font-weight: bolder;
+      // background-color: var(--colorBackgound);
+      height: 42.5px;
+      padding: auto 5px;
+      // border: 1px solid @colorBorder;
+      // color: white;
+      // font-weight: bolder;
+      transition: all ease 0.2s;
+      image {
+        width: 20px;
+        height: 20px;
+      }
     }
-    button:active {
-      background-color: #823d78;
+    #sendTxt {
+      transform: translate(100px);
+    }
+    #sendTxt.showButton {
+      transform: translateX(0);
     }
   }
 }
 .bulletShortcut {
   display: flex;
-  color: var(--colorFont);
-  width: 80%;
+  color: @colorFont;
+  width: 100%;
   flex-direction: row;
   flex-wrap: wrap;
   margin: 0 auto;
-  margin-bottom: 60rpx;
-  button.button {
-    font-weight: bolder;
-    color: white;
-    // background-color: transparent;
-    width: 30%;
-    margin: 1%;
-    height: 100rpx;
-    // border: 1px solid white;
-    // border-radius: 5px;
-    image {
-      height: 90%;
-      width: 90%;
-      margin: 0 auto;
-    }
-  }
-  button.button:active {
-    background-color: #823d78;
-  }
+  margin-bottom: 30px;
+  // button.button {
+  //   background-color: purple;
+  //   padding: 0;
+  //   width: 15%;
+  //   border-radius: 0;
+  //   margin: 0;
+  //   // background-color: var(--colorBackgound);
+  //   height: 85rpx;
+  //   padding: auto 10rpx;
+  //   border: 1px solid @colorBorder;
+  //   color: white;
+  //   font-weight: bolder;
+  //   transition: all ease 0.2s;
+  //   image {
+  //     height: 90%;
+  //     width: 90%;
+  //     margin: 0 auto;
+  //   }
+  // }
+  // button.button:active {
+  //   background-color: #823d78;
+  // }
 }
 </style>
 <template>
@@ -110,12 +195,23 @@
         <view class="message-container">
           <scroll-view scroll-y="true" class="chatView" scroll-top="{{scrollTop}}" lower-threshold="1px">
             <repeat for="{{chatList}}" key="index" index="key" item="val">
-              <view class="chat">
+              <view class="chat {{val.englishName==userInfo.englishName?'isMe':''}}">
                 <image class="avatar" src="{{val.avatarUrl}}"></image>
                 <!-- <view class="nickName">{{val.nickName}}</view> -->
-                <view wx:if="{{val.type==0}}" class="message">{{val.msg}}</view>
-                <image wx:if="{{val.type==1}}" class="messageIcon" src="https://ellist.cn/bulletmessage/static/icon/{{val.msg}}.png"></image>
-                <image wx:if="{{val.type==2}}" class="message" src="https://ellist.cn/bulletmessage/static/icon/{{val.msg}}.png"></image>
+                <view wx:if="{{val.type==0}}" class="message">
+                  <view class="englishName">{{val.englishName}}</view>
+                  <view class="msg">{{val.msg}}</view>
+                </view>
+                <view wx:if="{{val.type==1}}" class="messageIcon">
+                  <view class="englishName">{{val.englishName}}</view>
+                  <image class="msg" src="https://ellist.cn/bulletmessage/static/icon/{{val.msg}}.png"></image>
+                </view>
+                <!-- <image wx:if="{{val.type==1}}" class="messageIcon" src="https://ellist.cn/bulletmessage/static/icon/{{val.msg}}.png"></image> -->
+
+                <view wx:if="{{val.type==2}}" class="messageImage">
+                  <view class="englishName">{{val.nickName}}</view>
+                  <image class="msg" data-url="{{'https://ellist.cn/bulletmessage/uploads/images/'+val.msg}}" src="https://ellist.cn/bulletmessage/uploads/images/{{val.msg}}" @tap="imgClick"></image>
+                </view>
               </view>
             </repeat>
           </scroll-view>
@@ -123,12 +219,15 @@
       </view>
       <view class="input-container">
         <view class="input-text">
-          <input type="text" class="txt" value="{{bulletMessage}}" @input="bulletMessageInput" />
-          <button @tap="onClick">
-            <text>Submit</text>
+          <input type="text" class="txt" value="{{bulletMessage}}" maxlength="50" confirm-type="send" @input="bulletMessageInput" @confirm="onClick" />
+          <button id="sendPic" class="button button-raised button-royal" @tap="sendPicture">
+            <image class="icon" src="https://ellist.cn/bulletmessage/static/icon/photo-camera-2.png"></image>
+          </button>
+          <button class="{{showButtonText?'showButton':''}} button button-raised button-royal" id="sendTxt" @tap="onClick">
+            <text>send</text>
           </button>
         </view>
-        <view class="bulletShortcut">
+        <view wx:if="{{false}}" class="bulletShortcut">
           <button class="button" data-tag="clap" @tap="sendBulletShortcut">
             <!-- <image src="../static/img/clapping.png"></image> -->
             <image src="https://ellist.cn/bulletmessage/static/icon/H5Icon-13.png"></image>
@@ -161,38 +260,64 @@
   </view>
 </template>
 <script>
-import wepy from 'wepy'
-import Header from '@/components/header'
-let prefixIcon = '#$%'
-let prefixImg = 'img=>'
+import wepy from 'wepy';
+import Header from '@/components/header';
+let prefixIcon = '#$%';
+let prefixImg = 'img=>';
+let messageSize = 50;
 
 export default class Album extends wepy.page {
   config = {
     usingComponents: {},
     enablePullDownRefresh: true
-  }
+  };
   components = {
     header: Header
-  }
+  };
   data = {
     msg: '',
     chatList: [],
     bulletMessage: '',
-    scrollTop: 1000
-  }
+    scrollTop: 1000,
+    userInfo: {},
+    showButtonText: false
+  };
   methods = {
+    imgClick(e) {
+      let current = e.currentTarget.dataset.url;
+      let urls = [current];
+      // console.log('this.data', current);
+      wx.previewImage({
+        // current,
+        urls
+      });
+    },
+    sendPicture(e) {
+      let self = this;
+      wx.chooseImage({
+        sizeType: ['original', 'compressed'],
+        sourceType: ['album', 'camera'],
+        success: res => {
+          console.log(res.tempFilePaths);
+          self.upload(res.tempFilePaths[0]);
+        }
+      });
+    },
     bulletMessageInput(e) {
-      this.bulletMessage = e.detail.value
+      let self = this;
+      this.bulletMessage = e.detail.value;
+      self.showButtonText = !!this.bulletMessage;
+      self.$apply();
     },
     sendBulletShortcut(e) {
-      let shortcut = e.target.dataset.tag
-      console.log(shortcut)
-      this.sendBulletMessage(prefixIcon + shortcut)
-      this.bulletMessage = ''
-      this.$apply()
+      let shortcut = e.target.dataset.tag;
+      console.log(shortcut);
+      this.sendBulletMessage(prefixIcon + shortcut);
+      this.bulletMessage = '';
+      this.$apply();
     },
     onClick(e) {
-      console.log('bulletMessage', this.bulletMessage)
+      console.log('bulletMessage', this.bulletMessage);
 
       // let body = {
       //   type: 1,
@@ -200,116 +325,164 @@ export default class Album extends wepy.page {
       //   arguments: ['all', this.bulletMessage]
       // }
       // this.$parent.wsSend(JSON.stringify(body))
-      this.sendBulletMessage(this.bulletMessage)
-      this.bulletMessage = ''
-      this.scrollTop = 1000 * this.chatList.length
-      console.log('this.chatList.count()', this.chatList.length)
-      this.$apply()
+      this.sendBulletMessage(this.bulletMessage);
+      this.bulletMessage = '';
+      this.scrollTop = 1000 * this.chatList.length;
+      console.log('this.chatList.count()', this.chatList.length);
+      this.showButtonText = false;
+      this.$apply();
     }
     // sendBulletShortcut(e) {
     //   console.log('sendBulletShortcut')
     // }
+  };
+  onSocketMessage(res) {
+    let self = this;
+    var data = JSON.parse(res.data.replace(String.fromCharCode(0x1e), ''));
+    console.log('liveChat=>wsresponse', data);
+    if (data.target) {
+      switch (data.target) {
+        case 'ReceiveMessage':
+          // self.msg = data.arguments[0] + '|' + data.arguments[1]
+          if (!data.arguments[1]) return; // handle the heartbeat ping
+          let messagType = 0;
+          let msg = data.arguments[1];
+          // if (msg.indexOf(prefixIcon) > -1) {
+          //   messagType = 1 // icon
+          //   msg = msg.replace(prefixIcon, '')
+          // } else if (msg.indexOf(prefixImg) > -1) {
+          //   messagType = 2 // image
+          //   msg = msg.replace(prefixImg, '')
+          // }
+          let line = {
+            avatarUrl: data.arguments[0],
+            msg: data.arguments[1], // msg,
+            nickName: data.arguments[2],
+            englishName: data.arguments[2],
+            type: messagType
+          };
+          self.makeMessage(line);
+          console.log('recieve line===>', line);
+          self.chatList.push(line);
+          if (self.chatList.length > messageSize) self.chatList.shift();
+          self.$apply();
+          break;
+        default:
+          break;
+      }
+      self.$apply();
+    }
   }
   registerSocketMessage() {
-    let self = this
-    console.log('liveChat=>onload')
-    wx.onSocketMessage(function(res) {
-      var data = JSON.parse(res.data.replace(String.fromCharCode(0x1e), ''))
-      console.log('liveChat=>wsresponse', data)
-      if (data.target) {
-        switch (data.target) {
-          case 'ReceiveMessage':
-            // self.msg = data.arguments[0] + '|' + data.arguments[1]
-            if (!data.arguments[1]) return // handle the heartbeat ping
-            let messagType = 0
-            let msg = data.arguments[1]
-            // if (msg.indexOf(prefixIcon) > -1) {
-            //   messagType = 1 // icon
-            //   msg = msg.replace(prefixIcon, '')
-            // } else if (msg.indexOf(prefixImg) > -1) {
-            //   messagType = 2 // image
-            //   msg = msg.replace(prefixImg, '')
-            // }
-            let line = {
-              avatarUrl: data.arguments[0],
-              msg: data.arguments[1], // msg,
-              nickName: data.arguments[2],
-              type: messagType
-            }
-            self.makeMessage(line)
-            console.log('line', line)
-            self.chatList.push(line)
-            self.$apply()
-            break
-          default:
-            break
-        }
-        self.$apply()
-      }
-    })
+    let self = this;
+    console.log('liveChat=>onload');
+    // wx.onSocketMessage(onSocketMessage);
   }
+  // -------------------- upload image start --------------------
+  upload(path) {
+    var self = this;
+    var curImgList = [];
+    wx.showToast({
+      icon: 'loading',
+      title: 'uploading...'
+    });
+    let url = 'https://ellist.cn/bulletmessage/api/bullet/upload';
+    wx.uploadFile({
+      url: url,
+      filePath: path,
+      name: 'file',
+      header: { 'Content-Type': 'multipart/form-data' },
+      formData: {
+        nickName: self.userInfo.nickName,
+        avatarUrl: self.userInfo.avatarUrl,
+        englishName: this.$parent.globalData.user.englishName,
+        openid: this.$parent.globalData.userInfo.openid
+      },
+      success: function(res) {
+        console.log('upload success', res);
+      },
+      fail: function(e) {
+        wx.showModal({
+          title: 'fail',
+          content: 'upload failure',
+          showCancel: false
+        });
+      },
+      complete: function() {
+        wx.hideToast();
+      }
+    });
+  }
+  // -------------------- upload image end --------------------
   sendBulletMessage(txt) {
-    let self = this
-    if (!txt) return
-    let url = 'https://ellist.cn/bulletmessage/api/bullet'
+    let self = this;
+    if (!txt) return;
+    let url = 'https://ellist.cn/bulletmessage/api/bullet';
     let dataBullet = {
+      // nickName: this.$parent.globalData.userInfo.nickName,
+      openid: this.$parent.globalData.userInfo.openid,
       nickName: this.$parent.globalData.userInfo.nickName,
       Id: this.$parent.globalData.userInfo.avatarUrl,
+      englishName: this.$parent.globalData.user.englishName,
       Message: txt
-    }
+    };
     wepy.request({
       url: url,
       method: 'POST',
       data: dataBullet,
       success: function(resp) {
-        console.log('message send', resp)
+        console.log('message send', resp);
         // wepy.showToast({
         //   title: 'Message sent',
         //   icon: 'none',
         //   duration: 2000
         // })
 
-        self.scrollTop = self.chatList.length * 100
-        self.$apply()
+        self.scrollTop = self.chatList.length * 100;
+        self.$apply();
       },
       fail: function(err) {
-        console.error(err)
+        console.error(err);
       }
-    })
+    });
   }
   onLoad(parms, data) {
-    this.registerSocketMessage()
+    let self = this;
+    this.$parent.getUserInfo(info => {
+      self.userInfo = info;
+    });
   }
   makeMessage(lineObj) {
-    lineObj.type = 0
+    lineObj.type = 0;
     if (lineObj.msg.indexOf(prefixIcon) > -1) {
-      lineObj.type = 1 // icon
-      lineObj.msg = lineObj.msg.replace(prefixIcon, '')
+      lineObj.type = 1; // icon
+      lineObj.msg = lineObj.msg.replace(prefixIcon, '');
     } else if (lineObj.msg.indexOf(prefixImg) > -1) {
-      lineObj.type = 2 // image
-      lineObj.msg = lineObj.msg.replace(prefixImg, '')
+      lineObj.type = 2; // image
+      lineObj.msg = lineObj.msg.replace(prefixImg, '');
     }
   }
   onShow() {
-    let self = this
-    let url = 'https://ellist.cn/bulletmessage/api/bullet/messagehistory'
+    let self = this;
+    let url = 'https://ellist.cn/bulletmessage/api/bullet/messagehistory';
+    this.registerSocketMessage();
     wepy.request({
       url: url,
       method: 'GET',
       success: function(resp) {
-        console.log('message send', resp)
-        self.chatList = resp.data
+        console.log('message list==>', resp);
+        self.chatList = resp.data;
         for (let l of self.chatList) {
-          self.makeMessage(l)
+          self.makeMessage(l);
         }
         // console.log('self.chatList', self.chatList)
-        self.scrollTop = self.chatList.length * 100
-        self.$apply()
+        self.scrollTop = self.chatList.length * 100;
+        self.$apply();
       },
       fail: function(err) {
-        console.error(err)
+        console.error(err);
       }
-    })
+    });
   }
 }
 </script>

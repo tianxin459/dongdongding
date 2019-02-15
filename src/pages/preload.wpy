@@ -1,4 +1,6 @@
 <style lang="less">
+@import '../theme.less';
+// @import '../app.less';
 .loading {
   margin-left: auto;
   margin-right: auto;
@@ -12,124 +14,198 @@
       <loading></loading>
       <!-- <wux-loading id="wux-loading" /> -->
       <!-- <wux-spin class="loading" wux-class="spin" size="large" /> -->
+      <button wx:if="{{showReload}}" class="button2" @tap='reload'>
+        <image class="icon" src="https://ellist.cn/bulletmessage/static/icon/gear.png"></image>
+        <text>Reload</text>
+      </button>
     </view>
   </view>
 </template>
 <script>
-import wepy from 'wepy'
-import Header from '@/components/header' // alias example
-import Loading from '@/components/loading' // alias example
+import wepy from 'wepy';
+import Header from '@/components/header'; // alias example
+import Loading from '@/components/loading'; // alias example
 // import { $wuxLoading } from '../wux/index'
 // import { $wuxBackdrop } from '../wux/index'
-let balanceI
+let balanceI;
 
 export default class PreLoad extends wepy.page {
   components = {
     header: Header,
     loading: Loading
-  }
+  };
   config = {
     usingComponents: {
       // 'wux-loading': '../wux/loading/index',
       // 'wux-spin': '../wux/spin/index'
     }
-  }
-  components = {}
+  };
+  components = {};
   data = {
-    code: ''
-  }
-  methods = {}
+    code: '',
+    showReload: false
+  };
+  methods = {
+    reload(e) {
+      wepy.reLaunch({ url: './preload' });
+    }
+  };
 
   Login(userInfo) {
-    let self = this
-    var url = 'https://wtf.chinacloudsites.cn/api/WxUser/' + userInfo.nickName
-    console.log('balanceurl', url)
-    wepy.request({
-      url: url,
-      method: 'GET',
-      success: function(resp) {
-        console.log(resp)
-        if (!resp.data.item[0]) {
-          console.error('balance have no item, go to registration')
-          self.$redirect('./register')
-        } else {
-          self.$parent.saveCacheApp('isRegisted', true) // cache isRegisted
-          self.$parent.globalData.user.balance = resp.data.item[0].balance
-          self.$parent.globalData.user.englishName =
-            resp.data.item[0].englishName
+    let self = this;
+    let balanceRequest = {
+      Nickname: this.$parent.globalData.userInfo.nickName,
+      WxOpenId: this.$parent.globalData.userInfo.openid
+    };
+    self.goNextBaseOnConfiguration(true);
 
-          let redirectData = userInfo
-          redirectData.balance = resp.data.item[0].balance
-          redirectData.englishName = resp.data.item[0].englishName
-          self.goNextBaseOnConfiguration(true)
-          // self.$redirect('./index', redirectData)
-        }
-      },
-      fail: function(err) {
-        console.error(err)
-        self.$redirect('./transfer-fail')
-      }
-    })
+    // --------------------leave for transaction start ----------------------
+    // console.log('balanceRequest', balanceRequest);
+    // var url = 'https://wtf.chinacloudsites.cn/api/WxUser';
+    // wepy.request({
+    //   url: url,
+    //   method: 'POST',
+    //   data: balanceRequest,
+    //   header: {
+    //     'content-type': 'application/json' // 默认值
+    //   },
+    //   success: function(resp) {
+    //     console.log('get balanceData', resp);
+    //     if (!resp.data.item) {
+    //       console.error('balance have no item, go to registration');
+    //       // self.$redirect('./register');
+    //       self.goNextBaseOnConfiguration(false);
+    //     } else {
+    //       self.$parent.saveCacheApp('isRegisted', true); // cache isRegisted
+    //       self.$parent.globalData.user.balance = resp.data.item.balance;
+    //       self.$parent.globalData.user.englishName = resp.data.item.englishName;
+
+    //       let redirectData = userInfo;
+    //       redirectData.balance = resp.data.item.balance;
+    //       redirectData.englishName = resp.data.item.englishName;
+    //       wepy.setStorageSync(this.globalData.CacheName_UserInfo, redirectData);
+    //       self.goNextBaseOnConfiguration(true);
+    //     }
+    //   },
+    //   fail: function(err) {
+    //     console.error(err);
+    //     self.$redirect('./transfer-fail');
+    //   }
+    //});
+    // --------------------leave for transaction end ----------------------
   }
 
   goNextBaseOnConfiguration(isRegistered) {
-    let self = this
-    this.$parent.getConfig(false, config => {
-      self.handleConfiguration(config, isRegistered)
-    })
+    let self = this;
+    self.$parent.getConfig(false, config => {
+      self.handleConfiguration(config, isRegistered);
+    });
   }
 
   handleConfiguration(config, isRegistered) {
-    let self = this
+    console.log('handleConfiguration===>');
+    let self = this;
     if (config.debug) {
-      console.log('debug')
+      console.log('debug');
     } else {
-      console.log(config)
+      console.log(config);
     }
+    // config.stage = '2';
     switch (config.stage) {
       case '1':
-        if (isRegistered) self.$redirect('./welcome')
-        else self.$redirect('./register')
-        break
+        if (isRegistered) self.$redirect('./welcome');
+        else self.$redirect('./register');
+        break;
       case '2':
-        self.$redirect('./index')
-        break
+        self.$redirect('./index');
+        break;
+      case '3':
+        if (isRegistered) {
+          console.log(
+            'self.$parent.getCacheApp(ischeckin',
+            self.$parent.getCacheApp('isCheckedIn')
+          );
+          if (self.$parent.getCacheApp('isCheckedIn')) {
+            self.$redirect('./index');
+          } else {
+            self.$redirect('./checkin');
+          }
+        } else self.$redirect('./block');
+        break;
       default:
-        self.$redirect('./index')
-        break
+        self.$redirect('./index');
+        break;
     }
   }
 
+  goLogin(openid) {
+    let self = this;
+    self.$parent.getUserInfo(
+      info => {
+        info.openid = openid;
+        self.$parent.globalData.userInfo.openid = openid;
+        console.log('preload=>getuserinfo', info);
+        if (self.$parent.globalData.userInfo == null) {
+          self.$redirect('./register');
+        } else {
+          self.userInfo = info;
+          // login with wx code
+          self.Login(info);
+        }
+      },
+      err => {
+        console.error('get userinfo failure', err);
+        self.$redirect('./register');
+      }
+    );
+  }
+  onHide() {}
   onLoad(parm, data) {
-    let self = this
-    console.log('app pre-load', !this.$parent.globalData.userInfo)
-    console.log(this.$parent.globalData.userInfo)
+    let self = this;
+    console.log('app pre-load', !this.$parent.globalData.userInfo);
+    // console.log(this.$parent.globalData.userInfo);
+    self.showReload = false;
+    setTimeout(() => {
+      self.showReload = true;
+      self.$apply();
+    }, 10000);
+
+    self.$apply();
     wepy.login({
       success(res) {
-        console.log('wx.login', res)
+        console.log('wx.login', res);
         if (res.code) {
-          self.code = res.code
-          self.$parent.getUserInfo(
-            info => {
-              console.log('preload=>getuserinfo', info)
-              if (self.$parent.globalData.userInfo == null) {
-                self.$redirect('./register')
-              } else {
-                self.userInfo = info
-                // login with wx code
-                self.Login(info)
-              }
-            },
-            err => {
-              console.error('get userinfo failure', err)
-              self.$redirect('./register')
-            }
-          )
+          self.code = res.code;
         } else {
-          console.log('登录失败！' + res.errMsg)
+          console.log('登录失败！' + res.errMsg);
+          return;
         }
-      }
-    })
+
+        let urlLogin =
+          'https://ellist.cn/bulletmessage/api/client/wxlogin/' + self.code;
+        wepy.request({
+          url: urlLogin,
+          method: 'GET',
+          success: function(resp) {
+            console.log('wxLogin.openid===>', resp.data);
+            // console.log(
+            //   'self.$parent.globalData.userInfo',
+            //   self.$parent.globalData.userInfo
+            // );
+            // self.$parent.globalData.userInfo.openid = resp.data;
+            // console.log(
+            //   'webuser.openid====>',
+            //   self.$parent.globalData.userInfo.openid
+            // );
+            self.goLogin(resp.data);
+          },
+          fail: function(err) {
+            console.error(err);
+          }
+        });
+      },
+      complete() {}
+    });
   }
 }
 </script>

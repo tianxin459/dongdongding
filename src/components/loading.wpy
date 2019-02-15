@@ -1,8 +1,9 @@
 <style lang="less">
+@import '../app.less';
 @text_color : white;
 @stick_color: white; //Changes the colour of all sticks
-@stick_length: 60rpx; //Changes length of all sticks
-@stick_distance: -7rpx; //Changes distance between sticks (will need editing after 30px)
+@stick_length: 30px; //Changes length of all sticks
+@stick_distance: -3.5px; //Changes distance between sticks (will need editing after 30px)
 
 .loading {
   h1 {
@@ -28,7 +29,7 @@
 
   .stick {
     width: @stick_length;
-    height: 6rpx;
+    height: 3px;
     background: @stick_color;
     display: inline-block;
     margin-left: @stick_distance;
@@ -82,7 +83,7 @@
   </view>
 </template>
 <script>
-import wepy from 'wepy'
+import wepy from 'wepy';
 
 export default class Loading extends wepy.component {}
 </script>

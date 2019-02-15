@@ -1,4 +1,6 @@
 <style lang="less">
+// @import '../app.less';
+@import '../theme.less';
 .body {
   // background-color: var(--colorGreenGD);
 }
@@ -12,7 +14,7 @@
     flex-direction: column;
     color: white;
     p {
-      font-size: 40rpx;
+      font-size: 20px;
       font-weight: 300;
     }
   }
@@ -22,24 +24,46 @@
   <view class="container">
     <header></header>
     <view class="body">
+      <!-- <view class="floating-btn">
+        <button
+          class="button-icon"
+          open-type="contact"
+        >
+          <image
+            class="icon"
+            src="https://ellist.cn/bulletmessage/static/icon/customerService.png"
+          ></image>
+          <view class="label">Talk to Us</view>
+        </button>
+      </view> -->
       <wux-button class="btnLogin" block outline type="balanced" open-type="getUserInfo" bindgetuserinfo="onGotUserInfo">
         <view class="btn2">
           <wux-icon type="ios-beer" color="white" size="64" />
           <view>Authorize the App</view>
         </view>
       </wux-button>
-      <!-- <button open-type="getUserInfo" lang="zh_CN" bindgetuserinfo="onGotUserInfo">Go Party</button> -->
+      <!-- <button class="btnLogin" open-type="getUserInfo" bindgetuserinfo="onGotUserInfo">
+        <view class="btn2">
+          <wux-icon type="ios-beer" color="white" size="64" />
+          <view>Authorize the App</view>
+      </button> -->
+    </view>
+    <view class="footer">
+      <button class="button-icon" session-from="{{userInfoS}}" open-type="contact">
+        <image class="icon" src="https://ellist.cn/bulletmessage/static/icon/customerService.png"></image>
+        <view class="label">Talk to Us</view>
+      </button>
     </view>
   </view>
 </template>
 <script>
-import wepy from 'wepy'
-import Header from '@/components/header'
+import wepy from 'wepy';
+import Header from '@/components/header';
 
 export default class Login extends wepy.page {
   components = {
     header: Header
-  }
+  };
   config = {
     usingComponents: {
       'wux-button': '../wux/button/index',
@@ -49,34 +73,37 @@ export default class Login extends wepy.page {
       // 'wux-row': '../wux/row/index',
       // 'wux-col': '../wux/col/index'
     }
-  }
-  components = {}
+  };
+  components = {};
   data = {
     userInfo: {},
     qrCodeUrl: '.',
     qrCodeData: 'no data',
     qrCodeColor: '#1ab16c',
     isIPX: false
-  }
+  };
   methods = {
     goBack() {
-      console.log('go back')
+      console.log('go back');
       // this.$redirect('./index');
     },
     onGotUserInfo(e) {
-      console.log(e.detail.errMsg)
-      console.log(e.detail.userInfo)
-      console.log(e.detail.rawData)
-      wepy.setStorageSync(this.globalData.CacheName_UserInfo, e.detail.userInfo)
-      let self = this
-      let url = `https://wtf.chinacloudsites.cn/api/WxUser/register`
+      console.log(e.detail.errMsg);
+      console.log(e.detail.userInfo);
+      console.log(e.detail.rawData);
+      wepy.setStorageSync(
+        this.$parent.globalData.CacheName_UserInfo,
+        e.detail.userInfo
+      );
+      let self = this;
+      let url = `https://wtf.chinacloudsites.cn/api/WxUser/register`;
       // let url = `https://wtf.chinacloudsites.cn/api/WxUser/register?nickname=${e.detail.userInfo.nickName}&avatarUrl=${e.detail.userInfo.avatarUrl}`;
-      console.log(url)
-      let loginData = e.detail.userInfo
-      console.log(loginData)
-      this.$redirect('./preload')
+      console.log(url);
+      let loginData = e.detail.userInfo;
+      console.log(loginData);
+      this.$redirect('./preload');
     }
-  }
+  };
 
   onLoad(parm, data) {}
 }

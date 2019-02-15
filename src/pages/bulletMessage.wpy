@@ -1,4 +1,5 @@
 <style lang="less">
+@import '../theme.less';
 .body {
   // background-color: var(--colorGreenGD);
   color: white;
@@ -48,8 +49,8 @@
   </view>
 </template>
 <script>
-import wepy from 'wepy'
-import Header from '@/components/header' // alias example
+import wepy from 'wepy';
+import Header from '@/components/header'; // alias example
 // import Hub from '@/utils/miniProgramSignalr.js'
 // var hub = require('../utils/miniProgramSignalr.js')
 
@@ -59,7 +60,7 @@ import Header from '@/components/header' // alias example
 export default class BulletMessage extends wepy.page {
   components = {
     header: Header
-  }
+  };
   config = {
     usingComponents: {
       'wux-wing-blank': '../wux/wing-blank/index',
@@ -73,23 +74,23 @@ export default class BulletMessage extends wepy.page {
       // 'wux-radio-group': '../wux/radio-group/index',
       // 'wux-radio': '../wux/radio/index'
     }
-  }
-  components = {}
+  };
+  components = {};
   data = {
     msg: '',
     hubConnect: {},
     userInfo: {}
-  }
+  };
   methods = {
     onEmailChange(e) {
-      this.email = e.detail.value
+      this.email = e.detail.value;
     },
     onEnglishNameChange(e) {
-      this.englishName = e.detail.value
+      this.englishName = e.detail.value;
     },
     onNumPeopleChange(e) {
-      this.numPeople = e.detail.value
-      console.log(e.detail.value)
+      this.numPeople = e.detail.value;
+      console.log(e.detail.value);
     },
     submit() {
       // this.wsSend('{"type":1,"target":"SendMessage","arguments":["eee","ccc"]}')
@@ -99,19 +100,19 @@ export default class BulletMessage extends wepy.page {
         type: 1,
         target: 'Register',
         arguments: ['eee', 'cbcdc']
-      }
-      this.$parent.wsSend(JSON.stringify(body)) //发送握手包
+      };
+      this.$parent.wsSend(JSON.stringify(body)); //发送握手包
       // this.wsSend('{"protocol":"json","version":1}') //发送握手包
     }
-  }
+  };
 
   onLoad(parm, data) {
     // console.log(websocket)
   }
 
   onShow() {
-    let self = this
-    console.log('bulletMessage=>onshow')
+    let self = this;
+    console.log('bulletMessage=>onshow');
     // wepy.onSocketOpen(res => {
     //   console.log('bulletMessage=>onSocketOpen')
     //   self.$parent.wsSend('{"protocol":"json","version":1}')
@@ -136,20 +137,20 @@ export default class BulletMessage extends wepy.page {
     // })
 
     wx.onSocketMessage(function(res) {
-      console.log('bulletMessage=>wsresponse', res)
+      console.log('bulletMessage=>wsresponse', res);
       //接收消息回调
-      var data = JSON.parse(res.data.replace(String.fromCharCode(0x1e), '')) //返回时去掉分隔符
+      var data = JSON.parse(res.data.replace(String.fromCharCode(0x1e), '')); //返回时去掉分隔符
       if (!!data.target) {
         switch (data.target) {
           case 'ReceiveMessage':
-            self.msg = data.arguments[0] + '|' + data.arguments[1]
-            break
+            self.msg = data.arguments[0] + '|' + data.arguments[1];
+            break;
           default:
-            break
+            break;
         }
-        self.$apply()
+        self.$apply();
       }
-    })
+    });
   }
 
   // wsSend(msg) {

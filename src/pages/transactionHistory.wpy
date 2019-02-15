@@ -1,17 +1,19 @@
 <style lang="less">
+// @import '../app.less';
+@import '../theme.less';
 .userinfo {
   display: flex;
   flex-direction: column;
   justify-content: center;
   image {
     align-self: center;
-    height: 200rpx;
-    width: 200rpx;
+    height: 100px;
+    width: 100x;
     border-radius: 50%;
-    margin-right: 5rpx;
+    margin-right: 2.5px;
   }
   p {
-    font-size: 50rpx;
+    font-size: 25px;
     align-self: center;
   }
 }
@@ -20,8 +22,8 @@
   display: flex;
   flex-direction: row;
   .txt-amount {
-    font-size: 40rpx;
-    height: 60rpx;
+    font-size: 20px;
+    height: 30px;
     border-bottom: 1px solid black;
   }
 }
@@ -42,7 +44,7 @@
 .body {
   color: white;
   .title {
-    color: var(--colorFontb);
+    color: @colorFontb;
     font-weight: bolder;
     text-align: center;
   }
@@ -51,7 +53,7 @@
     z-index: 5;
     .transaction-item {
       display: flex;
-      border-bottom: 1px solid var(--colorBorder);
+      border-bottom: 1px solid @colorBorder;
       justify-content: space-between;
       .name {
         color: var(--colorFont);
@@ -83,9 +85,9 @@
         <repeat for="{{transactionList}}" key="index" index="index" item="item">
           <view class="transaction-item">
             <text class="name">
-              Transfer-{{userInfo.nickName==item.toUser?item.fromUser:item.toUser}}</text>
+              Transfer-{{userInfo.openid==item.toWxOpenId?item.fromUserEnglishName:item.toUserEnglishName}}</text>
             <text class="amount">
-              {{userInfo.nickName==item.toUser?'+':'-'}}{{item.amount}}
+              {{userInfo.openid==item.toWxOpenId?'+':'-'}}{{item.amount}}
             </text>
           </view>
         </repeat>
@@ -104,17 +106,17 @@
   </view>
 </template>
 <script>
-import wepy from 'wepy'
-import Header from '@/components/header'
+import wepy from 'wepy';
+import Header from '@/components/header';
 
 export default class TransferHistory extends wepy.page {
   components = {
     header: Header
-  }
+  };
   config = {
     usingComponents: {}
-  }
-  components = {}
+  };
+  components = {};
   data = {
     msg: '',
     buttons: [
@@ -126,35 +128,35 @@ export default class TransferHistory extends wepy.page {
     ],
     userInfo: {},
     transactionList: []
-  }
+  };
   methods = {
     onClick() {
-      var self = this
-      this.$redirect('./index')
+      var self = this;
+      this.$redirect('./index');
     }
-  }
+  };
   onLoad(parms, data) {
-    console.log('history page')
-    let self = this
-    console.log(url)
-    self.userInfo = this.$parent.globalData.userInfo
-    console.log(self.userInfo)
+    console.log('history page');
+    let self = this;
+    console.log(url);
+    self.userInfo = this.$parent.globalData.userInfo;
+    console.log(self.userInfo);
 
     let url =
-      'https://wtf.chinacloudsites.cn/api/transaction/' + self.userInfo.nickName
+      'https://wtf.chinacloudsites.cn/api/transaction/' + self.userInfo.openid;
     wepy.request({
       url: url,
       method: 'GET',
       success: function(resp) {
-        self.transactionList = resp.data.item
-        console.log(self.transactionList)
+        self.transactionList = resp.data.item;
+        console.log(self.transactionList);
         // self.msg = resp.data.item.notificationContent;
-        self.$apply()
+        self.$apply();
       },
       fail: function(err) {
-        self.$redirect('./transfer-fail')
+        self.$redirect('./transfer-fail');
       }
-    })
+    });
   }
 }
 </script>

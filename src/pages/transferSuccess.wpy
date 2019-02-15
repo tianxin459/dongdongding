@@ -1,17 +1,19 @@
 <style lang="less">
+@import '../theme.less';
+// @import '../app.less';
 .userinfo {
   display: flex;
   flex-direction: column;
   justify-content: center;
   image {
     align-self: center;
-    height: 200rpx;
-    width: 200rpx;
+    height: 100px;
+    width: 100px;
     border-radius: 50%;
-    margin-right: 5rpx;
+    margin-right: 2.5px;
   }
   p {
-    font-size: 50rpx;
+    font-size: 25px;
     align-self: center;
   }
 }
@@ -20,8 +22,8 @@
   display: flex;
   flex-direction: row;
   .txt-amount {
-    font-size: 40rpx;
-    height: 60rpx;
+    font-size: 20px;
+    height: 30px;
     border-bottom: 1px solid black;
   }
 }
@@ -37,15 +39,15 @@
   </view>
 </template>
 <script>
-import wepy from 'wepy'
+import wepy from 'wepy';
 
 export default class TransferSuccess extends wepy.page {
   config = {
     usingComponents: {
       'wux-result': '../wux/result/index'
     }
-  }
-  components = {}
+  };
+  components = {};
   data = {
     msg: '',
     buttons: [
@@ -55,13 +57,13 @@ export default class TransferSuccess extends wepy.page {
         text: 'OK'
       }
     ]
-  }
+  };
   methods = {
     onClick() {
-      var self = this
-      this.$redirect('./index')
+      var self = this;
+      this.$redirect('./index');
     }
-  }
+  };
   onLoad(parms, data) {}
 }
 </script>

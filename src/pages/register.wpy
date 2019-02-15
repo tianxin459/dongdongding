@@ -1,7 +1,9 @@
 <style lang="less">
+@import '../theme.less';
+// @import '../app.less';
 .body {
-  background-color: var(--colorBackground);
-  color: var(--colorFont);
+  background-color: @colorBackground;
+  color: @colorFont;
 }
 
 .title {
@@ -42,7 +44,7 @@
     // border: 1px solid green;
     text-align: center;
     height: 4ex;
-    border: 1px solid var(--colorBorder);
+    border: 1px solid @colorBorder;
     border-radius: 5px;
     // border-bottom: 2px solid green;
   }
@@ -56,7 +58,7 @@
   top: 220rpx;
   flex-direction: column;
   justify-content: flex-start;
-  background-color: var(--colorBackground);
+  background-color: @colorBackground;
   color: white;
   .success-animate {
     position: fixed;
@@ -84,8 +86,8 @@
   .success-btn {
     margin: 50rpx auto;
     color: white;
-    background-color: var(--colorBackground);
-    border: 1px solid var(--colorBorder);
+    background-color: @colorBackground;
+    border: 1px solid @colorBorder;
     bottom: 150rpx;
     position: fixed;
     width: 80%;
@@ -147,6 +149,19 @@
   <view class="container">
     <header></header>
     <view class="body" wx:if="{{!showSucces}}">
+      <!-- <view class="floating-btn">
+        <button
+          class="button-icon"
+          session-from="{{userInfoS}}"
+          open-type="contact"
+        >
+          <image
+            class="icon"
+            src="https://ellist.cn/bulletmessage/static/icon/customerService.png"
+          ></image>
+          <view class="label">Talk to Us</view>
+        </button>
+      </view> -->
       <view class="title">
         <wux-white-space size="large" />
         <wux-row>
@@ -164,7 +179,7 @@
                 <text>Company Email</text>
               </view>
               <view class="input-field">
-                <input type="input-txt" @input="onEmailChange" placeholder="Sixteen" maxlength="32" />
+                <input type="input-txt" @input="onEmailChange" placeholder="Sixteen" maxlength="20" />
                 <p>@greendotcorp.com</p>
               </view>
             </view>
@@ -178,7 +193,7 @@
               <view class="input-label">
                 <text>English Name</text>
               </view>
-              <input type="input-txt" @change="onEnglishNameChange" placeholder="Sixteen Liu" size="32" />
+              <input type="input-txt" @change="onEnglishNameChange" placeholder="Sixteen Liu" maxlength="20" />
             </view>
             <!-- <wux-input placeholder="English Name" bind:change="onEnglishNameChange" placeholder="Six Liu" /> -->
           </wux-col>
@@ -201,38 +216,41 @@
       <button class="success-btn" @tap="goToWelcome">Party Information</button>
     </view>
     <view class="footer {{isIPX?'isIPX':''}}">
+      <button class="button-icon" session-from="{{userInfoS}}" open-type="contact">
+        <image class="icon" src="https://ellist.cn/bulletmessage/static/icon/customerService.png"></image>
+        <view class="label">Talk to Us</view>
+      </button>
       <image class="side-background-se" src="https://ellist.cn/bulletmessage/static/img/H5-12.png"></image>
     </view>
   </view>
 </template>
 <script>
-import wepy from 'wepy'
-import Header from '@/components/header' // alias example
+import wepy from 'wepy';
+import Header from '@/components/header'; // alias example
 // import { $wuxBackdrop } from '../wux/index'
 export default class Register extends wepy.page {
   components = {
     header: Header
-  }
+  };
   config = {
     usingComponents: {
       'wux-wing-blank': '../wux/wing-blank/index',
       'wux-white-space': '../wux/white-space/index',
       'wux-row': '../wux/row/index',
       'wux-col': '../wux/col/index'
-      // 'wux-button': '../wux/button/index',
-      // 'wux-cell-group': '../wux/cell-group/index',
-      // 'wux-cell': '../wux/cell/index',
-      // 'wux-input': '../wux/input/index',
-      // 'wux-radio-group': '../wux/radio-group/index',
-      // 'wux-radio': '../wux/radio/index'
     }
-  }
+  };
   computed = {
     AvatarUrl() {
-      return this.$parent.globalData.userInfo.avatarUrl
+      return this.$parent.globalData.userInfo.avatarUrl;
+    },
+    userInfoS() {
+      return `{"nickName":"${
+        this.$parent.globalData.userInfo.nickName
+      }","avatarUrl":"${this.$parent.globalData.userInfo.avatarUrl}"}`;
     }
-  }
-  components = {}
+  };
+  components = {};
   data = {
     email: '',
     englishName: '',
@@ -241,49 +259,54 @@ export default class Register extends wepy.page {
     showSucces: false,
     numPeopleList: ['...', 'come along', 'bring 1 family member'],
     userInfo: {}
-  }
+  };
   methods = {
     goToWelcome(e) {
-      this.$redirect('./welcome')
+      this.$redirect('./welcome');
     },
     onEmailChange(e) {
-      this.email = e.detail.value
+      this.email = e.detail.value;
     },
     onEnglishNameChange(e) {
-      this.englishName = e.detail.value
+      this.englishName = e.detail.value;
     },
     onNumPeopleChange(e) {
-      this.numPeople = e.detail.value
-      console.log(e.detail.value)
+      this.numPeople = e.detail.value;
+      console.log(e.detail.value);
     },
     submit() {
-      let self = this
+      let self = this;
       if (self.englishName === 'testing') {
-        self.email = 'eee@gd.com'
-        self.showSucces = true
-        self.selfReg()
-        return
+        self.email = 'eee@gd.com';
+        self.showSucces = true;
+        // self.selfReg();
+        return;
       }
 
-      if (!self.email) {
+      console.log(self.email, self.englishName);
+      if (!self.email || !self.englishName) {
         wepy.showToast({
           title: 'email/name is empty',
           icon: 'none',
           duration: 2000
-        })
-        return
+        });
+        return;
       }
 
-      let url = `https://wtf.chinacloudsites.cn/api/WxUser/register`
-      console.log(url)
-      let loginData = this.$parent.globalData.userInfo
-      loginData.email = self.email + '@greendotcorp.com'
-      loginData.englishName = self.englishName
-      console.log('loginData', loginData)
+      let url = `https://wtf.chinacloudsites.cn/api/WxUser/register`;
+      // console.log(url);
+      let loginData = this.$parent.globalData.userInfo;
+      loginData.email = self.email + '@greendotcorp.com';
+      loginData.englishName = self.englishName;
+      loginData.WxOpenId = this.$parent.globalData.userInfo.openid;
+      console.log('loginData', loginData);
 
       // self.selfReg()
       // return
 
+      wx.showLoading({
+        title: 'Register...'
+      });
       wepy.request({
         url: url,
         method: 'POST',
@@ -292,39 +315,39 @@ export default class Register extends wepy.page {
           'content-type': 'application/json' // 默认值
         },
         success: function(resp) {
+          wx.hideLoading();
           if (resp.data.isSuccess) {
-            self.$parent.saveCacheApp('isRegisted', true) // cache isRegisted
-            self.showSucces = true
-            self.selfReg()
+            self.$parent.saveCacheApp('isRegisted', true); // cache isRegisted
+            self.showSucces = true;
+            self.selfReg();
           } else {
             wepy.showToast({
               title: 'you have already register for the event',
               icon: 'none',
               duration: 2000
-            })
-            console.error(resp)
+            });
+            console.error(resp);
           }
           // self.$redirect('./welcome')
         },
         fail: function(err) {
-          console.error(err)
-          self.msg = err
-          // self.$redirect('./transfer-fail');
+          console.error(err);
+          self.msg = err;
+          self.$redirect('./result', { error: true, msg: err.errMsg });
         }
-      })
+      });
     }
-  }
+  };
 
   selfReg() {
-    let self = this
+    let self = this;
     // ---------self reg user list start-------------------
-    let urlreg = `https://ellist.cn/bulletmessage/api/client/setUser`
-    let regData = this.$parent.globalData.userInfo
-    regData.email = self.email + '@greendotcorp.com'
-    // regData.nickName = 'ttee'
-    regData.englishName = self.englishName
-    regData.model = self.$parent.globalData.model
-    console.log('regData', regData)
+    let urlreg = `https://ellist.cn/bulletmessage/api/client/setUser`;
+    let regData = this.$parent.globalData.userInfo;
+    regData.email = self.email + '@greendotcorp.com';
+    regData.englishName = self.englishName;
+    regData.model = self.$parent.globalData.model;
+    console.log('regData', regData);
     wepy.request({
       url: urlreg,
       method: 'POST',
@@ -333,29 +356,27 @@ export default class Register extends wepy.page {
         'content-type': 'application/json' // 默认值
       },
       success: function(resp) {
-        console.log('self reg success', resp)
+        console.log('self reg success', resp);
       },
       fail: function(err) {
-        console.error('self reg fail', err)
+        console.error('self reg fail', err);
       }
-    })
+    });
     // ---------self reg user list end-------------------
   }
   onLoad(parm, data) {
-    let self = this
-    self.isIPX = this.$parent.globalData.isIpx
-    // console.log('isipx', self.isIPX)
-    // console.log('this.$parent.getUserIn fo', this.$parent.getUserInfo)
+    let self = this;
+    self.isIPX = this.$parent.globalData.isIpx;
     this.$parent.getUserInfo(
       info => {
-        console.log('info', info)
-        self.userInfo = info
+        console.log('info', info);
+        self.userInfo = info;
       },
       err => {
-        console.log(err)
+        console.log(err);
       }
-    )
-    self.$apply()
+    );
+    self.$apply();
   }
 }
 </script>
