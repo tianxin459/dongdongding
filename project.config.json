@@ -1,15 +1,16 @@
 {
-	"description": "A WePY project",
-	"setting": {
-		"urlCheck": true,
-		"es6": false,
-		"postcss": false,
-		"minified": false,
-		"newFeature": true
-	},
-	"compileType": "miniprogram",
-	"appid": "wx542fb51443cdffdb",
-	"projectname": "%E5%92%9A%E5%92%9A%E5%8F%AE",
-	"miniprogramRoot": "./dist",
-	"condition": {}
+    "description": "A WePY project(shake)",
+    "setting": {
+        "urlCheck": true,
+        "es6": false,
+        "postcss": false,
+        "minified": false,
+        "newFeature": true
+    },
+    "compileType": "miniprogram",
+    "appid": "wx542fb51443cdffdb",
+    "projectname": "%E5%92%9A%E5%92%9A%E5%8F%AE",
+    "miniprogramRoot": "./dist",
+    "condition": {},
+    "cloudfunctionRoot": "functions"
 }

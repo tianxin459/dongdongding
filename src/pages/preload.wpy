@@ -144,7 +144,7 @@ export default class PreLoad extends wepy.page {
       info => {
         info.openid = openid;
         self.$parent.globalData.userInfo.openid = openid;
-        console.log('preload=>getuserinfo', info);
+        // console.log('preload=>getuserinfo', info);
         if (self.$parent.globalData.userInfo == null) {
           self.$redirect('./register');
         } else {
@@ -171,41 +171,51 @@ export default class PreLoad extends wepy.page {
     }, 10000);
 
     self.$apply();
-    wepy.login({
-      success(res) {
-        console.log('wx.login', res);
-        if (res.code) {
-          self.code = res.code;
-        } else {
-          console.log('登录失败！' + res.errMsg);
-          return;
-        }
 
-        let urlLogin =
-          'https://ellist.cn/bulletmessage/api/client/wxlogin/' + self.code;
-        wepy.request({
-          url: urlLogin,
-          method: 'GET',
-          success: function(resp) {
-            console.log('wxLogin.openid===>', resp.data);
-            // console.log(
-            //   'self.$parent.globalData.userInfo',
-            //   self.$parent.globalData.userInfo
-            // );
-            // self.$parent.globalData.userInfo.openid = resp.data;
-            // console.log(
-            //   'webuser.openid====>',
-            //   self.$parent.globalData.userInfo.openid
-            // );
-            self.goLogin(resp.data);
-          },
-          fail: function(err) {
-            console.error(err);
-          }
-        });
+    wx.cloud.callFunction({
+      name: 'getOpenID',
+      data: {},
+      success: resp => {
+        console.log('goLogin===>', resp.result.openid);
+        self.goLogin(resp.result.openid);
       },
-      complete() {}
+      fail: console.error
     });
+    // wepy.login({
+    //   success(res) {
+    //     console.log('wx.login', res);
+    //     if (res.code) {
+    //       self.code = res.code;
+    //     } else {
+    //       console.log('登录失败！' + res.errMsg);
+    //       return;
+    //     }
+
+    //     let urlLogin =
+    //       'https://ellist.cn/bulletmessage/api/client/wxlogin/' + self.code;
+    //     wepy.request({
+    //       url: urlLogin,
+    //       method: 'GET',
+    //       success: function(resp) {
+    //         console.log('wxLogin.openid===>', resp.data);
+    //         // console.log(
+    //         //   'self.$parent.globalData.userInfo',
+    //         //   self.$parent.globalData.userInfo
+    //         // );
+    //         // self.$parent.globalData.userInfo.openid = resp.data;
+    //         // console.log(
+    //         //   'webuser.openid====>',
+    //         //   self.$parent.globalData.userInfo.openid
+    //         // );
+    //         self.goLogin(resp.data);
+    //       },
+    //       fail: function(err) {
+    //         console.error(err);
+    //       }
+    //     });
+    //   },
+    //   complete() {}
+    // });
   }
 }
 </script>

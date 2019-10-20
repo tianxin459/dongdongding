@@ -1,0 +1,59 @@
+<style></style>
+<template>
+  <h1>tests</h1>
+  <view wx:for="{{list}}" wx:for-item="row" wx:key="">
+    {{row}}
+  </view>
+</template>
+<script>
+import wepy from 'wepy';
+
+export default class Events extends wepy.page {
+  components = {};
+  data = {
+    userInfo: {},
+    msg: '---',
+    list: [1, 2, 3, 4],
+    events: []
+  };
+  methods = {
+    onClick() {
+      console.log('on click');
+      this.msg = '666';
+    },
+    chooseImage(e) {
+      let self = this;
+      wx.chooseImage({
+        sizeType: ['original', 'compressed'], //可选择原图或压缩后的图片
+        sourceType: ['album', 'camera'], //可选择性开放访问相册、相机
+        success: res => {
+          console.log(res.tempFilePaths);
+          self.upload(res.tempFilePaths[0]);
+        }
+      });
+    }
+  };
+
+  upload(path) {}
+
+  onLoad() {
+    var self = this;
+    this.$parent.getUserInfo(info => {
+      self.userInfo = info;
+      self.msg = '###';
+      console.log('getuserinfo==>', info);
+      self.$apply();
+    });
+
+    wx.cloud.callFunction({
+      name: 'getEventList',
+      data: {},
+      success: resp => {
+        self.events = resp.result.data;
+        console.log(resp);
+      },
+      fail: console.error
+    });
+  }
+}
+</script>

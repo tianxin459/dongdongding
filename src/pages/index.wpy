@@ -339,7 +339,7 @@
       <!-- https://ionicons.com -->
       <view class="functionList">
         <view>
-          <button class="button2" data-url='./liveChat' @tap='nav'>
+          <button wx:if="{{displayChatRoom}}" class="button2" data-url='./liveChat' @tap='nav'>
             <image class="icon" src="https://ellist.cn/bulletmessage/static/icon/chat.png"></image>
             <view wx:if="{{messageCount>0}}" class="messageBubble">{{messageCount}}</view>
             <text>{{Lang.index.menu.ChatRoom}}</text>
@@ -356,7 +356,7 @@
             <image class="icon" src="https://ellist.cn/bulletmessage/static/icon/H5Icon-22.png"></image>
             <text>{{Lang.index.menu.RunningGame}}</text>
           </button>
-          <button class="button2" data-url='./welcome' @tap='nav'>
+          <button wx:if="{{false}}" class="button2" data-url='./welcome' @tap='nav'>
             <!-- <wux-icon wux-class="icon" type="ios-information-circle-outline" size="30" slot="icon-on" /> -->
             <image class="icon" src="https://ellist.cn/bulletmessage/static/icon/info.png"></image>
             <text>{{Lang.index.menu.Infomation}}</text>
@@ -557,6 +557,10 @@ export default class Index extends wepy.page {
       // return false;
       return this.$parent.isAdmin();
     }, // isRegisted
+    displayChatRoom() {
+      if (!this.config.chatRoom) return false;
+      return this.config.chatRoom == 'true';
+    },
     displayRefill() {
       let refillTime = this.$parent.getCacheApp('refill');
       // console.log('refillTime=' + refillTime);
@@ -572,6 +576,7 @@ export default class Index extends wepy.page {
   };
   components = {};
   data = {
+    config: {},
     showBullet: false,
     showCurtain: false,
     hideHelp: true,
@@ -700,7 +705,7 @@ export default class Index extends wepy.page {
   getNotification = () => {
     var self = this;
     var url = urlNotification;
-    wepy.request({
+    this.$parent.wxRequest({
       url: url,
       method: 'GET',
       success: function(resp) {
@@ -793,6 +798,10 @@ export default class Index extends wepy.page {
     var self = this;
     self.isIPX = this.$parent.globalData.isIpx;
     // console.log(this.$parent.globalData.isIpx)
+    this.$parent.getConfig(false, config => {
+      self.config = config;
+      console.log('self.config', self.config);
+    });
     this.$parent.getUserInfo(info => {
       self.userInfo = info;
       self.msg =
@@ -869,11 +878,12 @@ export default class Index extends wepy.page {
       englishName: this.$parent.globalData.user.englishName,
       Message: txt
     };
-    wepy.request({
+    this.$parent.wxRequest({
       url: url,
       method: 'POST',
       data: dataBullet,
       success: function(resp) {
+        f;
         console.log('message send', resp);
         wepy.showToast({
           title: 'Message sent',

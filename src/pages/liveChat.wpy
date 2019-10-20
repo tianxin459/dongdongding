@@ -426,7 +426,8 @@ export default class Album extends wepy.page {
       englishName: this.$parent.globalData.user.englishName,
       Message: txt
     };
-    wepy.request({
+
+    this.$parent.wxRequest({
       url: url,
       method: 'POST',
       data: dataBullet,
@@ -445,6 +446,25 @@ export default class Album extends wepy.page {
         console.error(err);
       }
     });
+    // wepy.request({
+    //   url: url,
+    //   method: 'POST',
+    //   data: dataBullet,
+    //   success: function(resp) {
+    //     console.log('message send', resp);
+    //     // wepy.showToast({
+    //     //   title: 'Message sent',
+    //     //   icon: 'none',
+    //     //   duration: 2000
+    //     // })
+
+    //     self.scrollTop = self.chatList.length * 100;
+    //     self.$apply();
+    //   },
+    //   fail: function(err) {
+    //     console.error(err);
+    //   }
+    // });
   }
   onLoad(parms, data) {
     let self = this;
@@ -466,7 +486,8 @@ export default class Album extends wepy.page {
     let self = this;
     let url = 'https://ellist.cn/bulletmessage/api/bullet/messagehistory';
     this.registerSocketMessage();
-    wepy.request({
+    console.log(this.$parent.wxRequest);
+    this.$parent.wxRequest({
       url: url,
       method: 'GET',
       success: function(resp) {
@@ -483,6 +504,23 @@ export default class Album extends wepy.page {
         console.error(err);
       }
     });
+    // wepy.request({
+    //   url: url,
+    //   method: 'GET',
+    //   success: function(resp) {
+    //     console.log('message list==>', resp);
+    //     self.chatList = resp.data;
+    //     for (let l of self.chatList) {
+    //       self.makeMessage(l);
+    //     }
+    //     // console.log('self.chatList', self.chatList)
+    //     self.scrollTop = self.chatList.length * 100;
+    //     self.$apply();
+    //   },
+    //   fail: function(err) {
+    //     console.error(err);
+    //   }
+    // });
   }
 }
 </script>

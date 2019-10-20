@@ -26,6 +26,8 @@ export default class extends wepy.app {
   config = {
     pages: [
       'pages/preload',
+      'pages/events',
+      'pages/login',
       'pages/index',
       'pages/block',
       'pages/checkin',
@@ -39,7 +41,6 @@ export default class extends wepy.app {
       'pages/result',
       'pages/bulletMessage',
       'pages/transfer',
-      'pages/login',
       'pages/shake',
       // 'pages/index2',
       // 'pages/index3',
@@ -51,8 +52,8 @@ export default class extends wepy.app {
       backgroundTextStyle: 'light',
       backgroundColor: '#7a2c2d',
       navigationBarBackgroundColor: '#d0624f',
-      navigationBarTitleText: '2019 Annual Party',
-      navigationBarTextStyle: '#7a2c2d'
+      navigationBarTitleText: '弹幕shake～～',
+      navigationBarTextStyle: 'white'
     }
   };
 
@@ -73,7 +74,8 @@ export default class extends wepy.app {
     isIpx: false,
     isDebug: true,
     qrCodeUrl: 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=',
-    baseurlTransaction: 'https://wtf.chinacloudsites.cn/'
+    baseurlTransaction: 'https://wtf.chinacloudsites.cn/',
+    eventId: 12345
   };
 
   constructor() {
@@ -130,12 +132,22 @@ export default class extends wepy.app {
     }
   }
 
+  initCloud() {
+    if (!wx.cloud) {
+      console.log('version is too low to cloud');
+    } else {
+      wx.cloud.init({ traceUser: true });
+    }
+  }
+
   onLaunch() {
     // this.testAsync()
     let self = this;
     this.resetCache();
     this.getSystemInfo();
     this.getConfig();
+    this.initCloud();
+
     wepy.onSocketOpen(res => {
       let self = this;
       console.log('app=>onSocketOpen');
@@ -151,7 +163,7 @@ export default class extends wepy.app {
         };
         console.log('app => register user', body);
         self.wsSend(JSON.stringify(body));
-      });
+      }, console.error);
 
       wx.onSocketMessage(function(res) {
         //接收消息回调
@@ -178,8 +190,6 @@ export default class extends wepy.app {
       setTimeout(() => self.WsConnect(), 5000); //5s后自动重连
     });
 
-    self.WsConnect();
-
     wx.onAccelerometerChange(e => {
       var pages = getCurrentPages();
       var currentPage = pages[pages.length - 1];
@@ -188,6 +198,8 @@ export default class extends wepy.app {
         currentPage.onAccelerometerChange(e);
       }
     });
+
+    self.WsConnect();
   }
 
   WsConnect() {
@@ -243,13 +255,7 @@ export default class extends wepy.app {
         self.globalData.config = resp.data;
         cb && cb(self.globalData.config);
       },
-      fail: function(err) {
-        console.error(err);
-        // wepy.redirectTo({
-        //   url: 'result'
-        // })
-        // self.$redirect('./result', 'failure')
-      }
+      fail: console.error
     });
   }
 
@@ -272,10 +278,12 @@ export default class extends wepy.app {
       },
       fail(err) {
         console.error(err);
-        // wepy.$redirect('./login')
-        wepy.redirectTo({
-          url: 'login'
-        });
+        wepy.redirectTo({ url: './login' });
+
+        // wepy.$redirect('./login');
+        // wepy.redirectTo({
+        //   url: 'login'
+        // });
       }
     });
   }
@@ -314,6 +322,17 @@ export default class extends wepy.app {
         console.log(res.model, 'is ipx=' + that.globalData.isIpx);
       }
     });
+  }
+
+  wxRequest(requestObj) {
+    if (!requestObj.header) requestObj.header = {};
+    Object.assign(
+      requestObj.header,
+      { eventId: this.globalData.eventId },
+      requestObj.header
+    );
+
+    wepy.request(requestObj);
   }
 }
 </script>

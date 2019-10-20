@@ -136,6 +136,7 @@ export default class Admin extends wepy.page {
       let url = `https://ellist.cn/bulletmessage/api/client/config`;
       console.log(url);
       // this.config.onSiteReg = true;
+      if (!this.config.chatRoom) this.config.chatRoom = false;
       let configData = { configurationJson: JSON.stringify(this.config) };
       console.log('configData', configData);
       wepy.request({
