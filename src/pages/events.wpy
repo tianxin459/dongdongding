@@ -45,15 +45,6 @@ export default class Events extends wepy.page {
       self.$apply();
     });
 
-    wx.cloud.callFunction({
-      name: 'getEventList',
-      data: {},
-      success: resp => {
-        self.events = resp.result.data;
-        console.log(resp);
-      },
-      fail: console.error
-    });
   }
 }
 </script>

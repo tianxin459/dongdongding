@@ -1,7 +1,7 @@
 <style lang="less">
 @import '../app.less';
-@text_color : white;
-@stick_color: white; //Changes the colour of all sticks
+@text_color : @colorFont;
+@stick_color: @colorFont; //Changes the colour of all sticks
 @stick_length: 30px; //Changes length of all sticks
 @stick_distance: -3.5px; //Changes distance between sticks (will need editing after 30px)
 

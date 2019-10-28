@@ -1,5 +1,5 @@
 page {
-  background-color: #a61f24;
+  background-color: #192B33;
   font-family: 'Proxima Nova Rg', Verdana;
 }
 button.button {
@@ -7,7 +7,7 @@ button.button {
 }
 button.isAdmin,
 .isAdmin {
-  border: 1px dashed #fedb31;
+  border: 1px dashed #cccc52;
 }
 .wux-tabbar--bottom {
   bottom: 25px;
@@ -23,14 +23,15 @@ button.isAdmin,
   align-items: center;
   justify-content: flex-start;
   box-sizing: border-box;
-  background-color: #a61f24;
+  background-color: #192B33;
+  color: #FFD933;
 }
 .header {
   height: 10vh;
   width: 100%;
   display: flex;
   flex-direction: column;
-  background-color: #fd8023;
+  background-color: #FF7F00;
   color: white;
 }
 .body {
@@ -41,7 +42,7 @@ button.isAdmin,
   flex-direction: column;
   justify-content: flex-start;
   align-content: center;
-  background-color: #a61f24;
+  background-color: #192B33;
 }
 .body > view {
   align-self: center;
@@ -53,9 +54,9 @@ button.isAdmin,
   margin: 20px auto;
   width: 80%;
   height: 40px;
-  color: white;
-  background-color: #a61f24;
-  border: 2px solid #fedb31;
+  color: #FFD933;
+  background-color: #192B33;
+  border: 2px solid #cccc52;
   border-radius: 5px;
   text-align: center;
   display: flex;
@@ -93,7 +94,7 @@ button.isAdmin,
 }
 .button2:active,
 .btn-primary:active {
-  background-color: #823d78;
+  background-color: #FF7F00;
 }
 .btn-primary {
   width: 100px;
@@ -105,9 +106,8 @@ button.isAdmin,
   position: absolute;
   left: 50%;
   margin-left: -50px;
-  color: white;
   background-color: #58bd51;
-  border: 2px solid #fedb31;
+  border: 2px solid #cccc52;
   display: flex;
   z-index: 10;
 }
@@ -161,7 +161,7 @@ button.btn-primary2 text {
   font-weight: bolder;
 }
 .footer {
-  background-color: #a61f24;
+  background-color: #192B33;
   width: 100%;
   align-self: flex-end;
   display: flex;

@@ -43,8 +43,6 @@
 }
 
 .balance-bar {
-  background-color: @colorBackground;
-  color: white;
   width: 100%;
   .text {
     text-align: center;
@@ -83,7 +81,7 @@
     background-color: red;
     line-height: 25px;
     border-radius: 50%;
-    color: white;
+    color: @colorFontb;
   }
   .button2 {
     width: 100%;
@@ -112,7 +110,6 @@
       // background-color: white;
       border: 2px solid @colorBorder;
       border-radius: 10px;
-      color: white;
       display: flex;
       flex-direction: row;
       justify-content: center;
@@ -163,7 +160,6 @@
     }
     text {
       align-self: center;
-      color: white;
     }
   }
   .item-middle {
@@ -186,7 +182,6 @@
       align-self: center;
       font-weight: bolder;
       font-size: 15px;
-      color: white;
     }
     // position:absolute;
   }
@@ -213,11 +208,10 @@
   transform-style: preserve-3d;
   transition: all 0.5s;
   input {
-    border-bottom: 2px solid #a94076;
+    border-bottom: 2px solid @colorBorder;
     box-shadow: 2px;
     font-size: 20px;
     height: 4ex;
-    color: white;
     width: 80%;
     margin: 0 auto;
     font-weight: bolder;
@@ -232,7 +226,6 @@
     margin-bottom: 30px;
     button.button2 {
       font-weight: bolder;
-      color: white;
       // background-color: transparent;
       width: 30%;
       margin: 1%;
@@ -246,11 +239,10 @@
       }
     }
     button.button2:active {
-      background-color: #823d78;
+      background-color: @colorButtonActive;
     }
     button.button3 {
       font-weight: bolder;
-      color: white;
       // background-color: transparent;
       width: 30%;
       margin: 1%;

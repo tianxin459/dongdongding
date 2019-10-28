@@ -9,7 +9,6 @@
     .config-item {
       display: flex;
       padding: 20px;
-      color: white;
       .config-key {
         width: 40%;
       }
@@ -19,11 +18,10 @@
     }
   }
   .bgChange {
-    border: 1px solid white;
+    border: 1px solid @colorBorder;
     margin: 20px auto;
     input {
       margin: 5px;
-      color: white;
     }
   }
 }
