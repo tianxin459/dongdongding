@@ -140,7 +140,7 @@
 }
 
 .btn-bar {
-  background-color: #d0624f;
+  background-color: @colorBackgrounda;
   border-radius: 10px;
   height: 70px;
   display: flex;

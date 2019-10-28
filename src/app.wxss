@@ -1,0 +1,348 @@
+page {
+  background-color: #a61f24;
+  font-family: 'Proxima Nova Rg', Verdana;
+}
+button.button {
+  font-family: 'Proxima Nova Rg', Verdana;
+}
+button.isAdmin,
+.isAdmin {
+  border: 1px dashed #fedb31;
+}
+.wux-tabbar--bottom {
+  bottom: 25px;
+  border: 1px solid gold;
+}
+.container {
+  height: auto;
+  min-height: 100vh;
+  width: 100%;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  box-sizing: border-box;
+  background-color: #a61f24;
+}
+.header {
+  height: 10vh;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  background-color: #fd8023;
+  color: white;
+}
+.body {
+  width: 100%;
+  min-height: 100%;
+  padding: 2.5px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-content: center;
+  background-color: #a61f24;
+}
+.body > view {
+  align-self: center;
+}
+.button {
+  width: 100%;
+}
+.button2 {
+  margin: 20px auto;
+  width: 80%;
+  height: 40px;
+  color: white;
+  background-color: #a61f24;
+  border: 2px solid #fedb31;
+  border-radius: 5px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  transition: all 0.2s;
+}
+.button2 .icon {
+  width: 28px;
+  height: 28px;
+  margin: auto 10px;
+  align-self: center;
+}
+.button3 {
+  margin: 20px auto;
+  width: 80%;
+  height: 40px;
+  color: white;
+  border-radius: 5px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  transition: all 0.2s;
+}
+.button3 .icon {
+  width: 30px;
+  height: 30px;
+  margin: auto 5px;
+  align-self: center;
+}
+.logoGD {
+  background: url(http://ellist.cn/bulletmessage/static/img/GD-Logo.png) no-repeat;
+  background-size: 100% 100%;
+}
+.button2:active,
+.btn-primary:active {
+  background-color: #823d78;
+}
+.btn-primary {
+  width: 100px;
+  padding: 0;
+  height: 100px;
+  border-radius: 50%;
+  margin-top: 25px;
+  bottom: 75px;
+  position: absolute;
+  left: 50%;
+  margin-left: -50px;
+  color: white;
+  background-color: #58bd51;
+  border: 2px solid #fedb31;
+  display: flex;
+  z-index: 10;
+}
+.btn-primary view {
+  margin: auto;
+  font-weight: bolder;
+}
+.btn-primary text {
+  align-self: center;
+  margin: 0 auto;
+}
+button.btn-primary2 {
+  width: 100px;
+  padding: 0;
+  height: 100px;
+  border-radius: 50%;
+  margin-top: 25px;
+  bottom: 75px;
+  position: absolute;
+  left: 50%;
+  margin-left: -50px;
+  display: flex;
+  z-index: 10;
+}
+button.btn-primary2 view {
+  margin: auto;
+  font-weight: bolder;
+}
+button.btn-primary2 text {
+  align-self: center;
+  margin: 0 auto;
+}
+.btn-group {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  position: absolute;
+  bottom: 75px;
+}
+.btn-group .btn-primary {
+  width: 135px;
+  height: 50px;
+  position: static;
+  left: auto;
+  margin: 0 10px;
+  border-radius: 50px;
+  bottom: auto;
+}
+.btn-group .btn-primary view {
+  margin: 0 auto;
+  font-weight: bolder;
+}
+.footer {
+  background-color: #a61f24;
+  width: 100%;
+  align-self: flex-end;
+  display: flex;
+  flex-direction: column;
+}
+.footer .button-icon {
+  position: fixed;
+  bottom: 5px;
+  left: 5px;
+  width: 40px;
+  height: 40px;
+  background-color: transparent;
+  padding: 0;
+  color: white;
+  font-weight: bold;
+  z-index: 99;
+}
+.footer .button-icon .icon {
+  width: 100%;
+  height: 100%;
+}
+.footer .button-icon .label {
+  position: absolute;
+  font-size: 20px;
+}
+.footer .footer-btn {
+  position: fixed;
+  bottom: 20px;
+  width: 100%;
+}
+.footer .side-background-s {
+  position: absolute;
+  margin: 0 auto;
+  bottom: 0;
+  z-index: 1;
+}
+.footer .side-background-sw {
+  width: 75px;
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  z-index: 1;
+}
+.footer .side-background-se {
+  width: 75px;
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  z-index: 1;
+}
+.author {
+  color: white;
+  display: block;
+  margin: 0 auto;
+  text-align: center;
+}
+.btn-group {
+  display: flex;
+  flex-direction: row;
+}
+.userinfo {
+  align-self: center;
+  display: flex;
+  flex-direction: column;
+  /* background-color: #3e8bf8; */
+}
+.userinfo image {
+  height: 75px;
+  width: 75px;
+  border-radius: 50%;
+  margin-left: auto;
+  margin-right: auto;
+}
+.userinfo p {
+  color: white;
+  font-size: 25px;
+  margin-left: auto;
+  margin-right: auto;
+}
+button.button2 {
+  display: flex;
+}
+.floating-btn {
+  position: absolute;
+  background-color: transparent;
+  top: 10vh;
+  right: 5px;
+  z-index: 99;
+}
+.floating-btn .button-icon {
+  width: 40px;
+  height: 40px;
+  background-color: transparent;
+  padding: 0;
+  color: white;
+  font-weight: bold;
+  margin: 10px 0;
+}
+.floating-btn .button-icon .icon {
+  width: 100%;
+  height: 100%;
+}
+.floating-btn .button-icon .label {
+  position: absolute;
+  font-size: 20px;
+}
+#helpCover {
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  z-index: 100;
+  height: 100vh;
+  width: 100vw;
+  min-height: 100vh;
+  background-color: rgba(0, 0, 0, 0.7);
+}
+#helpCover .helpDisableCover {
+  height: 200vh;
+  width: 100%;
+  z-index: 200;
+  background-color: transparent;
+  position: absolute;
+}
+#helpCover .helpTitle {
+  font-size: 40px;
+  color: white;
+  font-weight: bolder;
+  text-align: center;
+  margin: 20px;
+}
+#helpCover .helpView {
+  opacity: 1;
+  color: white;
+  display: flex;
+  flex-direction: column;
+}
+#helpCover .helpView .btn-bar {
+  align-self: center;
+  margin-bottom: 35px;
+}
+#helpCover .helpView .helpDesc .descPoint3 {
+  width: 30%;
+  border: 1px solid white;
+}
+#helpCover .helpView .helpDesc .helpTextPoint,
+#helpCover .helpView .helpDesc .helpTextPoint3 {
+  position: relative;
+  width: 0px;
+  height: 0px;
+  line-height: 0px;
+  border-bottom: 10px solid white;
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  top: -10px;
+}
+#helpCover .helpView .helpDesc .helpTextPoint {
+  left: 76px;
+}
+#helpCover .helpView .helpDesc .helpTextPoint3 {
+  left: 50px;
+}
+#helpCover .helpView .helpDesc .helpText,
+#helpCover .helpView .helpDesc .helpText3 {
+  flex-direction: column;
+  display: flex;
+  justify-content: center;
+  padding: 5px;
+}
+#helpCover .helpView .helpDesc .helpText .url,
+#helpCover .helpView .helpDesc .helpText3 .url {
+  margin: 5px auto;
+  color: aqua;
+}
+#helpCover .helpView .helpDesc .helpText {
+  border: 1px solid white;
+}
+#helpCover button {
+  display: flex;
+  flex-direction: row;
+  margin-bottom: 0px;
+}
+#helpCover button view {
+  align-self: center;
+}

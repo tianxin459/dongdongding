@@ -51,8 +51,8 @@ export default class extends wepy.app {
     window: {
       backgroundTextStyle: 'light',
       backgroundColor: '#7a2c2d',
-      navigationBarBackgroundColor: '#d0624f',
-      navigationBarTitleText: '弹幕shake～～',
+      navigationBarBackgroundColor: '#fd8023',
+      navigationBarTitleText: 'Walmart 2020',
       navigationBarTextStyle: 'white'
     }
   };
@@ -132,21 +132,13 @@ export default class extends wepy.app {
     }
   }
 
-  initCloud() {
-    if (!wx.cloud) {
-      console.log('version is too low to cloud');
-    } else {
-      wx.cloud.init({ traceUser: true });
-    }
-  }
-
   onLaunch() {
     // this.testAsync()
     let self = this;
     this.resetCache();
     this.getSystemInfo();
     this.getConfig();
-    this.initCloud();
+    // this.initCloud();
 
     wepy.onSocketOpen(res => {
       let self = this;
