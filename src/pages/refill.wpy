@@ -362,7 +362,7 @@ export default class Refill extends wepy.page {
     let shakeW = 0;
     this.shakeTime = this.$parent.globalData.config.shakeTime;
     innerAudioContext.autoplay = false;
-    innerAudioContext.src = 'http://ellist.cn/bulletmessage/static/coin2.mp3';
+    innerAudioContext.src = 'http://ellist.cn/wmtan/static/coin2.mp3';
     innerAudioContext.onPlay(() => {
       console.log('start play');
     });

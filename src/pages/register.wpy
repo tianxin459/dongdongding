@@ -157,7 +157,7 @@
         >
           <image
             class="icon"
-            src="https://ellist.cn/bulletmessage/static/icon/customerService.png"
+            src="https://ellist.cn/wmtan/static/icon/customerService.png"
           ></image>
           <view class="label">Talk to Us</view>
         </button>
@@ -217,10 +217,10 @@
     </view>
     <view class="footer {{isIPX?'isIPX':''}}">
       <button class="button-icon" session-from="{{userInfoS}}" open-type="contact">
-        <image class="icon" src="https://ellist.cn/bulletmessage/static/icon/customerService.png"></image>
+        <image class="icon" src="https://ellist.cn/wmtan/static/icon/customerService.png"></image>
         <view class="label">Talk to Us</view>
       </button>
-      <image class="side-background-se" src="https://ellist.cn/bulletmessage/static/img/H5-12.png"></image>
+      <image class="side-background-se" src="https://ellist.cn/wmtan/static/img/H5-12.png"></image>
     </view>
   </view>
 </template>
@@ -342,7 +342,7 @@ export default class Register extends wepy.page {
   selfReg() {
     let self = this;
     // ---------self reg user list start-------------------
-    let urlreg = `https://ellist.cn/bulletmessage/api/client/setUser`;
+    let urlreg = `https://ellist.cn/wmtan/api/client/setUser`;
     let regData = this.$parent.globalData.userInfo;
     regData.email = self.email + '@greendotcorp.com';
     regData.englishName = self.englishName;

@@ -1,4 +1,5 @@
 @import './theme.less';
+@import './buttons.less';
 
 // @import './font.less';
 page {
@@ -107,7 +108,7 @@ button.isAdmin,
 }
 
 .logoGD {
-  background: url(http://ellist.cn/bulletmessage/static/img/GD-Logo.png) no-repeat;
+  background: url(https://ellist.cn/wmtan/static/img/GD-Logo.png) no-repeat;
   background-size: 100% 100%;
 }
 
@@ -416,6 +417,50 @@ button.button2 {
 
     view {
       align-self: center;
+    }
+  }
+}
+
+
+.input-container {
+  width: 90%;
+  position: relative;
+  .input-text {
+    display: flex;
+    justify-content: flex-start;
+    overflow: hidden;
+    input {
+      align-self: center;
+      height: 40px;
+      width: 80%;
+      color: white;
+      padding: 0 5px;
+    }
+    button {
+      // background-color: purple;
+      padding: 0;
+      position: absolute;
+      right: 0;
+      width: 20%;
+      border-radius: 0;
+      margin: 0;
+      // background-color: var(--colorBackgound);
+      height: 42.5px;
+      padding: auto 5px;
+      // border: 1px solid @colorBorder;
+      // color: white;
+      // font-weight: bolder;
+      transition: all ease 0.2s;
+      image {
+        width: 20px;
+        height: 20px;
+      }
+    }
+    #sendTxt {
+      transform: translate(100px);
+    }
+    #sendTxt.showButton {
+      transform: translateX(0);
     }
   }
 }

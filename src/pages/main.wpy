@@ -42,7 +42,7 @@ export default class Main extends wepy.page {
       icon: 'loading',
       title: '正在上传'
     })
-    let url = 'https://ellist.cn/bulletmessage/api/bullet/upload'
+    let url = 'https://ellist.cn/wmtan/api/bullet/upload'
     wx.uploadFile({
       url: url,
       filePath: path,

@@ -107,7 +107,7 @@ export default class Admin extends wepy.page {
       // console.log(this.config);
       // console.log(JSON.stringify(this.config));
 
-      let url = `https://ellist.cn/bulletmessage/api/bullet/changebg`;
+      let url = `https://ellist.cn/wmtan/api/bullet/changebg`;
       console.log(url);
       let bgData = {
         Id: 'admin',
@@ -131,7 +131,7 @@ export default class Admin extends wepy.page {
       console.log(this.config);
       console.log(JSON.stringify(this.config));
 
-      let url = `https://ellist.cn/bulletmessage/api/client/config`;
+      let url = `https://ellist.cn/wmtan/api/client/config`;
       console.log(url);
       // this.config.onSiteReg = true;
       if (!this.config.chatRoom) this.config.chatRoom = false;
@@ -158,7 +158,7 @@ export default class Admin extends wepy.page {
       icon: 'loading',
       title: 'uploading...'
     });
-    let url = 'https://ellist.cn/bulletmessage/api/bullet/uploadbg';
+    let url = 'https://ellist.cn/wmtan/api/bullet/uploadbg';
     wx.uploadFile({
       url: url,
       filePath: path,

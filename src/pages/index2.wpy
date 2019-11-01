@@ -199,7 +199,7 @@
   color: @colorFont;
   font-weight: 500;
   border-radius: 5px;
-  background: url(https://ellist.cn/bulletmessage/static/img/h5-18.png)
+  background: url(https://ellist.cn/wmtan/static/img/h5-18.png)
     no-repeat;
   background-size: 100% 100%;
   margin-left: auto;
@@ -333,37 +333,37 @@
       <view class="functionList">
         <view>
           <button class="button2" data-url='./liveChat' @tap='nav'>
-            <image class="icon" src="https://ellist.cn/bulletmessage/static/icon/chat.png"></image>
+            <image class="icon" src="https://ellist.cn/wmtan/static/icon/chat.png"></image>
             <view wx:if="{{messageCount>0}}" class="messageBubble">{{messageCount}}</view>
             <text>Chat Room</text>
           </button>
           <button class="button2" data-url='./album' @tap='nav'>
-            <image class="icon" src="https://ellist.cn/bulletmessage/static/icon/album.png"></image>
+            <image class="icon" src="https://ellist.cn/wmtan/static/icon/album.png"></image>
             <text>Album</text>
           </button>
           <button class="button2" @tap='goHistory'>
-            <image class="icon" src="https://ellist.cn/bulletmessage/static/icon/H5Icon-19.png"></image>
+            <image class="icon" src="https://ellist.cn/wmtan/static/icon/H5Icon-19.png"></image>
             <text>Transaction History</text>
           </button>
           <button class="button2" @tap='goShake'>
-            <image class="icon" src="https://ellist.cn/bulletmessage/static/icon/H5Icon-22.png"></image>
+            <image class="icon" src="https://ellist.cn/wmtan/static/icon/H5Icon-22.png"></image>
             <text>Running Game</text>
           </button>
           <button class="button2" data-url='./welcome' @tap='nav'>
             <!-- <wux-icon wux-class="icon" type="ios-information-circle-outline" size="30" slot="icon-on" /> -->
-            <image class="icon" src="https://ellist.cn/bulletmessage/static/icon/info.png"></image>
+            <image class="icon" src="https://ellist.cn/wmtan/static/icon/info.png"></image>
             <text>Party Infomation</text>
           </button>
           <button wx:if="{{isAdmin||displayRefill}}" class="button2 {{isAdmin?'isAdmin':''}}" data-url='./refill' @tap='nav'>
-            <image class="icon" src="https://ellist.cn/bulletmessage/static/icon/H5Icon-21.png"></image>
+            <image class="icon" src="https://ellist.cn/wmtan/static/icon/H5Icon-21.png"></image>
             <text>Deposit Money</text>
           </button>
           <button class="button2" @tap='openHelp'>
-            <image class="icon" src="https://ellist.cn/bulletmessage/static/icon/help.png"></image>
+            <image class="icon" src="https://ellist.cn/wmtan/static/icon/help.png"></image>
             <text>Help</text>
           </button>
           <button wx:if="{{isAdmin||displayCheckin}}" class="button2 {{isAdmin?'isAdmin':''}}" data-url='./checkin' @tap='nav'>
-            <image class="icon" src="https://ellist.cn/bulletmessage/static/icon/H5Icon-23.png"></image>
+            <image class="icon" src="https://ellist.cn/wmtan/static/icon/H5Icon-23.png"></image>
             <text>CheckIn for Party</text>
           </button>
           <button wx:if="{{isAdmin||displayRegister}}" class="button2 {{isAdmin?'isAdmin':''}}" @tap="goReg">
@@ -371,16 +371,16 @@
             <text>Register for Party</text>
           </button>
           <button wx:if="{{isAdmin}}" class="button2 {{isAdmin?'isAdmin':''}}" data-url='./login' @tap='nav'>
-            <image class="icon" src="https://ellist.cn/bulletmessage/static/icon/H5Icon-23.png"></image>
+            <image class="icon" src="https://ellist.cn/wmtan/static/icon/H5Icon-23.png"></image>
             <text>Login Page</text>
           </button>
           <button wx:if="{{isAdmin}}" class="button2 {{isAdmin?'isAdmin':''}}" data-url='./block' @tap='nav'>
-            <image class="icon" src="https://ellist.cn/bulletmessage/static/icon/block.png"></image>
+            <image class="icon" src="https://ellist.cn/wmtan/static/icon/block.png"></image>
             <text>Blocking Page</text>
           </button>
           <button class="button2 isAdmin" data-url='./admin' @tap='nav' wx:if="{{isAdmin||isEllis}}">
             <!-- <wux-icon wux-class="icon" type="ios-refresh" size="30" slot="icon-on" /> -->
-            <image class="icon" src="https://ellist.cn/bulletmessage/static/icon/gear.png"></image>
+            <image class="icon" src="https://ellist.cn/wmtan/static/icon/gear.png"></image>
             <text>Admin</text>
           </button>
         </view>
@@ -397,41 +397,41 @@
       <wux-wing-blank size="default">
         <button class="button3 button button-block button-rounded button-royal" @tap="sendBulletMessage">Send to Big Screen</button>
         <!-- <button id="camera" class="button3 button button-block button-rounded button-royal" @tap="sendPicture">
-          <image class="icon" src="https://ellist.cn/bulletmessage/static/icon/photo-camera-2.png"></image>
+          <image class="icon" src="https://ellist.cn/wmtan/static/icon/photo-camera-2.png"></image>
         </button> -->
       </wux-wing-blank>
       <wux-wing-blank size="default">
         <view class="bulletShortcut">
           <button class="button3 button-raised button-royal" data-tag="clap" @tap="sendBulletShortcut">
             <!-- <image src="../static/img/clapping.png"></image> -->
-            <image src="https://ellist.cn/bulletmessage/static/icon/H5Icon-13.png"></image>
+            <image src="https://ellist.cn/wmtan/static/icon/H5Icon-13.png"></image>
           </button>
           <button class="button3 button-raised button-royal" data-tag="like" @tap="sendBulletShortcut">
             <!-- <image src="../static/img/like.png"></image> -->
-            <image src="https://ellist.cn/bulletmessage/static/icon/H5Icon-14.png"></image>
+            <image src="https://ellist.cn/wmtan/static/icon/H5Icon-14.png"></image>
           </button>
           <button class="button3 button-raised button-royal" data-tag="star" @tap="sendBulletShortcut">
             <!-- <image src="../static/img/star.png"></image> -->
-            <image src="https://ellist.cn/bulletmessage/static/icon/H5Icon-16.png"></image>
+            <image src="https://ellist.cn/wmtan/static/icon/H5Icon-16.png"></image>
           </button>
           <button class="button3 button-raised button-royal" data-tag="cheers" @tap="sendBulletShortcut">
             <!-- <image src="../static/img/star.png"></image> -->
-            <image src="https://ellist.cn/bulletmessage/static/icon/H5Icon-15.png"></image>
+            <image src="https://ellist.cn/wmtan/static/icon/H5Icon-15.png"></image>
           </button>
           <button class="button3 button-raised button-royal" data-tag="horn" @tap="sendBulletShortcut">
             <!-- <image src="../static/img/star.png"></image> -->
-            <image src="https://ellist.cn/bulletmessage/static/icon/H5Icon-17.png"></image>
+            <image src="https://ellist.cn/wmtan/static/icon/H5Icon-17.png"></image>
           </button>
           <button class="button3 button-raised button-royal" data-tag="money" @tap="sendBulletShortcut">
             <!-- <image src="../static/img/star.png"></image> -->
-            <image src="https://ellist.cn/bulletmessage/static/icon/H5Icon-18.png"></image>
+            <image src="https://ellist.cn/wmtan/static/icon/H5Icon-18.png"></image>
           </button>
         </view>
       </wux-wing-blank>
     </view>
     <view class="footer {{isIPX?'isIPX':''}}">
-      <image class="side-background-sw" src="https://ellist.cn/bulletmessage/static/img/H5-13.png"></image>
-      <image class="side-background-se" src="https://ellist.cn/bulletmessage/static/img/H5-15.png"></image>
+      <image class="side-background-sw" src="https://ellist.cn/wmtan/static/img/H5-13.png"></image>
+      <image class="side-background-se" src="https://ellist.cn/wmtan/static/img/H5-15.png"></image>
       <view class="author">
         By Ellis & Edi
       </view>
@@ -469,7 +469,7 @@
       <!-- <scroll-view scroll-y="true" style="height: 500rpx;"> -->
       <!-- <view class="functionList"> -->
       <button class="button2" data-url='./liveChat' @tap='nav'>
-        <image class="icon" src="https://ellist.cn/bulletmessage/static/icon/chat.png"></image>
+        <image class="icon" src="https://ellist.cn/wmtan/static/icon/chat.png"></image>
         <view>Chat Room</view>
       </button>
       <view class="helpDesc">
@@ -479,7 +479,7 @@
         </view>
       </view>
       <button class="button2" data-url='./album' @tap='nav'>
-        <image class="icon" src="https://ellist.cn/bulletmessage/static/icon/album.png"></image>
+        <image class="icon" src="https://ellist.cn/wmtan/static/icon/album.png"></image>
         <text>Album</text>
       </button>
       <view class="helpDesc">
@@ -489,7 +489,7 @@
         </view>
       </view>
       <button class="button2" data-url='./shake' @tap='nav'>
-        <image class="icon" src="https://ellist.cn/bulletmessage/static/icon/H5Icon-22.png"></image>
+        <image class="icon" src="https://ellist.cn/wmtan/static/icon/H5Icon-22.png"></image>
         <text>Running Game</text>
       </button>
       <view class="helpDesc">
@@ -499,7 +499,7 @@
         </view>
       </view>
       <button class="button2" data-url='./refill' @tap='nav'>
-        <image class="icon" src="https://ellist.cn/bulletmessage/static/icon/H5Icon-21.png"></image>
+        <image class="icon" src="https://ellist.cn/wmtan/static/icon/H5Icon-21.png"></image>
         <text>Deposit Money</text>
       </button>
       <view class="helpDesc">
@@ -763,7 +763,7 @@ export default class Index2 extends wepy.page {
       icon: 'loading',
       title: 'uploading...'
     });
-    let url = 'https://ellist.cn/bulletmessage/api/bullet/upload';
+    let url = 'https://ellist.cn/wmtan/api/bullet/upload';
     wx.uploadFile({
       url: url,
       filePath: path,
@@ -859,7 +859,7 @@ export default class Index2 extends wepy.page {
     clearInterval(notificationI);
   }
   sendBulletMessage(txt) {
-    let url = 'https://ellist.cn/bulletmessage/api/bullet';
+    let url = 'https://ellist.cn/wmtan/api/bullet';
     let dataBullet = {
       // nickName: this.$parent.globalData.userInfo.englishName,
       // Id: this.$parent.globalData.userInfo.avatarUrl,

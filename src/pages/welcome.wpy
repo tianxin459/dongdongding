@@ -155,7 +155,7 @@ image.icon {
         >
           <image
             class="icon"
-            src="https://ellist.cn/bulletmessage/static/icon/customerService.png"
+            src="https://ellist.cn/wmtan/static/icon/customerService.png"
           ></image>
           <view class="label">Talk to Us</view>
         </button> -->
@@ -166,7 +166,7 @@ image.icon {
         >
           <image
             class="icon"
-            src="https://ellist.cn/bulletmessage/static/icon/share.png"
+            src="https://ellist.cn/wmtan/static/icon/share.png"
           >
           </image>
           <view class="label">Share</view>
@@ -177,10 +177,10 @@ image.icon {
           <p>时间: 2019-1-10 17:30-21:20 </p>
         </view>
         HOTEL MAP
-        <image src="http://ellist.cn/bulletmessage/static/img/location.png"></image>
+        <image src="http://ellist.cn/wmtan/static/img/location.png"></image>
         <view class="addressText">
           <p class="underline">
-            <image class="icon" src="https://ellist.cn/bulletmessage/static/icon/loc6.png"></image>上海卓美亚喜马拉雅酒店 欢·宴会厅 3楼
+            <image class="icon" src="https://ellist.cn/wmtan/static/icon/loc6.png"></image>上海卓美亚喜马拉雅酒店 欢·宴会厅 3楼
           </p>
           <p class="underline">浦东新区梅花路1108号 (近芳甸路)</p>
         </view>
@@ -287,7 +287,7 @@ image.icon {
     <!-- ----------------------- footer ----------------------- -->
     <view class="footer">
       <button class="button-icon" session-from="{{userInfoS}}" open-type="contact">
-        <image class="icon" src="https://ellist.cn/bulletmessage/static/icon/customerService.png"></image>
+        <image class="icon" src="https://ellist.cn/wmtan/static/icon/customerService.png"></image>
         <view class="label">Talk to Us</view>
       </button>
       <!-- <button class="button" session-from="{{userInfoStr}}" open-type="contact" bindcontact="handleContact">
@@ -328,14 +328,14 @@ export default class Welcome extends wepy.page {
   components = {};
   data = {
     urls: [
-      'https://ellist.cn/bulletmessage/static/dresscode/img8.jpg',
-      'https://ellist.cn/bulletmessage/static/dresscode/img7.jpg',
-      'https://ellist.cn/bulletmessage/static/dresscode/img6.jpg',
-      'https://ellist.cn/bulletmessage/static/dresscode/img5.jpg',
-      'https://ellist.cn/bulletmessage/static/dresscode/img4.jpg',
-      'https://ellist.cn/bulletmessage/static/dresscode/img3.jpg',
-      'https://ellist.cn/bulletmessage/static/dresscode/img2.jpg',
-      'https://ellist.cn/bulletmessage/static/dresscode/img1.jpg'
+      'https://ellist.cn/wmtan/static/dresscode/img8.jpg',
+      'https://ellist.cn/wmtan/static/dresscode/img7.jpg',
+      'https://ellist.cn/wmtan/static/dresscode/img6.jpg',
+      'https://ellist.cn/wmtan/static/dresscode/img5.jpg',
+      'https://ellist.cn/wmtan/static/dresscode/img4.jpg',
+      'https://ellist.cn/wmtan/static/dresscode/img3.jpg',
+      'https://ellist.cn/wmtan/static/dresscode/img2.jpg',
+      'https://ellist.cn/wmtan/static/dresscode/img1.jpg'
     ],
     msg: '',
     hubConnect: {},
@@ -414,7 +414,7 @@ export default class Welcome extends wepy.page {
     return {
       title: '2019 Annual Party',
       path: '/pages/preload',
-      imageUrl: 'https://ellist.cn/bulletmessage/static/gd-logo.png'
+      imageUrl: 'https://ellist.cn/wmtan/static/gd-logo.png'
     };
   }
 }

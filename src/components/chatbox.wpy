@@ -53,5 +53,5 @@
 <script>
 import wepy from 'wepy';
 
-export default class Header extends wepy.component {}
+export default class ChatBox extends wepy.component {}
 </script>

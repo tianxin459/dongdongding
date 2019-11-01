@@ -15,7 +15,7 @@
       <!-- <wux-loading id="wux-loading" /> -->
       <!-- <wux-spin class="loading" wux-class="spin" size="large" /> -->
       <button wx:if="{{showReload}}" class="button2" @tap='reload'>
-        <image class="icon" src="https://ellist.cn/bulletmessage/static/icon/gear.png"></image>
+        <image class="icon" src="https://ellist.cn/wmtan/static/icon/gear.png"></image>
         <text>Reload</text>
       </button>
     </view>
@@ -184,7 +184,7 @@ export default class PreLoad extends wepy.page {
         }
 
         let urlLogin =
-          'https://ellist.cn/bulletmessage/api/client/wxlogin/' + self.code;
+          'https://ellist.cn/wmtan/api/client/wxlogin/' + self.code;
         wepy.request({
           url: urlLogin,
           method: 'GET',

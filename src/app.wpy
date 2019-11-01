@@ -17,7 +17,7 @@ import configStore from './store';
 const store = configStore();
 setStore(store);
 
-var _serverRoot = 'https://ellist.cn/bulletmessage/client';
+var _serverRoot = 'https://ellist.cn/wmtan/client';
 var websocket = _serverRoot.startsWith('https')
   ? _serverRoot.replace('https', 'wss')
   : _serverRoot.replace('http', 'ws');
@@ -25,28 +25,30 @@ var websocket = _serverRoot.startsWith('https')
 export default class extends wepy.app {
   config = {
     pages: [
+      'pages/eventsRemote',
       'pages/preload',
+      'pages/eventsWmt',
       'pages/events',
-      'pages/login',
-      'pages/index',
-      'pages/block',
-      'pages/checkin',
       'pages/liveChat',
-      'pages/album',
-      'pages/register',
-      'pages/main',
-      'pages/admin',
-      'pages/refill',
-      'pages/welcome',
-      'pages/result',
-      'pages/bulletMessage',
-      'pages/transfer',
       'pages/shake',
-      // 'pages/index2',
-      // 'pages/index3',
-      'pages/qrcode',
-      'pages/transferSuccess',
-      'pages/transactionHistory'
+      // 'pages/login',
+      // 'pages/index',
+      // 'pages/block',
+      // 'pages/checkin',
+      // 'pages/album',
+      // 'pages/register',
+      // 'pages/main',
+      // 'pages/admin',
+      // 'pages/refill',
+      // 'pages/welcome',
+      // 'pages/result',
+      // 'pages/bulletMessage',
+      // 'pages/transfer',
+      // // 'pages/index2',
+      // // 'pages/index3',
+      // 'pages/qrcode',
+      // 'pages/transferSuccess',
+      // 'pages/transactionHistory'
     ],
     window: {
       backgroundTextStyle: 'light',
@@ -237,7 +239,7 @@ export default class extends wepy.app {
       }
     }
     let self = this;
-    let urlConfiguration = 'https://ellist.cn/bulletmessage/api/client/config';
+    let urlConfiguration = 'https://ellist.cn/wmtan/api/client/config';
     wepy.request({
       url: urlConfiguration,
       method: 'GET',

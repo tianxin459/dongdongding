@@ -1,0 +1,118 @@
+<style>
+.input-container {
+  border: 1px solid;
+}
+.btnCommand {
+  width: 90%;
+  margin: 10px;
+}
+</style>
+<template>
+  <view class="container">
+    <h1>Remote{{bulletMessage}}-{{showButtonText?'showButton':''}}</h1>
+
+    <view class="input-container">
+      <view class="input-text">
+        <input type="text" class="txt" value="{{bulletMessage}}" maxlength="50" confirm-type="send" @input="cmdMessageInput" @confirm="cmdConfirm" />
+        <button class="{{showButtonText?'showButton':''}} button button-raised button-royal" id="sendTxt" @tap="cmdConfirm">
+          <text>send</text>
+        </button>
+      </view>
+    </view>
+    <button class="btnCommand button button-raised button-inverse button-pill" data-tag="cmd#@$stage1" @tap="sendCommandShortcut">
+      <text>Prize#1</text>
+    </button>
+    <button class="btnCommand button button-raised button-inverse button-pill" data-tag="cmd#@$stage2" @tap="sendCommandShortcut">
+      <text>Prize#2</text>
+    </button>
+    <button class="btnCommand button button-raised button-inverse button-pill" data-tag="cmd#@$stage3" @tap="sendCommandShortcut">
+      <text>Prize#3</text>
+    </button>
+    <button class="btnCommand button button-raised button-inverse button-pill" data-tag="cmd#@$startstop" @tap="sendCommandShortcut">
+      <text>Start/Stop</text>
+    </button>
+  </view>
+</template>
+<script>
+import wepy from 'wepy';
+import Header from '@/components/header';
+import ChatBox from '@/components/chatbox';
+
+export default class EventsRemote extends wepy.page {
+
+  components = {
+    header: Header,
+    chatbox:ChatBox
+  };
+  data = {
+    userInfo: {},
+    bulletMessage:'',
+    showButtonText:false
+  };
+  methods = {
+    onClick() {
+      console.log('on click');
+      this.msg = '666';
+    },
+    cmdMessageInput(e) {
+      let self = this;
+      this.bulletMessage = e.detail.value;
+      self.showButtonText = !!this.bulletMessage;
+      self.$apply();
+    },
+    cmdConfirm(e) {
+      console.log('cmd', this.bulletMessage);
+      this.sendCommand(this.bulletMessage);
+      this.bulletMessage = '';
+      this.scrollTop = 1000 * this.chatList.length;
+      console.log('this.chatList.count()', this.chatList.length);
+      this.showButtonText = false;
+      this.$apply();
+    },
+    sendCommandShortcut(e){
+      let shortcut = e.target.dataset.tag;
+      console.log(shortcut);
+      this.sendCommand(shortcut);
+    }
+  };
+
+  onLoad() {
+    var self = this;
+    this.$parent.getUserInfo(info => {
+      self.userInfo = info;
+      self.msg = '###';
+      self.$apply();
+    });
+  }
+
+
+
+    sendCommand(txt) {
+      let self = this;
+      if (!txt) return;
+      let url = 'https://ellist.cn/wmtan/api/remote';
+      let dataBullet = {
+        // nickName: this.$parent.globalData.userInfo.nickName,
+        openid: this.$parent.globalData.userInfo.openid,
+        nickName: this.$parent.globalData.userInfo.nickName,
+        Id: this.$parent.globalData.userInfo.avatarUrl,
+        englishName: this.$parent.globalData.user.englishName,
+        Message: txt
+      };
+
+      this.$parent.wxRequest({
+        url: url,
+        method: 'POST',
+        data: dataBullet,
+        success: function(resp) {
+          console.log('message send', resp);
+          self.scrollTop = self.chatList.length * 100;
+          self.$apply();
+        },
+        fail: function(err) {
+          console.error(err);
+        }
+      });
+    },
+}
+</script>

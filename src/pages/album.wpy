@@ -174,7 +174,7 @@
       <view class="newMessage" wx:if="{{newPicCount>0}}"><span class="newPicCount">{{newPicCount}}</span> new pictures, pull down to refresh</view>
 
       <button wx:if="{{showPreviousButton}}" class="button2" @tap='moveUp'>
-        <!-- <image class="icon" src="https://ellist.cn/bulletmessage/static/icon/help.png"></image> -->
+        <!-- <image class="icon" src="https://ellist.cn/wmtan/static/icon/help.png"></image> -->
         <text>Previous</text>
       </button>
       <view class="album-container">
@@ -186,8 +186,8 @@
                 <image wx:if="{{val.type==1}}" src="https://wx.qlogo.cn/mmopen/vi_32/{{val.avator}}" lazy-load="true"></image>
                 <image wx:if="{{val.type==0}}" src="{{val.avator}}" lazy-load="true"></image>
               </view>
-              <image src="https://ellist.cn/bulletmessage/uploads/images/{{val.url}}" lazy-load="true" bindload="imgLoad" data-url='https://ellist.cn/bulletmessage/uploads/images/{{val.url}}' @tap="openSelectPic"></image>
-              <image wx:if="{{isAdmin}}" class="delete-icon" src="https://ellist.cn/bulletmessage/static/icon/delete.png" data-url='https://ellist.cn/bulletmessage/uploads/images/{{val.url}}' lazy-load="true" @tap="deletePic"></image>
+              <image src="https://ellist.cn/wmtan/uploads/images/{{val.url}}" lazy-load="true" bindload="imgLoad" data-url='https://ellist.cn/wmtan/uploads/images/{{val.url}}' @tap="openSelectPic"></image>
+              <image wx:if="{{isAdmin}}" class="delete-icon" src="https://ellist.cn/wmtan/static/icon/delete.png" data-url='https://ellist.cn/wmtan/uploads/images/{{val.url}}' lazy-load="true" @tap="deletePic"></image>
             </view>
             <!-- {{val}} -->
           </view>
@@ -195,7 +195,7 @@
       </view>
 
       <button wx:if="{{showNextButton}}" class="button2" @tap='moveDown'>
-        <!-- <image class="icon" src="https://ellist.cn/bulletmessage/static/icon/help.png"></image> -->
+        <!-- <image class="icon" src="https://ellist.cn/wmtan/static/icon/help.png"></image> -->
         <text>Next</text>
       </button>
       <scroll-view scroll-x="true" class="pageScroll">
@@ -210,7 +210,7 @@
       <view class="pictureNum">{{pictureList.length}} pictures left</view>
       <button id="sendPic" class="button button-glow button-circle button-action button-royal" @tap="sendPicture">
         <!-- <i class="fa fa-camera"></i> -->
-        <image class="icon" src="https://ellist.cn/bulletmessage/static/icon/photo-camera-2.png"></image>
+        <image class="icon" src="https://ellist.cn/wmtan/static/icon/photo-camera-2.png"></image>
       </button>
     </view>
   </view>
@@ -279,10 +279,10 @@ export default class Album extends wepy.page {
     deletePic(e) {
       let current = e.currentTarget.dataset.url;
       current = current.replace(
-        'https://ellist.cn/bulletmessage/uploads/images/',
+        'https://ellist.cn/wmtan/uploads/images/',
         ''
       );
-      let url = 'https://ellist.cn/bulletmessage/api/bullet/deletefiles';
+      let url = 'https://ellist.cn/wmtan/api/bullet/deletefiles';
       console.log('delete ' + current);
       this.$parent.wxRequest({
         url: url,
@@ -348,7 +348,7 @@ export default class Album extends wepy.page {
       icon: 'loading',
       title: 'uploading...'
     });
-    let url = 'https://ellist.cn/bulletmessage/api/bullet/upload';
+    let url = 'https://ellist.cn/wmtan/api/bullet/upload';
     wx.uploadFile({
       url: url,
       filePath: path,
@@ -381,7 +381,7 @@ export default class Album extends wepy.page {
     let self = this;
     self.windowPictureList = [];
     self.pageItem = [];
-    let url = 'https://ellist.cn/bulletmessage/api/bullet/uploadfiles';
+    let url = 'https://ellist.cn/wmtan/api/bullet/uploadfiles';
     this.$parent.wxRequest({
       url: url,
       method: 'GET',
@@ -393,7 +393,7 @@ export default class Album extends wepy.page {
           let url = i;
           let englishName = '';
           let avator =
-            'https://ellist.cn/bulletmessage/static/icon/system-camera.png';
+            'https://ellist.cn/wmtan/static/icon/system-camera.png';
           let type = '0';
           if (i.split('-_-').length > 2) {
             url = i;
@@ -403,7 +403,7 @@ export default class Album extends wepy.page {
             type = '1';
           } else {
             englishName = i.replace(
-              'https://ellist.cn/bulletmessage/uploads/images/',
+              'https://ellist.cn/wmtan/uploads/images/',
               ''
             );
           }
@@ -423,7 +423,7 @@ export default class Album extends wepy.page {
         self.picturePreviewList = [];
         for (let vu of self.pictureList) {
           self.picturePreviewList.push(
-            'https://ellist.cn/bulletmessage/uploads/images/' + vu.url
+            'https://ellist.cn/wmtan/uploads/images/' + vu.url
           );
         }
         let pictureCount =

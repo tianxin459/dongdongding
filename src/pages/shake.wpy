@@ -112,7 +112,7 @@
       </view>
       <view class="avatar">
         <view class="runner">
-          <image class="running-body" src='https://ellist.cn/bulletmessage/static/img/running1.gif'></image>
+          <image class="running-body" src='https://ellist.cn/wmtan/static/img/running1.gif'></image>
           <image class="running-head" src="{{UserInfo.avatarUrl}}"></image>
         </view>
       </view>
@@ -160,7 +160,7 @@ export default class Register extends wepy.page {
       console.log('send test run 50');
     },
     onStart(e) {
-      let url = 'https://ellist.cn/bulletmessage/api/race/begin';
+      let url = 'https://ellist.cn/wmtan/api/race/begin';
       let dataRun = {
         Message: 'GoGoGo'
       };
@@ -256,7 +256,7 @@ export default class Register extends wepy.page {
   }
 
   sendRun(step) {
-    let url = 'https://ellist.cn/bulletmessage/api/race/run';
+    let url = 'https://ellist.cn/wmtan/api/race/run';
     let self = this;
     let dataRun = {
       userId: this.$parent.globalData.userInfo.openid,

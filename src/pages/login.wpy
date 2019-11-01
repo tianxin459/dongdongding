@@ -31,7 +31,7 @@
         >
           <image
             class="icon"
-            src="https://ellist.cn/bulletmessage/static/icon/customerService.png"
+            src="https://ellist.cn/wmtan/static/icon/customerService.png"
           ></image>
           <view class="label">Talk to Us</view>
         </button>
@@ -50,7 +50,7 @@
     </view>
     <view class="footer">
       <button class="button-icon" session-from="{{userInfoS}}" open-type="contact">
-        <image class="icon" src="https://ellist.cn/bulletmessage/static/icon/customerService.png"></image>
+        <image class="icon" src="https://ellist.cn/wmtan/static/icon/customerService.png"></image>
         <view class="label">Talk to Us</view>
       </button>
     </view>

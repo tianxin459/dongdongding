@@ -90,7 +90,7 @@
     </button>
   </view>
   <view class="footer">
-    <image class="side-background-s" src="http://ellist.cn/bulletmessage/static/img/h5-20.png"></image>
+    <image class="side-background-s" src="http://ellist.cn/wmtan/static/img/h5-20.png"></image>
   </view>
   </view>
 </template>

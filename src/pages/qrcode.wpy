@@ -87,7 +87,7 @@
       </view> -->
     </view>
     <view class="footer">
-      <image class="side-background-s" src="http://ellist.cn/bulletmessage/static/img/H5-17.png"></image>
+      <image class="side-background-s" src="http://ellist.cn/wmtan/static/img/H5-17.png"></image>
     </view>
   </view>
 </template>

@@ -102,7 +102,7 @@
       </view>
     </view>
     <view class="footer">
-      <image class="side-background-sw" src="http://ellist.cn/bulletmessage/static/img/h5-19.png"></image>
+      <image class="side-background-sw" src="http://ellist.cn/wmtan/static/img/h5-19.png"></image>
     </view>
   </view>
 </template>

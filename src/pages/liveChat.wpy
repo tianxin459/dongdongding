@@ -204,13 +204,13 @@ page {
                 </view>
                 <view wx:if="{{val.type==1}}" class="messageIcon">
                   <view class="englishName">{{val.englishName}}</view>
-                  <image class="msg" src="https://ellist.cn/bulletmessage/static/icon/{{val.msg}}.png"></image>
+                  <image class="msg" src="https://ellist.cn/wmtan/static/icon/{{val.msg}}.png"></image>
                 </view>
-                <!-- <image wx:if="{{val.type==1}}" class="messageIcon" src="https://ellist.cn/bulletmessage/static/icon/{{val.msg}}.png"></image> -->
+                <!-- <image wx:if="{{val.type==1}}" class="messageIcon" src="https://ellist.cn/wmtan/static/icon/{{val.msg}}.png"></image> -->
 
                 <view wx:if="{{val.type==2}}" class="messageImage">
                   <view class="englishName">{{val.nickName}}</view>
-                  <image class="msg" data-url="{{'https://ellist.cn/bulletmessage/uploads/images/'+val.msg}}" src="https://ellist.cn/bulletmessage/uploads/images/{{val.msg}}" @tap="imgClick"></image>
+                  <image class="msg" data-url="{{'https://ellist.cn/wmtan/uploads/images/'+val.msg}}" src="https://ellist.cn/wmtan/uploads/images/{{val.msg}}" @tap="imgClick"></image>
                 </view>
               </view>
             </repeat>
@@ -221,7 +221,7 @@ page {
         <view class="input-text">
           <input type="text" class="txt" value="{{bulletMessage}}" maxlength="50" confirm-type="send" @input="bulletMessageInput" @confirm="onClick" />
           <button id="sendPic" class="button button-raised button-royal" @tap="sendPicture">
-            <image class="icon" src="https://ellist.cn/bulletmessage/static/icon/photo-camera-2.png"></image>
+            <image class="icon" src="https://ellist.cn/wmtan/static/icon/photo-camera-2.png"></image>
           </button>
           <button class="{{showButtonText?'showButton':''}} button button-raised button-royal" id="sendTxt" @tap="onClick">
             <text>send</text>
@@ -230,27 +230,27 @@ page {
         <view wx:if="{{false}}" class="bulletShortcut">
           <button class="button" data-tag="clap" @tap="sendBulletShortcut">
             <!-- <image src="../static/img/clapping.png"></image> -->
-            <image src="https://ellist.cn/bulletmessage/static/icon/H5Icon-13.png"></image>
+            <image src="https://ellist.cn/wmtan/static/icon/H5Icon-13.png"></image>
           </button>
           <button class="button" data-tag="like" @tap="sendBulletShortcut">
             <!-- <image src="../static/img/like.png"></image> -->
-            <image src="https://ellist.cn/bulletmessage/static/icon/H5Icon-14.png"></image>
+            <image src="https://ellist.cn/wmtan/static/icon/H5Icon-14.png"></image>
           </button>
           <button class="button" data-tag="star" @tap="sendBulletShortcut">
             <!-- <image src="../static/img/star.png"></image> -->
-            <image src="https://ellist.cn/bulletmessage/static/icon/H5Icon-16.png"></image>
+            <image src="https://ellist.cn/wmtan/static/icon/H5Icon-16.png"></image>
           </button>
           <button class="button" data-tag="cheers" @tap="sendBulletShortcut">
             <!-- <image src="../static/img/star.png"></image> -->
-            <image src="https://ellist.cn/bulletmessage/static/icon/H5Icon-15.png"></image>
+            <image src="https://ellist.cn/wmtan/static/icon/H5Icon-15.png"></image>
           </button>
           <button class="button" data-tag="horn" @tap="sendBulletShortcut">
             <!-- <image src="../static/img/star.png"></image> -->
-            <image src="https://ellist.cn/bulletmessage/static/icon/H5Icon-17.png"></image>
+            <image src="https://ellist.cn/wmtan/static/icon/H5Icon-17.png"></image>
           </button>
           <button class="button" data-tag="money" @tap="sendBulletShortcut">
             <!-- <image src="../static/img/star.png"></image> -->
-            <image src="https://ellist.cn/bulletmessage/static/icon/H5Icon-18.png"></image>
+            <image src="https://ellist.cn/wmtan/static/icon/H5Icon-18.png"></image>
           </button>
         </view>
       </view>
@@ -386,7 +386,7 @@ export default class Album extends wepy.page {
       icon: 'loading',
       title: 'uploading...'
     });
-    let url = 'https://ellist.cn/bulletmessage/api/bullet/upload';
+    let url = 'https://ellist.cn/wmtan/api/bullet/upload';
     wx.uploadFile({
       url: url,
       filePath: path,
@@ -417,7 +417,7 @@ export default class Album extends wepy.page {
   sendBulletMessage(txt) {
     let self = this;
     if (!txt) return;
-    let url = 'https://ellist.cn/bulletmessage/api/bullet';
+    let url = 'https://ellist.cn/wmtan/api/bullet';
     let dataBullet = {
       // nickName: this.$parent.globalData.userInfo.nickName,
       openid: this.$parent.globalData.userInfo.openid,
@@ -484,7 +484,7 @@ export default class Album extends wepy.page {
   }
   onShow() {
     let self = this;
-    let url = 'https://ellist.cn/bulletmessage/api/bullet/messagehistory';
+    let url = 'https://ellist.cn/wmtan/api/bullet/messagehistory';
     this.registerSocketMessage();
     console.log(this.$parent.wxRequest);
     this.$parent.wxRequest({

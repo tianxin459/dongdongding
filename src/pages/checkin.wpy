@@ -83,24 +83,24 @@
         <view>Welcome</view>
         <view class="userName">{{englishName}}</view>
       </view>
-      <image class="main-bg-image" src="http://ellist.cn/bulletmessage/static/img/h5-16.png"></image>
+      <image class="main-bg-image" src="http://ellist.cn/wmtan/static/img/h5-16.png"></image>
       <!-- <button class="btn-primary" @tap="reFill">
         <view>Checkin</view>
       </button> -->
       <button class="button2" @tap="reFill">
-        <image class="icon" src="https://ellist.cn/bulletmessage/static/icon/scanQr.png"></image>
+        <image class="icon" src="https://ellist.cn/wmtan/static/icon/scanQr.png"></image>
         <text>Checkin</text>
       </button>
       <button class="button2" data-url='./welcome' @tap='nav'>
-        <image class="icon" src="https://ellist.cn/bulletmessage/static/icon/info.png"></image>
+        <image class="icon" src="https://ellist.cn/wmtan/static/icon/info.png"></image>
         <text>Party Infomation</text>
       </button>
       <button class="button2" data-url='./album' @tap='nav'>
-        <image class="icon" src="https://ellist.cn/bulletmessage/static/icon/album.png"></image>
+        <image class="icon" src="https://ellist.cn/wmtan/static/icon/album.png"></image>
         <text>Party Album</text>
       </button>
       <button class="button2" @tap='openHelp'>
-        <image class="icon" src="https://ellist.cn/bulletmessage/static/icon/help.png"></image>
+        <image class="icon" src="https://ellist.cn/wmtan/static/icon/help.png"></image>
         <text>Help</text>
       </button>
       <!-- <button open-type="getUserInfo" lang="zh_CN" bindgetuserinfo="onGotUserInfo">Go Party</button> -->
@@ -112,7 +112,7 @@
       <view class="helpTitle">GD MiniApp Help</view>
       <view class="helpView">
         <button class="button2" @tap="reFill">
-          <image class="icon" src="https://ellist.cn/bulletmessage/static/icon/scanQr.png"></image>
+          <image class="icon" src="https://ellist.cn/wmtan/static/icon/scanQr.png"></image>
           <text>Checkin</text>
         </button>
         <view class="helpDesc">
@@ -125,7 +125,7 @@
           </view>
         </view>
         <button class="button2" data-url='./welcome' @tap='nav'>
-          <image class="icon" src="https://ellist.cn/bulletmessage/static/icon/info.png"></image>
+          <image class="icon" src="https://ellist.cn/wmtan/static/icon/info.png"></image>
           <text>Party Infomation</text>
         </button>
         <view class="helpDesc">
@@ -135,7 +135,7 @@
           </view>
         </view>
         <button class="button2" data-url='./album' @tap='nav'>
-          <image class="icon" src="https://ellist.cn/bulletmessage/static/icon/album.png"></image>
+          <image class="icon" src="https://ellist.cn/wmtan/static/icon/album.png"></image>
           <text>Party Album</text>
         </button>
         <view class="helpDesc">
@@ -149,7 +149,7 @@
     <!------------------------------ help end---------------------------------->
     <view class="footer">
       <button class="button-icon" session-from="{{userInfoS}}" open-type="contact">
-        <image class="icon" src="https://ellist.cn/bulletmessage/static/icon/customerService.png"></image>
+        <image class="icon" src="https://ellist.cn/wmtan/static/icon/customerService.png"></image>
         <view class="label">Talk to Us</view>
       </button>
       <view class="author">

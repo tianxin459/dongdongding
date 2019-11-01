@@ -89,7 +89,7 @@ button.isAdmin,
   align-self: center;
 }
 .logoGD {
-  background: url(http://ellist.cn/bulletmessage/static/img/GD-Logo.png) no-repeat;
+  background: url(http://ellist.cn/wmtan/static/img/GD-Logo.png) no-repeat;
   background-size: 100% 100%;
 }
 .button2:active,

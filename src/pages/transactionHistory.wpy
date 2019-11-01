@@ -101,7 +101,7 @@
       </wux-cell-group> -->
     </view>
     <view class="footer">
-      <image class="side-background-s" src="https://ellist.cn/bulletmessage/static/img/H5-14.png"></image>
+      <image class="side-background-s" src="https://ellist.cn/wmtan/static/img/H5-14.png"></image>
     </view>
   </view>
 </template>
