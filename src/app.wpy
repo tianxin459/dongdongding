@@ -25,12 +25,14 @@ var websocket = _serverRoot.startsWith('https')
 export default class extends wepy.app {
   config = {
     pages: [
-      'pages/eventsRemote',
       'pages/preload',
+      'pages/shakeGroup',
+      'pages/shakeTest',
+      'pages/shake',
+      'pages/eventsRemote',
       'pages/eventsWmt',
       'pages/events',
-      'pages/liveChat',
-      'pages/shake',
+      'pages/liveChat'
       // 'pages/login',
       // 'pages/index',
       // 'pages/block',
@@ -77,7 +79,8 @@ export default class extends wepy.app {
     isDebug: true,
     qrCodeUrl: 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=',
     baseurlTransaction: 'https://wtf.chinacloudsites.cn/',
-    eventId: 12345
+    eventId: 12345,
+    environment: ''
   };
 
   constructor() {
@@ -188,7 +191,7 @@ export default class extends wepy.app {
       var pages = getCurrentPages();
       var currentPage = pages[pages.length - 1];
       if (currentPage && currentPage.onAccelerometerChange) {
-        console.log('currentPage', currentPage);
+        // console.log('currentPage', currentPage);
         currentPage.onAccelerometerChange(e);
       }
     });
@@ -308,12 +311,13 @@ export default class extends wepy.app {
         //model中包含着设备信息
         var model = res.model;
         that.globalData.model = res.model;
+        that.globalData.environment = res.environment;
         if (model.search('IphoneX') != -1 || model.search('iPhone X') != -1) {
           that.globalData.isIpx = true;
         } else {
           that.globalData.isIpx = false;
         }
-        console.log(res.model, 'is ipx=' + that.globalData.isIpx);
+        console.log('get system info completed=>', res);
       }
     });
   }

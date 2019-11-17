@@ -1,0 +1,373 @@
+<style lang="less">
+@import '../theme.less';
+// @import '../buttons.less';
+
+.container {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.body {
+  color: white;
+}
+
+.title {
+  width: 100%;
+  font-weight: 200;
+}
+
+.input-container {
+  width: 100%;
+}
+
+.ratio {
+  border-bottom: 2px solid green;
+}
+
+.input {
+  // border: 1px solid green;
+  width: 100%;
+  .input-label {
+  }
+  input {
+    // border: 1px solid green;
+    height: 4ex;
+    border-bottom: 2px solid green;
+  }
+}
+.button-circle {
+  margin: 40rpx;
+}
+
+.btn-normal {
+  width: 80%;
+  margin: 40rpx;
+}
+
+.btnStart {
+  position: fixed;
+  top: 100px;
+  right: 25px;
+  background-color: red;
+  color: white;
+}
+
+@keyframes runnerHead {
+  from {
+    top: 12.5px;
+  }
+  80% {
+    top: 16px;
+  }
+  to {
+    top: 12.5px;
+  }
+}
+.avatar {
+  width: 100%;
+  height: 150px;
+}
+
+.runner {
+  position: relative;
+  transition: all linear 0.1s;
+  margin-left: -50px;
+  left: 50%;
+  .running-head {
+    position: absolute;
+    width: 100px;
+    height: 100px;
+    border: 1px solid green;
+    box-shadow: 0 0 0 1px white;
+    border-radius: 50%;
+    animation-name: runnerHead;
+    animation-duration: 0.4s;
+    animation-iteration-count: infinite;
+    left: 30px;
+  }
+  .running-body {
+    position: absolute;
+    top: 50px;
+    left: -70px;
+    width: 200px;
+    height: 150px;
+  }
+}
+
+.display {
+  font-size: 30px;
+  .ranking {
+    max-width: 100vw;
+    color: orange;
+    // text-shadow: 0 0 1px currentColor, -1px -1px 1px #030, 0 -1px 1px #030,
+    //   1px -1px 1px #030, 1px 0 1px #030, 1px 1px 1px #030, 0 1px 1px #030,
+    //   -1px 1px 1px #030, -1px 0 1px #030;
+  }
+}
+.scanCover {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  background: gray;
+  width: 100%;
+  height: 100%;
+  &.hideQR {
+    animation: ani-hide 1s ease forwards;
+  }
+}
+.startstop {
+  width: 100vw;
+  display: flex;
+  margin: 0;
+  padding: 0;
+  & > button {
+    margin: 2px;
+  }
+}
+.hit {
+  border: 1px solid;
+  width: 99vw;
+  margin: 1px;
+  display: flex;
+  .hit-item {
+    flex: 0.33;
+  }
+  .highlight {
+    font-weight: bold;
+    color: yellow;
+  }
+  .run-step {
+    font-weight: bold;
+    color: rgb(243, 119, 82);
+  }
+}
+@keyframes ani-hide {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-20%);
+  }
+  100% {
+    transform: translateY(-100%);
+  }
+}
+</style>
+<template>
+  <view class="container">
+    <view class="body">
+      <view>x:{{sx}}</view>
+      <view>y:{{sy}}</view>
+      <view>z:{{sz}}</view>
+      <view class="startstop">
+        <button class="button2" @tap="startShaking">
+          <text>Start</text>
+        </button>
+        <button class="button2" @tap="stopShaking">
+          <text>Stop</text>
+        </button>
+      </view>
+      <button class="button2" @tap="clearHits">
+        <text>Clear</text>
+      </button>
+      <view>
+        <view>threshold= {{threshold}} - {{shakeActive}}:</view>
+        <repeat for="{{hits}}" key="index" index="key" item="val">
+          <view class="hit">
+            <view class="hit-item {{val.x>threshold?'highlight':''}}">x:{{val.x}}</view>
+            <view class="hit-item {{val.y>threshold?'highlight':''}}">y:{{val.y}}</view>
+            <view class="hit-item {{val.z>threshold?'highlight':''}}">z:{{val.z}}</view>
+            <view class="hit-item run-step">run:{{val.run}}</view>
+            <view class="hit-item ">{{val.count}}</view>
+
+          </view>
+        </repeat>
+      </view>
+    </view>
+  </view>
+</template>
+<script>
+import wepy from 'wepy';
+import Header from '@/components/header'; // alias example
+import TextMixin from '@/mixins/text';
+// const threshold = 0.5;
+// import { $wuxBackdrop } from '../wux/index'
+export default class ShakeTest extends wepy.page {
+  components = {
+    header: Header
+  };
+  mixins = [TextMixin];
+  config = {
+    usingComponents: {}
+  };
+  computed = {
+    UserInfo() {
+      return this.$parent.globalData.userInfo;
+    },
+    isAdmin() {
+      return this.$parent.isAdmin();
+    }
+  };
+  components = {};
+  data = {
+    lastCheckTime: 0,
+    threshold: 2,
+    checkTimeThreshold: 1000,
+    requestTimeBreak: 1000,
+    hits: [],
+    shakeHistory: [],
+    amp: 1,
+    sx: 0,
+    sy: 0,
+    sz: 0,
+    msg: 'msg',
+    range: 1,
+    showButton: true,
+    showQRScan: false,
+    ranking: 'Click to ready',
+    shakeActive: false,
+    shakeSteps: 0,
+    groupid: 0
+  };
+  methods = {
+    startShaking() {
+      this.startShake();
+    },
+    stopShaking() {
+      this.shakeActive = false;
+      wx.stopAccelerometer();
+    },
+    clearHits() {
+      this.hits.length = 0;
+    }
+  };
+  onAccelerometerChange(res) {
+    let self = this;
+
+    self.sx = res.x;
+    self.sy = res.y;
+    self.sz = res.z;
+    var x = res.x.toFixed(4);
+    var y = res.y.toFixed(4);
+    var z = res.z.toFixed(4);
+    if (
+      res.x > self.threshold ||
+      res.y > self.threshold ||
+      res.z > self.threshold
+    ) {
+      self.shakeHistory.push({ x, y, z });
+    }
+    let nowCheckTime = Date.now();
+    if (nowCheckTime - self.lastCheckTime < self.checkTimeThreshold) return;
+    self.lastCheckTime = nowCheckTime;
+    if (self.shakeHistory.length < 1) return;
+
+    let maxx = Math.max(...self.shakeHistory.map(i => Math.abs(i.x)));
+    let maxy = Math.max(...self.shakeHistory.map(i => Math.abs(i.y)));
+    let maxz = Math.max(...self.shakeHistory.map(i => Math.abs(i.z)));
+    let run = Math.ceil(maxx + maxy + maxz);
+    let count = self.shakeHistory.length;
+    self.shakeHistory.length = 0;
+    let hit = { x: maxx, y: maxy, z: maxz, run: run, count };
+    self.hits.push(hit);
+    let runDis = hit.run * self.amp;
+
+    if (self.shakeActive) {
+      self.sendRun(runDis);
+      self.msg = runDis;
+      self.ranking = 'run for ' + runDis;
+      // if ((shakeX && shakeY) || (shakeX && shakeZ) || (shakeY && shakeZ)) {
+      //   self.shakeSteps++;
+      //   step = Math.ceil(Math.max(x, y, z)) * 10;
+      //   //reduce the shake step
+      //   if (self.shakeSteps % 4 === 1) {
+      //     // self.shakeSteps = 1;
+      //     if (step > 50) step += Math.floor(Math.random() * 10) * 2;
+      //     active = true;
+      //     self.sendRun(step);
+      //     self.msg = 'shake to run:' + step;
+      //     // self.ranking = self.shakeSteps + '=|' + x + '|' + y + '|' + z + '|';
+      //     self.ranking = 'run ' + step;
+      //     console.log('xy step', step);
+      //   } else {
+      //     active = false;
+      //   }
+      // }
+    }
+    // if (active) {
+    //   self.sendRun(step);
+    //   self.msg = 'shake to run:' + step;
+    //   // console.log(self.msg);
+    // }
+    self.$apply();
+  }
+  onUnload() {
+    wx.stopAccelerometer();
+  }
+  onLoad(parm, data) {
+    let self = this;
+    self.showButton = true;
+    if (self.shakeActive) {
+      this.startShake();
+    }
+  }
+  onHide() {
+    let self = this;
+    self.showButton = true;
+    self.ranking = '';
+    wx.stopAccelerometer();
+  }
+  onShow() {
+    let self = this;
+    self.ranking = self.Lang.shake.ClickReady;
+    if (self.shakeActive) {
+      this.startShake();
+    }
+    this.$parent.getConfig(false, config => {
+      self.config = config;
+    });
+  }
+  startShake() {
+    this.shakeActive = true;
+    wx.startAccelerometer({
+      interval: 'ui'
+    });
+  }
+  onSocketMessage(res) {
+    let self = this;
+    console.log('shake=>wsresponse', res);
+    // 接收消息回调
+    var data = JSON.parse(res.data.replace(String.fromCharCode(0x1e), '')); // 返回时去掉分隔符
+    if (data.target) {
+      switch (data.target) {
+        case 'ReceiveMessage':
+          self.msg = data.arguments[0] + '|' + data.arguments[1];
+          self.ReceiveMessage(data.arguments[0], data.arguments[1]);
+          break;
+        default:
+          break;
+      }
+      self.$apply();
+    }
+  }
+  ReceiveMessage(uid, message) {
+    let self = this;
+    if (!message) return;
+    if (message.indexOf('finish at') > -1) {
+      self.shakeActive = false;
+      wepy.vibrateLong();
+      self.ranking = 'Competition ranking:' + message.replace('finish at', '');
+      wx.stopAccelerometer();
+    }
+    if (message.indexOf('GoGoGo') > -1) {
+      self.shakeActive = true;
+      wepy.vibrateLong();
+      self.ranking = 'Go! Shake~Shake';
+    }
+  }
+}
+</script>
