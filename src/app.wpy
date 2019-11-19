@@ -32,7 +32,8 @@ export default class extends wepy.app {
       'pages/eventsRemote',
       'pages/eventsWmt',
       'pages/events',
-      'pages/liveChat'
+      'pages/liveChat',
+      'pages/admin'
       // 'pages/login',
       // 'pages/index',
       // 'pages/block',
@@ -40,7 +41,6 @@ export default class extends wepy.app {
       // 'pages/album',
       // 'pages/register',
       // 'pages/main',
-      // 'pages/admin',
       // 'pages/refill',
       // 'pages/welcome',
       // 'pages/result',

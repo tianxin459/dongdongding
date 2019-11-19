@@ -116,7 +116,7 @@ export default class PreLoad extends wepy.page {
         self.$redirect('./shakeGroup');
         break;
       case '2':
-        self.$redirect('./shakeGroup');
+        self.$redirect('./shake');
         // self.$redirect('./index');
         break;
       case '3':
@@ -175,7 +175,7 @@ export default class PreLoad extends wepy.page {
     wepy.getSystemInfo({
       success: function(sys) {
         console.log('getsys info==>', sys);
-        if (sys.environment == 'wxwork') {
+        if (sys.environment == 'wxwork2') {
           self.wxworkLogin();
         } else {
           // 普通登陆----------------------------
@@ -207,6 +207,7 @@ export default class PreLoad extends wepy.page {
   }
 
   normalLogin() {
+    let self = this;
     wepy.login({
       success(res) {
         console.log('wx.login', res);

@@ -79,8 +79,18 @@
   }
 }
 
+.block {
+  flex: 1;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-content: center;
+  align-items: center;
+}
+
 .display {
   font-size: 30px;
+
   .ranking {
     max-width: 100vw;
     color: orange;
@@ -89,12 +99,19 @@
     //   -1px 1px 1px #030, -1px 0 1px #030;
   }
 }
+.footer {
+  flex-direction: row;
+  margin-bottom: 30px;
+  .button {
+    padding: 0 10px;
+  }
+}
 </style>
 <template>
   <view class="container">
     <header></header>
     <view class="body">
-      <view>
+      <view wx:if="{{false}}">
         <view>{{Lang.shake.Url}}</view>
         {{Lang.shake.Desc1}}
         <!-- <view>
@@ -106,9 +123,9 @@
         <!-- <button class="button button-3d button-caution" @tap="testRun" wx:if="{{isAdmin}}">
           <text>test run</text>
         </button> -->
-        <button class="btn-primary2 button-raised button-action button-circle" @tap="onShake" wx:if="{{showButton}}">
+        <!-- <button class="btn-primary2 button-raised button-action button-circle" @tap="onShake" wx:if="{{showButton}}">
           <text>{{Lang.shake.BtnReady}}</text>
-        </button>
+        </button> -->
       </view>
       <view class="avatar">
         <view class="runner">
@@ -120,6 +137,29 @@
         <view class="ranking">
           {{ranking}}
         </view>
+      </view>
+      <view class="display block">
+        <button class="button button-raised button-action button-circle" @tap="onShake" wx:if="{{showButton}}">
+          <text>{{Lang.shake.BtnReady}}</text>
+        </button>
+
+        <button class="button button-raised button-action button-circle" @tap="onShake" wx:if="{{!showButton}}">
+          <text>Refresh</text>
+        </button>
+      </view>
+
+      <view class="footer" wx:if="{{isAdmin}}">
+        <button class="button button-raised button-primary" data-url='./admin' @tap='nav'>
+          <text>Admin</text>
+        </button>
+
+        <button class="button button-raised button-primary" data-url='./shakeTest' @tap='nav'>
+          <text>Test</text>
+        </button>
+
+        <button class="button button-raised button-caution" @tap="onStart">
+          <text>{{Lang.shake.BtnStart}}</text>
+        </button>
       </view>
     </view>
   </view>
@@ -147,6 +187,16 @@ export default class Shake extends wepy.page {
   };
   components = {};
   data = {
+    lastCheckTime: 0,
+    threshold: 2,
+    checkTimeThreshold: 500,
+    requestTimeBreak: 1000,
+    hits: [],
+    shakeHistory: [],
+    amp: 1,
+    sx: 0,
+    sy: 0,
+    sz: 0,
     msg: '',
     range: 1,
     showButton: true,
@@ -158,6 +208,10 @@ export default class Shake extends wepy.page {
     testRun(e) {
       this.sendRun(50);
       console.log('send test run 50');
+    },
+    nav(e) {
+      // console.log(e.target.dataset)
+      this.$navigate(e.target.dataset.url);
     },
     onStart(e) {
       let url = 'https://ellist.cn/wmtan/api/race/begin';
@@ -203,44 +257,40 @@ export default class Shake extends wepy.page {
   };
   onAccelerometerChange(res) {
     let self = this;
-    // self.range = self.config.shakeRange || self.range;
-    // self.range = self.config.shakeRange || self.range;
-    var x = res.x.toFixed(2);
-    var y = res.y.toFixed(2);
-    var z = res.z.toFixed(2);
 
-    var shakeX = x > self.range;
-    var shakeY = y > self.range;
-    var shakeZ = z > self.range;
+    self.sx = res.x;
+    self.sy = res.y;
+    self.sz = res.z;
+    var x = res.x.toFixed(4);
+    var y = res.y.toFixed(4);
+    var z = res.z.toFixed(4);
+    if (
+      res.x > self.threshold ||
+      res.y > self.threshold ||
+      res.z > self.threshold
+    ) {
+      self.shakeHistory.push({ x, y, z });
+    }
+    let nowCheckTime = Date.now();
+    if (nowCheckTime - self.lastCheckTime < self.checkTimeThreshold) return;
+    self.lastCheckTime = nowCheckTime;
+    if (self.shakeHistory.length < 1) return;
 
-    let step = 5; //Math.floor(Math.random() * 100) % 10;
-    let active = false;
+    let maxx = Math.max(...self.shakeHistory.map(i => Math.abs(i.x)));
+    let maxy = Math.max(...self.shakeHistory.map(i => Math.abs(i.y)));
+    let maxz = Math.max(...self.shakeHistory.map(i => Math.abs(i.z)));
+    let run = Math.ceil(maxx + maxy + maxz);
+    let count = self.shakeHistory.length;
+    self.shakeHistory.length = 0;
+    let hit = { x: maxx, y: maxy, z: maxz, run: run, count };
+    self.hits.push(hit);
+    let runDis = hit.run * self.amp + count;
 
     if (self.shakeActive) {
-      if ((shakeX && shakeY) || (shakeX && shakeZ) || (shakeY && shakeZ)) {
-        self.shakeSteps++;
-        step = Math.ceil(Math.max(x, y, z)) * 10;
-
-        //reduce the shake step
-        if (self.shakeSteps % 4 === 1) {
-          // self.shakeSteps = 1;
-          if (step > 50) step += Math.floor(Math.random() * 10) * 2;
-          active = true;
-          self.sendRun(step);
-          self.msg = 'shake to run:' + step;
-          // self.ranking = self.shakeSteps + '=|' + x + '|' + y + '|' + z + '|';
-          self.ranking = 'run ' + step;
-          console.log('xy step', step);
-        } else {
-          active = false;
-        }
-      }
+      self.sendRun(runDis);
+      self.msg = runDis;
+      self.ranking = 'run for ' + runDis;
     }
-    // if (active) {
-    //   self.sendRun(step);
-    //   self.msg = 'shake to run:' + step;
-    //   // console.log(self.msg);
-    // }
     self.$apply();
   }
   shakeFun() {
