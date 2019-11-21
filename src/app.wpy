@@ -34,7 +34,7 @@ export default class extends wepy.app {
       'pages/events',
       'pages/liveChat',
       'pages/admin',
-      'pages/login',
+      'pages/login'
       // 'pages/index',
       // 'pages/block',
       // 'pages/checkin',
@@ -285,7 +285,7 @@ export default class extends wepy.app {
     });
   }
   isDebug() {
-    return  this.globalData.config.debug;
+    return this.globalData.config.debug;
   }
   isAdmin() {
     let adminConfig = this.globalData.config.admin || '';
