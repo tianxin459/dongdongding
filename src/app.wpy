@@ -33,8 +33,8 @@ export default class extends wepy.app {
       'pages/eventsWmt',
       'pages/events',
       'pages/liveChat',
-      'pages/admin'
-      // 'pages/login',
+      'pages/admin',
+      'pages/login'
       // 'pages/index',
       // 'pages/block',
       // 'pages/checkin',

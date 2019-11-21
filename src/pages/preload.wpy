@@ -175,7 +175,7 @@ export default class PreLoad extends wepy.page {
     wepy.getSystemInfo({
       success: function(sys) {
         console.log('getsys info==>', sys);
-        if (sys.environment == 'wxwork2') {
+        if (sys.environment == 'wxwork') {
           self.wxworkLogin();
         } else {
           // 普通登陆----------------------------
@@ -187,21 +187,44 @@ export default class PreLoad extends wepy.page {
   }
 
   wxworkLogin() {
+    let self = this;
     // 企业微信登陆----------------------------
     wx.qy.login({
       success: function(res) {
         console.log('wxwork==>', res);
-        // if (res.code) {
-        //   //发起网络请求
-        //   wx.request({
-        //     url: 'https://test.com/onLogin',
-        //     data: {
-        //       code: res.code
-        //     }
-        //   });
-        // } else {
-        //   console.log('登录失败！' + res.errMsg);
-        // }
+        let urlLogin =
+          'https://ellist.cn/wmtan/api/client/wxqylogin/' + res.code;
+        wepy.request({
+          url: urlLogin,
+          method: 'GET',
+          success: function(resp) {
+            console.log('wxqylogin===>', resp);
+            let qyid = resp;
+            wx.qy.getAvatar({
+              success: function(res2) {
+                var avatar = res2.avatar;
+                console.log('wxqylogin avatar===>', avatar);
+                self.$parent.globalData.userInfo.avatarUrl = avatar;
+              },
+              fail: function(res) {
+                console.log(res.fail_reason);
+              }
+            });
+            wx.qy.getEnterpriseUserInfo({
+              success: function(res) {
+                var userInfo = res.userInfo;
+                var name = userInfo.name;
+                var gender = userInfo.gender;
+                self.$parent.globalData.userInfo.name = name;
+                console.log('qy userInfo', userInfo);
+              }
+            });
+            self.goLogin(qyid);
+          },
+          fail: function(err) {
+            console.error(err);
+          }
+        });
       }
     });
   }
