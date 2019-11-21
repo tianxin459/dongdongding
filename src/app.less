@@ -47,11 +47,13 @@ button.isAdmin,
 .body {
   width: 100%;
   min-height: 100%;
+  flex: 1;
   padding: 2.5px;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   align-content: center;
+  align-items: center;
   background-color: @colorBackground;
 
   >view {
@@ -112,10 +114,30 @@ button.isAdmin,
   background-size: 100% 100%;
 }
 
+.button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.btn-img {
+  width: 100rpx;
+  height: 100rpx;
+  transition: 200ms all;
+
+  &:active {
+    transform: scale(1.2);
+  }
+}
 
 .button2:active,
 .btn-primary:active {
   background-color: @colorButtonActive;
+}
+
+.button-circle {
+  height: 200rpx;
+  width: 200rpx;
 }
 
 .btn-primary {
@@ -425,10 +447,12 @@ button.button2 {
 .input-container {
   width: 90%;
   position: relative;
+
   .input-text {
     display: flex;
     justify-content: flex-start;
     overflow: hidden;
+
     input {
       align-self: center;
       height: 40px;
@@ -436,6 +460,7 @@ button.button2 {
       color: white;
       padding: 0 5px;
     }
+
     button {
       // background-color: purple;
       padding: 0;
@@ -451,14 +476,17 @@ button.button2 {
       // color: white;
       // font-weight: bolder;
       transition: all ease 0.2s;
+
       image {
         width: 20px;
         height: 20px;
       }
     }
+
     #sendTxt {
       transform: translate(100px);
     }
+
     #sendTxt.showButton {
       transform: translateX(0);
     }

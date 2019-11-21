@@ -1,6 +1,13 @@
 <style lang="less">
 @import '../theme.less';
 // @import '../buttons.less';
+
+.container {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
 .body {
   color: white;
 }
@@ -29,6 +36,14 @@
     border-bottom: 2px solid green;
   }
 }
+.button-circle {
+  margin: 40rpx;
+}
+
+.btn-normal {
+  width: 80%;
+  margin: 40rpx;
+}
 
 .btnStart {
   position: fixed;
@@ -55,7 +70,7 @@
 }
 
 .runner {
-  position: absolute;
+  position: relative;
   transition: all linear 0.1s;
   margin-left: -50px;
   left: 50%;
@@ -67,30 +82,21 @@
     box-shadow: 0 0 0 1px white;
     border-radius: 50%;
     animation-name: runnerHead;
-    animation-duration: 1s;
+    animation-duration: 0.4s;
     animation-iteration-count: infinite;
+    left: 30px;
   }
   .running-body {
     position: absolute;
-    top: 57.5px;
-    // left: -10rpx;
-    width: 100px;
-    height: 100px;
+    top: 50px;
+    left: -70px;
+    width: 200px;
+    height: 150px;
   }
-}
-
-.block {
-  flex: 1;
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-content: center;
-  align-items: center;
 }
 
 .display {
   font-size: 30px;
-
   .ranking {
     max-width: 100vw;
     color: orange;
@@ -99,11 +105,29 @@
     //   -1px 1px 1px #030, -1px 0 1px #030;
   }
 }
-.footer {
-  flex-direction: row;
-  margin-bottom: 30px;
-  .button {
-    padding: 0 10px;
+.scanCover {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  background: gray;
+  width: 100%;
+  height: 100%;
+  &.hideQR {
+    animation: ani-hide 1s ease forwards;
+  }
+}
+@keyframes ani-hide {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-20%);
+  }
+  100% {
+    transform: translateY(-100%);
   }
 }
 </style>
@@ -111,25 +135,23 @@
   <view class="container">
     <header></header>
     <view class="body">
-      <view wx:if="{{false}}">
+      <view>
         <view>{{Lang.shake.Url}}</view>
         {{Lang.shake.Desc1}}
-        <!-- <view>
+        <view>
           Msg:{{msg}}
-        </view> -->
-        <button class="button button-3d button-caution" @tap="onStart" wx:if="{{true||isAdmin}}">
+        </view>
+        <button class="btn-normal button button-3d button-caution" @tap="onStart" wx:if="{{true||isAdmin}}">
           <text>{{Lang.shake.BtnStart}}</text>
         </button>
-        <!-- <button class="button button-3d button-caution" @tap="testRun" wx:if="{{isAdmin}}">
+        <button class="btn-normal button button-3d button-caution" @tap="testRun" wx:if="{{isAdmin}}">
           <text>test run</text>
-        </button> -->
-        <!-- <button class="btn-primary2 button-raised button-action button-circle" @tap="onShake" wx:if="{{showButton}}">
-          <text>{{Lang.shake.BtnReady}}</text>
-        </button> -->
+        </button>
       </view>
       <view class="avatar">
         <view class="runner">
-          <image class="running-body" src='https://ellist.cn/wmtan/static/img/running1.gif'></image>
+          <!-- <image class="running-body" src='https://ellist.cn/wmtan/static/img/running1.gif'></image> -->
+          <image class="running-body" src='../static/img/Bus1.gif'></image>
           <image class="running-head" src="{{UserInfo.avatarUrl}}"></image>
         </view>
       </view>
@@ -138,29 +160,16 @@
           {{ranking}}
         </view>
       </view>
-      <view class="display block">
-        <button class="button button-raised button-action button-circle" @tap="onShake" wx:if="{{showButton}}">
-          <text>{{Lang.shake.BtnReady}}</text>
-        </button>
 
-        <button class="button button-raised button-action button-circle" @tap="onShake" wx:if="{{!showButton}}">
-          <text>Refresh</text>
-        </button>
-      </view>
-
-      <view class="footer" wx:if="{{isAdmin}}">
-        <button class="button button-raised button-primary" data-url='./admin' @tap='nav'>
-          <text>Admin</text>
-        </button>
-
-        <button class="button button-raised button-primary" data-url='./shakeTest' @tap='nav'>
-          <text>Test</text>
-        </button>
-
-        <button class="button button-raised button-caution" @tap="onStart">
-          <text>{{Lang.shake.BtnStart}}</text>
-        </button>
-      </view>
+      <button class="button button-raised button-action button-circle" @tap="onShake" wx:if="{{showButton}}">
+        <text>{{Lang.shake.BtnReady}}</text>
+      </button>
+    </view>
+    <view class="scanCover {{showQRScan?'':'hideQR'}}">
+      <!-- <image class="btn-img" src='../static/icon/scan.png'></image> -->
+      <button class="button button-highlight button-raised button-action button-circle" @tap="scanQR">
+        <image class="btn-img" src='../static/icon/scan.png'></image>
+      </button>
     </view>
   </view>
 </template>
@@ -169,7 +178,7 @@ import wepy from 'wepy';
 import Header from '@/components/header'; // alias example
 import TextMixin from '@/mixins/text';
 // import { $wuxBackdrop } from '../wux/index'
-export default class Shake extends wepy.page {
+export default class ShakeGroup extends wepy.page {
   components = {
     header: Header
   };
@@ -189,7 +198,7 @@ export default class Shake extends wepy.page {
   data = {
     lastCheckTime: 0,
     threshold: 2,
-    checkTimeThreshold: 500,
+    checkTimeThreshold: 1000,
     requestTimeBreak: 1000,
     hits: [],
     shakeHistory: [],
@@ -200,18 +209,28 @@ export default class Shake extends wepy.page {
     msg: '',
     range: 1,
     showButton: true,
+    showQRScan: false,
     ranking: 'Click to ready',
     shakeActive: true,
-    shakeSteps: 0
+    shakeSteps: 0,
+    groupid: 0
   };
   methods = {
     testRun(e) {
       this.sendRun(50);
       console.log('send test run 50');
     },
-    nav(e) {
-      // console.log(e.target.dataset)
-      this.$navigate(e.target.dataset.url);
+    scanQR() {
+      let self = this;
+      self.showQRScan = false;
+      return;
+      wepy.scanCode({
+        success: function(resp) {
+          self.msg = resp.result;
+          self.showQRScan = false;
+        },
+        fail: console.error
+      });
     },
     onStart(e) {
       let url = 'https://ellist.cn/wmtan/api/race/begin';
@@ -249,7 +268,7 @@ export default class Shake extends wepy.page {
       let self = this;
       self.showButton = false;
       self.ranking = self.Lang.shake.WaitSignal; //'Wait for Start Signal...';
-      this.shakeFun();
+      this.startShake();
       this.sendRun();
       this.sendRun(10);
       self.$apply();
@@ -284,7 +303,7 @@ export default class Shake extends wepy.page {
     self.shakeHistory.length = 0;
     let hit = { x: maxx, y: maxy, z: maxz, run: run, count };
     self.hits.push(hit);
-    let runDis = hit.run * self.amp + count;
+    let runDis = hit.run * self.amp;
 
     if (self.shakeActive) {
       self.sendRun(runDis);
@@ -315,11 +334,15 @@ export default class Shake extends wepy.page {
       gender: this.$parent.globalData.userInfo.gender,
       message: step
     };
+    let header = {
+      groupId: self.groupid
+    };
     console.log('dataRun', dataRun);
-    wepy.request({
+    this.$parent.wxRequest({
       url: url,
       method: 'POST',
       data: dataRun,
+      header: header,
       success: function(resp) {
         self.msg = 'run ' + step;
         console.log('dataRun send', resp);
@@ -341,17 +364,25 @@ export default class Shake extends wepy.page {
     let self = this;
     self.showButton = true;
     self.ranking = '';
+    wx.stopAccelerometer();
     // self.$apply();
   }
   onShow() {
     let self = this;
     self.ranking = self.Lang.shake.ClickReady;
+    if (self.shakeActive) {
+      this.startShake();
+    }
     this.$parent.getConfig(false, config => {
       self.config = config;
     });
-    // this.shakeFun();
-    // console.log('start shakefun');
-    // this.sendRun();
+  }
+  startShake() {
+    this.shakeActive = true;
+    wx.startAccelerometer({
+      interval: 'ui'
+    });
+    wepy.vibrateLong();
   }
   onSocketMessage(res) {
     let self = this;
@@ -380,8 +411,9 @@ export default class Shake extends wepy.page {
       wx.stopAccelerometer();
     }
     if (message.indexOf('GoGoGo') > -1) {
-      self.shakeActive = true;
-      wepy.vibrateLong();
+      self.startShake();
+      // self.shakeActive = true;
+      // wepy.vibrateLong();
       self.ranking = 'Go! Shake~Shake';
     }
   }

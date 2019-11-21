@@ -103,21 +103,21 @@ export default class PreLoad extends wepy.page {
   }
 
   handleConfiguration(config, isRegistered) {
-    console.log('handleConfiguration===>');
+    // console.log('handleConfiguration===>');
     let self = this;
     if (config.debug) {
       console.log('debug');
     } else {
-      console.log(config);
+      console.log('Configuration===>', config);
     }
     // config.stage = '2';
     switch (config.stage) {
       case '1':
-        if (isRegistered) self.$redirect('./welcome');
-        else self.$redirect('./register');
+        self.$redirect('./shakeGroup');
         break;
       case '2':
-        self.$redirect('./index');
+        self.$redirect('./shake');
+        // self.$redirect('./index');
         break;
       case '3':
         if (isRegistered) {
@@ -162,8 +162,6 @@ export default class PreLoad extends wepy.page {
   onHide() {}
   onLoad(parm, data) {
     let self = this;
-    console.log('app pre-load', !this.$parent.globalData.userInfo);
-    // console.log(this.$parent.globalData.userInfo);
     self.showReload = false;
     setTimeout(() => {
       self.showReload = true;
@@ -172,6 +170,44 @@ export default class PreLoad extends wepy.page {
 
     self.$apply();
 
+    console.log('preloainding===>');
+
+    wepy.getSystemInfo({
+      success: function(sys) {
+        console.log('getsys info==>', sys);
+        if (sys.environment == 'wxwork2') {
+          self.wxworkLogin();
+        } else {
+          // 普通登陆----------------------------
+          self.normalLogin();
+        }
+      }
+    });
+    // console.log('this.$parent.globalData.enviroment', env);
+  }
+
+  wxworkLogin() {
+    // 企业微信登陆----------------------------
+    wx.qy.login({
+      success: function(res) {
+        console.log('wxwork==>', res);
+        // if (res.code) {
+        //   //发起网络请求
+        //   wx.request({
+        //     url: 'https://test.com/onLogin',
+        //     data: {
+        //       code: res.code
+        //     }
+        //   });
+        // } else {
+        //   console.log('登录失败！' + res.errMsg);
+        // }
+      }
+    });
+  }
+
+  normalLogin() {
+    let self = this;
     wepy.login({
       success(res) {
         console.log('wx.login', res);
