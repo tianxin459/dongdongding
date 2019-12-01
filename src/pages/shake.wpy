@@ -111,6 +111,22 @@
     padding: 0 10px;
   }
 }
+
+.bottomXYZ {
+  font-size: 10px;
+  // color: black;
+}
+@keyframes ani-hide {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-20%);
+  }
+  100% {
+    transform: translateY(-100%);
+  }
+}
 </style>
 <template>
   <view class="container">
@@ -149,9 +165,12 @@
           <text>{{Lang.shake.BtnReady}}</text>
         </button>
 
-        <button class="button button-raised button-action button-circle" @tap="onShake" wx:if="{{!showButton}}">
+        <button class="button button-raised button-default button-circle" @tap="oninitBtn" wx:if="{{!showButton}}">
           <text>Refresh</text>
         </button>
+      </view>
+      <view class="bottomXYZ">
+        {{sx}}-{{sy}}-{{sz}}|{{randomG}}
       </view>
 
       <view class="footer" wx:if="{{isDebug||isAdmin}}">
@@ -166,11 +185,18 @@
           <text>Remote</text>
         </button>
 
-
         <button class="button button-raised button-caution" @tap="onStart">
           <text>{{Lang.shake.BtnStart}}</text>
         </button>
       </view>
+    </view>
+    <view></view>
+    <view wx:if="{{false}}" class="shakeCover cover {{showButton?'':'hideCover'}}">
+      <view class="cover-top"></view>
+      <button class="button button-raised button-action button-circle" @tap="onShake">
+        <text>{{Lang.shake.BtnReady}}</text>
+      </button>
+      <view class="cover-bottom"></view>
     </view>
   </view>
 </template>
@@ -178,12 +204,13 @@
 import wepy from 'wepy';
 import Header from '@/components/header'; // alias example
 import TextMixin from '@/mixins/text';
+import AdminMixin from '@/mixins/adminMixin';
 // import { $wuxBackdrop } from '../wux/index'
 export default class Shake extends wepy.page {
   components = {
     header: Header
   };
-  mixins = [TextMixin];
+  mixins = [TextMixin, AdminMixin];
   config = {
     usingComponents: {}
   };
@@ -194,8 +221,12 @@ export default class Shake extends wepy.page {
     isAdmin() {
       return this.$parent.isAdmin();
     },
-    isDebug(){
+    isDebug() {
       return this.$parent.isDebug();
+    },
+    isWinning() {
+      let winningInfo = this.$parent.globalData.userInfo.winningInfo || {};
+      return !winningInfo.claimed;
     }
   };
   components = {};
@@ -211,6 +242,7 @@ export default class Shake extends wepy.page {
     sy: 0,
     sz: 0,
     msg: '',
+    randomG: 0,
     range: 1,
     showButton: true,
     ranking: 'Click to ready',
@@ -223,7 +255,6 @@ export default class Shake extends wepy.page {
       console.log('send test run 50');
     },
     nav(e) {
-      // console.log(e.target.dataset)
       this.$navigate(e.target.dataset.url);
     },
     onStart(e) {
@@ -258,22 +289,57 @@ export default class Shake extends wepy.page {
       // this.shakeFun();
       // this.sendRun();
     },
+    oninitBtn() {
+      this.showButton = true;
+      this.$apply();
+    },
+    reTryStartAccerometer() {
+      wx.startAccelerometer({
+        interval: 'ui',
+        success: () => {
+          console.log('start acc');
+        },
+        fail: console.error
+      });
+    },
     onShake() {
       let self = this;
-      self.showButton = false;
+      self.ranking = '... ...';
+      self.shakeActive = true;
+      wx.onAccelerometerChange(e => self.onAccelerometerChange(e));
+      setTimeout(() => {
+        wx.startAccelerometer({
+          interval: 'ui',
+          success: () => {
+            self.showButton = false;
+            self.ranking = self.Lang.shake.WaitSignal;
+            self.$apply();
+          },
+          fail: e => {
+            console.error('accelerometer error===>', e);
+            setTimeout(() => {
+              self.reTryStartAccerometer();
+            }, 500);
+          }
+        });
+      }, 500);
+
       self.ranking = self.Lang.shake.WaitSignal; //'Wait for Start Signal...';
-      this.shakeFun();
-      this.sendRun();
-      this.sendRun(10);
+      // this.shakeFun();
+      // self.sendRun(1);
+      self.sendRun(10);
       self.$apply();
     }
   };
+  randomRange(myMin, myMax) {
+    return Math.floor(Math.random() * (myMax - myMin + 1)) + myMin;
+  }
   onAccelerometerChange(res) {
     let self = this;
 
-    self.sx = res.x;
-    self.sy = res.y;
-    self.sz = res.z;
+    self.sx = res.x.toFixed(4);
+    self.sy = res.y.toFixed(4);
+    self.sz = res.z.toFixed(4);
     var x = res.x.toFixed(4);
     var y = res.y.toFixed(4);
     var z = res.z.toFixed(4);
@@ -286,7 +352,12 @@ export default class Shake extends wepy.page {
     }
     let nowCheckTime = Date.now();
     if (nowCheckTime - self.lastCheckTime < self.checkTimeThreshold) return;
-    self.lastCheckTime = nowCheckTime;
+    let randomGap = self.randomRange(
+      self.checkTimeThreshold * 0.8,
+      -1 * self.checkTimeThreshold * 0.8
+    );
+    self.randomG = randomGap;
+    self.lastCheckTime = nowCheckTime + randomGap;
     if (self.shakeHistory.length < 1) return;
 
     let maxx = Math.max(...self.shakeHistory.map(i => Math.abs(i.x)));
@@ -323,7 +394,7 @@ export default class Shake extends wepy.page {
     let self = this;
     let dataRun = {
       userId: this.$parent.globalData.userInfo.openid,
-      englishName: this.$parent.globalData.user.englishName,
+      englishName: this.$parent.globalData.userInfo.englishName,
       avatorUrl: this.$parent.globalData.userInfo.avatarUrl,
       gender: this.$parent.globalData.userInfo.gender,
       message: step
@@ -335,26 +406,31 @@ export default class Shake extends wepy.page {
       data: dataRun,
       success: function(resp) {
         self.msg = 'run ' + step;
-        console.log('dataRun send', resp);
+        // console.log('dataRun recieved', resp);
       },
       fail: function(err) {
+        self.msg = err;
         console.error(err);
       }
     });
   }
   onUnload() {
     wx.stopAccelerometer();
+    wx.offAccelerometerChange();
   }
   onLoad(parm, data) {
     let self = this;
     self.showButton = true;
+    console.log('amp * ==>', this.$parent.globalData.config.shakeAmp);
+    self.amp = (this.$parent.globalData.config.shakeAmp || 1) * 1;
     // this.shakeActive = true
   }
   onHide() {
     let self = this;
     self.showButton = true;
     self.ranking = '';
-    // self.$apply();
+    wx.stopAccelerometer();
+    wx.offAccelerometerChange();
   }
   onShow() {
     let self = this;
@@ -368,9 +444,13 @@ export default class Shake extends wepy.page {
   }
   onSocketMessage(res) {
     let self = this;
-    console.log('shake=>wsresponse', res);
+    // console.log('shake=>wsresponse', res);
     // 接收消息回调
-    var data = JSON.parse(res.data.replace(String.fromCharCode(0x1e), '')); // 返回时去掉分隔符
+    let dataStr = res.data.replace(String.fromCharCode(0x1e), '');
+    // incase we recieved '{}{...}'
+    dataStr = dataStr.replace('{}', '');
+    if (dataStr == '') dataStr = '{}';
+    let data = JSON.parse(dataStr); // 返回时去掉分隔符
     if (data.target) {
       switch (data.target) {
         case 'ReceiveMessage':
@@ -387,13 +467,14 @@ export default class Shake extends wepy.page {
     let self = this;
     if (!message) return;
     if (message.indexOf('finish at') > -1) {
-      self.shakeActive = false;
+      console.log('recieve "finish at"');
       wepy.vibrateLong();
       self.ranking = 'Competition ranking:' + message.replace('finish at', '');
       wx.stopAccelerometer();
     }
     if (message.indexOf('GoGoGo') > -1) {
       self.shakeActive = true;
+      console.log('recieve "GoGoGo"');
       wepy.vibrateLong();
       self.ranking = 'Go! Shake~Shake';
     }

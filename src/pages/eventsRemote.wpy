@@ -1,19 +1,55 @@
 <style lang="less">
 @import '../theme.less';
+.input-container .input-text input {
+  height: 160rpx;
+}
 .input-container {
   border: 1px solid;
 }
 .btnCommand {
   width: 90%;
   margin: 10px;
+  height: 100px;
+  border-radius: 10px;
 }
-.actions-btn-container{
+.actions-btn-container {
   display: flex;
+  width: 90%;
   flex-direction: column;
   border: 2px solid @colorBorder;
   .title-btn-container {
     display: flex;
   }
+}
+.prize-container {
+  display: grid;
+  grid-template-columns: 50% 50%;
+  grid-template-rows: repeat(1fr 10);
+  .btnCommand {
+    height: 200rpx;
+    border-radius: 10px;
+    &.prize-1 {
+      background: linear-gradient(180deg, #ab1c14, #dd3930);
+    }
+    &.prize-2 {
+      background: linear-gradient(180deg, #002364, #1985c6);
+    }
+    &.prize-3 {
+      background: linear-gradient(180deg, #993200, #ff5c11);
+    }
+    &.prize-4 {
+      background: linear-gradient(180deg, #157a6e, #499f68);
+    }
+  }
+}
+.btnDraw {
+  height: 100px;
+}
+
+.btnCommand.btnReset {
+  margin-top: 200rpx;
+  color: black;
+  background: linear-gradient(180deg, #ab1c14, #dd3930);
 }
 </style>
 <template>
@@ -40,24 +76,30 @@
     <view class="actions-btn-container">
       <view class="title-btn-container">
         <button class="btnCommand button button-raised button-action button-pill" @tap="cmdShowText">
-          <text>Show Curtain Title</text>
+          <text>Show</text>
         </button>
         <button class="btnCommand button button-raised button-caution button-pill" data-tag="cmd#@$hideprizetitle" @tap="sendCommandShortcut">
-          <text>Hide Curtain Title</text>
+          <text>Hide</text>
         </button>
       </view>
       <button class="btnCommand button button-raised button-action button-pill" data-tag="cmd#@$startstop" @tap="sendCommandShortcut">
         <text>Open Close Curtain</text>
       </button>
     </view>
-    <repeat for="{{prizeConfig}}"  key="index" index="key" item="val">
-      <button class="btnCommand button button-raised button-inverse button-pill" data-tag="{{val.command}}" data-display="{{val.display}}" @tap="sendCommandShortcut">
-        <text>{{val.display}}</text>
-      </button>
-    </repeat>
 
-    <button class="btnCommand button button-raised button-primary button-pill" data-tag="cmd#@$draw" @tap="sendCommandShortcut">
+    <button class="btnCommand btnDraw button button-raised button-primary button-pill" data-tag="cmd#@$draw" @tap="sendCommandShortcut">
       <text>Lucky Draw</text>
+    </button>
+    <view class="prize-container">
+      <repeat for="{{prizeConfig}}" key="index" index="key" item="val">
+        <button class="btnCommand button button-raised button-inverse button-pill prize-{{val.level}}" data-target="{{val}}" data-tag="{{val.command}}" data-display="{{val.display}}" data-id="{{val.id}}" @tap="sendPrizeCommandShortcut">
+          <text>{{val.display}}</text>
+        </button>
+      </repeat>
+    </view>
+
+    <button class="btnCommand button button-raised button-primary button-pill btnReset" data-tag="" @tap="resetPrizeObj">
+      <text>ResetPrize</text>
     </button>
   </view>
 </template>
@@ -67,107 +109,122 @@ import Header from '@/components/header';
 import ChatBox from '@/components/chatbox';
 
 export default class EventsRemote extends wepy.page {
-
   components = {
     header: Header,
-    chatbox:ChatBox
+    chatbox: ChatBox
   };
   data = {
+    CacheKey_Prize: '#$%Prize',
     userInfo: {},
-    bulletMessage:'cmd#@$',
-    prizeText:'',
-    showButtonText:false,
-    showtext:false,
-    prizeConfig:[
+    bulletMessage: 'cmd#@$',
+    prizeText: '',
+    showButtonText: false,
+    showtext: false,
+    prizeConfig: {},
+    prizeConfig2: [
       {
-        id:11,
-        title:"Prize1",
-        command:"cmd#@$switchtoprize:11:1",
-        display:"Prize 1-1"
+        id: 11,
+        enable: true,
+        level: 1,
+        title: 'Prize1',
+        command: 'cmd#@$switchtoprize:11:1',
+        display: 'Prize 1'
       },
       {
-        id:12,
-        title:"Prize12",
-        command:"cmd#@$switchtoprize:12:1",
-        display:"Prize 1-2"
+        id: 21,
+        enable: true,
+        level: 2,
+        title: 'Prize21',
+        command: 'cmd#@$switchtoprize:21:1',
+        display: 'Prize 2 round 1'
       },
       {
-        id:21,
-        title:"Prize21",
-        command:"cmd#@$switchtoprize:21:1",
-        display:"Prize 2-1"
+        id: 22,
+        enable: true,
+        level: 2,
+        title: 'Prize22',
+        command: 'cmd#@$switchtoprize:22:1',
+        display: 'Prize 2 round 2'
       },
       {
-        id:22,
-        title:"Prize22",
-        command:"cmd#@$switchtoprize:22:1",
-        display:"Prize 2-2"
+        id: 23,
+        enable: true,
+        level: 2,
+        title: 'Prize23',
+        command: 'cmd#@$switchtoprize:23:1',
+        display: 'Prize 2 round 3'
       },
       {
-        id:23,
-        title:"Prize23",
-        command:"cmd#@$switchtoprize:23:1",
-        display:"Prize 2-3"
+        id: 31,
+        enable: true,
+        level: 3,
+        title: 'Prize31',
+        command: 'cmd#@$switchtoprize:31:4',
+        display: 'Prize 3 round 1'
       },
       {
-        id:31,
-        title:"Prize31",
-        command:"cmd#@$switchtoprize:31:3",
-        display:"Prize 3-1"
+        id: 32,
+        enable: true,
+        level: 3,
+        title: 'Prize32',
+        command: 'cmd#@$switchtoprize:32:4',
+        display: 'Prize 3 round 2'
       },
       {
-        id:32,
-        title:"Prize32",
-        command:"cmd#@$switchtoprize:32:3",
-        display:"Prize 3-2"
+        id: 41,
+        enable: true,
+        level: 4,
+        title: 'Prize41',
+        command: 'cmd#@$switchtoprize:41:12',
+        display: 'Prize 4 round 1'
       },
       {
-        id:41,
-        title:"Prize41",
-        command:"cmd#@$switchtoprize:41:5",
-        display:"Prize 4-1"
+        id: 42,
+        enable: true,
+        level: 4,
+        title: 'Prize42',
+        command: 'cmd#@$switchtoprize:42:12',
+        display: 'Prize 4round 2'
       },
       {
-        id:42,
-        title:"Prize42",
-        command:"cmd#@$switchtoprize:42:5",
-        display:"Prize 4-2"
+        id: 43,
+        enable: true,
+        level: 4,
+        title: 'Prize43',
+        command: 'cmd#@$switchtoprize:43:12',
+        display: 'Prize 4 round 3'
       },
       {
-        id:43,
-        title:"Prize43",
-        command:"cmd#@$switchtoprize:43:5",
-        display:"Prize 4-3"
+        id: 51,
+        enable: true,
+        level: 5,
+        title: 'Prize51',
+        command: 'cmd#@$switchtoprize:51:15',
+        display: 'Prize 5 round 1'
       },
       {
-        id:51,
-        title:"Prize51",
-        command:"cmd#@$switchtoprize:51:15",
-        display:"Prize 5-1"
+        id: 52,
+        enable: true,
+        level: 5,
+        title: 'Prize52',
+        command: 'cmd#@$switchtoprize:52:15',
+        display: 'Prize 5 round 2'
       },
       {
-        id:52,
-        title:"Prize52",
-        command:"cmd#@$switchtoprize:52:15",
-        display:"Prize 5-2"
+        id: 53,
+        enable: true,
+        level: 5,
+        title: 'Prize53',
+        command: 'cmd#@$switchtoprize:53:15',
+        display: 'Prize 5 round 3'
       },
       {
-        id:53,
-        title:"Prize53",
-        command:"cmd#@$switchtoprize:53:15",
-        display:"Prize 5-3"
-      },
-      {
-        id:54,
-        title:"Prize54",
-        command:"cmd#@$switchtoprize:54:15",
-        display:"Prize 5-4"
-      },
-      {
-        id:55,
-        title:"Prize55",
-        command:"cmd#@$switchtoprize:55:15",
-        display:"Prize 5-5"
+        id: 54,
+        enable: true,
+        level: 5,
+        title: 'Prize54',
+        command: 'cmd#@$switchtoprize:54:15',
+        display: 'Prize 5 round 4'
       }
     ]
   };
@@ -182,7 +239,7 @@ export default class EventsRemote extends wepy.page {
       self.showButtonText = !!this.bulletMessage;
       self.$apply();
     },
-    cmdShowTextInput(e){
+    cmdShowTextInput(e) {
       let self = this;
       this.prizeText = e.detail.value;
       self.showtext = !!this.prizeText;
@@ -196,62 +253,110 @@ export default class EventsRemote extends wepy.page {
       this.$apply();
     },
     cmdShowText(e) {
-      this.sendCommand('cmd#@$showprizetitle:'+this.prizeText);
-      console.log('cmd=>', 'cmd#@$showprizetitle:'+this.prizeText);
-      this.prizeText = ''
+      if (this.prizeText == '') return;
+      this.sendCommand('cmd#@$showprizetitle:' + this.prizeText);
+      console.log('cmd=>', 'cmd#@$showprizetitle:' + this.prizeText);
+      this.prizeText = '';
       this.showtext = !!this.prizeText;
       this.$apply();
     },
-    sendCommandShortcut(e){
+    sendCommandShortcut(e) {
       let shortcut = e.target.dataset.tag;
       let display = e.target.dataset.display;
       this.prizeText = display;
       console.log(shortcut);
       this.sendCommand(shortcut);
       this.$apply();
+    },
+    sendPrizeCommandShortcut(e) {
+      let shortcut = e.target.dataset.tag;
+      let display = e.target.dataset.display;
+      let id = e.target.dataset.id;
+      let prizeObj = this.prizeConfig.find(x => x.id == id);
+      // console.log(e.target.dataset.target);
+      prizeObj.enable = false;
+      prizeObj.command = '';
+      prizeObj.display = '- - -';
+      console.log(prizeObj);
+      this.prizeText = display;
+      console.log(shortcut);
+      this.sendCommand(shortcut);
+      this.savePrizeConfig(this.prizeConfig);
+      this.$apply();
+    },
+    resetPrizeObj() {
+      let self = this;
+      wx.showModal({
+        title: 'Confirm?',
+        content: 'Confirm reset prize?',
+        success(res) {
+          if (res.confirm) {
+            console.log('reset');
+            self.resetPrizeConfig();
+          } else if (res.cancel) {
+            console.log('cancel');
+          }
+        }
+      });
     }
   };
 
+  resetPrizeConfig() {
+    var self = this;
+    self.savePrizeConfig(self.prizeConfig2.slice());
+  }
+
+  savePrizeConfig(prizeObj) {
+    var self = this;
+    wx.setStorageSync(self.CacheKey_Prize, prizeObj);
+    self.prizeConfig = prizeObj;
+    self.$apply();
+  }
+
   onLoad() {
     var self = this;
+    var prizeObj = wx.getStorageSync(self.CacheKey_Prize);
+    // console.table(prizeObj);
+    if (!prizeObj) self.resetPrizeConfig();
+    else self.prizeConfig = prizeObj;
+
     this.$parent.getUserInfo(info => {
       self.userInfo = info;
       self.msg = '###';
       self.$apply();
     });
+    self.$apply();
   }
 
+  sendCommand(txt) {
+    wepy.vibrateLong();
+    let self = this;
+    if (!txt) return;
+    let url = 'https://ellist.cn/wmtan/api/remote/Command';
+    let dataBullet = {
+      // nickName: this.$parent.globalData.userInfo.nickName,
+      openid: this.$parent.globalData.userInfo.openid,
+      nickName: this.$parent.globalData.userInfo.nickName,
+      Id: this.$parent.globalData.userInfo.avatarUrl,
+      englishName: this.$parent.globalData.user.englishName,
+      Message: txt
+    };
 
-
-    sendCommand(txt) {
-      let self = this;
-      if (!txt) return;
-      let url = 'https://ellist.cn/wmtan/api/remote/Command';
-      let dataBullet = {
-        // nickName: this.$parent.globalData.userInfo.nickName,
-        openid: this.$parent.globalData.userInfo.openid,
-        nickName: this.$parent.globalData.userInfo.nickName,
-        Id: this.$parent.globalData.userInfo.avatarUrl,
-        englishName: this.$parent.globalData.user.englishName,
-        Message: txt
-      };
-
-
-      this.$parent.wxRequest({
-        url: url,
-        method: 'POST',
-        data: dataBullet,
-        success: function(resp) {
-          console.log('message send', resp);
-          wx.showToast({
-            icon: 'success',
-            title: 'cmd sent=>'+dataBullet.Message
-          });
-        },
-        fail: function(err) {
-          console.error(err);
-        }
-      });
-    }
+    this.$parent.wxRequest({
+      url: url,
+      method: 'POST',
+      data: dataBullet,
+      success: function(resp) {
+        console.log('message send', resp);
+        wx.showToast({
+          icon: 'success',
+          title: 'cmd sent=>' + dataBullet.Message
+        });
+      },
+      fail: function(err) {
+        console.error(err);
+      }
+    });
+  }
 }
 </script>

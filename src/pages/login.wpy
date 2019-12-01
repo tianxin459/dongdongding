@@ -96,9 +96,6 @@ export default class Login extends wepy.page {
         e.detail.userInfo
       );
       let self = this;
-      let url = `https://wtf.chinacloudsites.cn/api/WxUser/register`;
-      // let url = `https://wtf.chinacloudsites.cn/api/WxUser/register?nickname=${e.detail.userInfo.nickName}&avatarUrl=${e.detail.userInfo.avatarUrl}`;
-      console.log(url);
       let loginData = e.detail.userInfo;
       console.log(loginData);
       this.$redirect('./preload');

@@ -1,0 +1,133 @@
+<style lang="less">
+@import '../theme.less';
+</style>
+<template>
+  <view class="container">
+    <header></header>
+    <view class="body" wx:if="{{isWinning}}">
+      {{isWinning}}
+      <view class="winning-info">
+        <view>{{winObj.userID}}</view>
+        <view>{{winObj.englishName}}</view>
+        <view>{{winObj.prize}}</view>
+      </view>
+      <view class="btn-group">
+
+        <button @tap="scanQR">scan</button>
+        <button @tap="claimPrize">Claim Prize</button>
+      </view>
+    </view>
+    <view class="body" wx:if="{{!isWinning}}">
+      Game is Over
+    </view>
+    <view class="footer">
+    </view>
+  </view>
+</template>
+<script>
+import wepy from 'wepy';
+import Header from '@/components/header'; // alias example
+// import { $wuxBackdrop } from '../wux/index'
+let balanceI;
+
+export default class EndGame extends wepy.page {
+  components = {
+    header: Header
+  };
+  config = {
+    usingComponents: {}
+  };
+  data = {
+    userInfo: {},
+    qrCodeUrl: '.',
+    qrCodeData: 'no data',
+    qrCodeColor: '#1ab16c',
+    isIPX: false
+  };
+  computed = {
+    UserInfo() {
+      return this.$parent.globalData.userInfo;
+    },
+    isAdmin() {
+      return this.$parent.isAdmin();
+    },
+    isDebug() {
+      return this.$parent.isDebug();
+    },
+    isWinning() {
+      let winningInfo = this.$parent.globalData.userInfo.winningInfo || {};
+      return !winningInfo.claimed;
+    },
+    winObj() {
+      return this.$parent.globalData.userInfo.winningInfo || {};
+    }
+  };
+  methods = {
+    scanQR() {
+      let self = this;
+      wepy.scanCode({
+        success: function(resp) {
+          console.log('scan QR', resp.result);
+        },
+        fail: function(err) {
+          console.error('err', err);
+        }
+      });
+    },
+    claimPrize() {
+      let winningInfo = this.$parent.globalData.userInfo.winningInfo;
+      if (!winningInfo) return;
+      winningInfo.claimed = true;
+      let urlClaim = 'https://ellist.cn/wmtan/api/db/saveWinners';
+      let postData = { winners: [winningInfo] };
+      this.$parent.wxRequest({
+        url: urlClaim,
+        method: 'POST',
+        data: postData,
+        success: function(resp) {
+          console.log('message send', resp);
+          wx.showToast({
+            icon: 'success',
+            title: 'cmd sent=>'
+          });
+        },
+        fail: function(err) {
+          console.error(err);
+        }
+      });
+    },
+    goBack() {
+      console.log('go back');
+      this.$redirect('./index');
+    }
+  };
+
+  onLoad(parm, data) {
+    var self = this;
+    //   console.log(data.$data);
+    self.userInfo = this.$parent.globalData.userInfo;
+    self.userInfo.englishName = self.$parent.globalData.user.englishName;
+    // console.log('qruserInfo', self.userInfo)
+    // var { nickName, avatarUrl } = self.userInfo
+    var qrdata = {};
+    // qrdata.nickName = self.userInfo.nickName;
+    qrdata.openid = self.userInfo.openid;
+    qrdata.avatarUrl = self.userInfo.avatarUrl;
+    qrdata.englishName = self.$parent.globalData.user.englishName;
+    // console.log('qrdata', qrdata)
+    self.qrCodeData = JSON.stringify(qrdata);
+    //   self.isIPX = this.$parent.globalData.isIpx;
+    //   console.log(this.$parent.globalData.isIpx);
+    //   this.$parent.getUserInfo(info=>{
+    //     self.userInfo = info;
+    //     self.msg = "###";
+    //     var {nickName,avatarUrl}  = self.userInfo;
+    //     var qrdata = {nickName,avatarUrl};
+    //     self.qrCodeData = JSON.stringify(qrdata);
+    //     console.log(self.qrCodeData);
+    //     console.log(JSON.parse(self.qrCodeData))
+    //     self.$apply();
+    //   });
+  }
+}
+</script>

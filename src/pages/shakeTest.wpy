@@ -248,9 +248,9 @@ export default class ShakeTest extends wepy.page {
   onAccelerometerChange(res) {
     let self = this;
 
-    self.sx = res.x;
-    self.sy = res.y;
-    self.sz = res.z;
+    self.sx = res.x.toFixed(4);
+    self.sy = res.y.toFixed(4);
+    self.sz = res.z.toFixed(4);
     var x = res.x.toFixed(4);
     var y = res.y.toFixed(4);
     var z = res.z.toFixed(4);

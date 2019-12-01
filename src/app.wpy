@@ -27,6 +27,9 @@ export default class extends wepy.app {
     pages: [
       'pages/preload',
       'pages/shakeGroup',
+      'pages/scanQR',
+      'pages/winPrize',
+      'pages/endGame',
       'pages/shakeTest',
       'pages/shake',
       'pages/eventsRemote',
@@ -86,9 +89,10 @@ export default class extends wepy.app {
   constructor() {
     super();
     this.use('requestfix');
+    // this.use('promisify');
   }
 
-  getCacheUser(name) {
+  getCacheUser() {
     let cacheUser =
       wepy.getStorageSync(this.globalData.CacheName_UserInfo) || {};
     if (cacheUser.nickName || cacheUser.avatarUrl) return cacheUser;
@@ -142,7 +146,7 @@ export default class extends wepy.app {
     let self = this;
     this.resetCache();
     this.getSystemInfo();
-    this.getConfig();
+    this.getConfig(console.log);
     // this.initCloud();
 
     wepy.onSocketOpen(res => {
@@ -165,7 +169,7 @@ export default class extends wepy.app {
       wx.onSocketMessage(function(res) {
         //接收消息回调
         var data = res.data.replace(String.fromCharCode(0x1e), ''); //返回时去掉分隔符
-        console.log('app=>onSocketMessage recieve:' + data);
+        // console.log('app=>onSocketMessage recieve:' + data);
         var pages = getCurrentPages();
         var currentPage = pages[pages.length - 1];
         if (currentPage && currentPage.onSocketMessage) {
@@ -187,16 +191,24 @@ export default class extends wepy.app {
       setTimeout(() => self.WsConnect(), 5000); //5s后自动重连
     });
 
-    wx.onAccelerometerChange(e => {
-      var pages = getCurrentPages();
-      var currentPage = pages[pages.length - 1];
-      if (currentPage && currentPage.onAccelerometerChange) {
-        // console.log('currentPage', currentPage);
-        currentPage.onAccelerometerChange(e);
-      }
-    });
+    // wx.onAccelerometerChange(e => {
+    //   var pages = getCurrentPages();
+    //   var currentPage = pages[pages.length - 1];
+    //   if (currentPage && currentPage.onAccelerometerChange) {
+    //     // console.log('currentPage', currentPage);
+    //     currentPage.onAccelerometerChange(e);
+    //   }
+    // });
 
     self.WsConnect();
+
+    wx.setKeepScreenOn({
+      keepScreenOn: true,
+      success: () => {
+        console.log('screen always on');
+      },
+      fail: console.error
+    });
   }
 
   WsConnect() {
@@ -262,6 +274,12 @@ export default class extends wepy.app {
       cb && cb(this.globalData.userInfo);
       return;
     }
+    // let userInfo = that.getCacheUser();
+    // if (userInfo) {
+    //   this.globalData.userInfo = userInfo;
+    //   cb && cb(this.globalData.userInfo);
+    //   return;
+    // }
 
     wepy.getUserInfo({
       success(res) {
@@ -284,8 +302,33 @@ export default class extends wepy.app {
       }
     });
   }
+
+  async getUserInfoAsync() {
+    const that = this;
+    return await new Promise((resolve, reject) => {
+      if (!!this.globalData.userInfo) {
+        resolve(this.globalData.userInfo);
+      }
+      wepy.getUserInfo({
+        success(res) {
+          wepy.setStorageSync(this.globalData.CacheName_UserInfo, res.userInfo);
+          that.globalData.userInfo = res.userInfo;
+          // that.globalData.userInfo.englishName = res.userInfo.nickName;
+          that.globalData.user.englishName = res.userInfo.nickName;
+          that.globalData.user.balance = 0;
+          console.log('user', that.globalData.userInfo, that.globalData.user);
+          resolve(this.globalData.userInfo);
+        },
+        fail(err) {
+          console.error(err);
+          wepy.redirectTo({ url: './login' });
+          reject();
+        }
+      });
+    });
+  }
   isDebug() {
-    return this.globalData.config.debug;
+    return this.globalData.config.debug == 'true';
   }
   isAdmin() {
     let adminConfig = this.globalData.config.admin || '';
@@ -326,6 +369,17 @@ export default class extends wepy.app {
   }
 
   wxRequest(requestObj) {
+    if (!requestObj.header) requestObj.header = {};
+    Object.assign(
+      requestObj.header,
+      { eventId: this.globalData.eventId },
+      requestObj.header
+    );
+
+    wepy.request(requestObj);
+  }
+
+  wxRequestAsync(requestObj) {
     if (!requestObj.header) requestObj.header = {};
     Object.assign(
       requestObj.header,

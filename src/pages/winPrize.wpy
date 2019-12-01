@@ -1,0 +1,128 @@
+<style lang="less">
+@import '../theme.less';
+</style>
+<template>
+  <view class="container">
+    <header></header>
+    <view class="body" wx:if="{{isWinning}}">
+      {{isWinning}}
+      <view class="winning-info">
+        <view>{{winObj.userID}}</view>
+        <view>{{winObj.englishName}}</view>
+        <view>{{winObj.prize}}</view>
+      </view>
+      <view class="qrCode">
+        <wux-qrcode data="{{ qrCodeData }}" fg-color="#485860" width="200" height="200" />
+      </view>
+      <view class="btn-group">
+
+        <button @tap="scanQR">scan</button>
+        <button @tap="claimPrize">Claim Prize</button>
+      </view>
+    </view>
+    <view class="body" wx:if="{{!isWinning}}">
+      Game is Over
+    </view>
+
+    <view class="footer" wx:if="{{isDebug||isAdmin}}">
+      <button class="button button-raised button-primary" data-url='./admin' @tap='nav'>
+        <text>Admin</text>
+      </button>
+
+      <button class="button button-raised button-primary" data-url='./scanQR' @tap='nav'>
+        <text>ScanQR</text>
+      </button>
+      <button class="button button-raised button-primary" data-url='./eventsRemote' @tap='nav'>
+        <text>Remote</text>
+      </button>
+    </view>
+  </view>
+</template>
+<script>
+import wepy from 'wepy';
+import Header from '@/components/header'; // alias example
+import AdminMixin from '@/mixins/adminMixin';
+// import { $wuxBackdrop } from '../wux/index'
+let balanceI;
+
+export default class WinPrize extends wepy.page {
+  mixins = [AdminMixin];
+  components = {
+    header: Header
+  };
+  config = {
+    usingComponents: {
+      'wux-qrcode': '../wux/qrcode/index'
+    }
+  };
+  data = {
+    userInfo: {},
+    qrCodeUrl: '.',
+    qrCodeData: 'no data',
+    qrCodeColor: '#1ab16c',
+    isIPX: false,
+    qrCodeData: ''
+  };
+  computed = {
+    isWinning() {
+      let winningInfo = this.$parent.globalData.userInfo.winningInfo || {};
+      if (winningInfo.claimed == undefined) return false;
+      return !winningInfo.claimed;
+    },
+    winObj() {
+      return this.$parent.globalData.userInfo.winningInfo || {};
+    }
+  };
+  methods = {
+    scanQR() {
+      let self = this;
+      wepy.scanCode({
+        success: function(resp) {
+          console.log('scan QR', resp.result);
+        },
+        fail: function(err) {
+          console.error('err', err);
+        }
+      });
+    },
+    claimPrize() {
+      let winningInfo = this.$parent.globalData.userInfo.winningInfo;
+      if (!winningInfo) return;
+      winningInfo.claimed = true;
+      let urlClaim = 'https://ellist.cn/wmtan/api/db/saveWinners';
+      let postData = { winners: [winningInfo] };
+      this.$parent.wxRequest({
+        url: urlClaim,
+        method: 'POST',
+        data: postData,
+        success: function(resp) {
+          console.log('message send', resp);
+          wx.showToast({
+            icon: 'success',
+            title: 'cmd sent=>'
+          });
+        },
+        fail: function(err) {
+          console.error(err);
+        }
+      });
+    },
+    goBack() {
+      console.log('go back');
+      this.$redirect('./index');
+    }
+  };
+
+  onLoad(parm, data) {
+    var self = this;
+    self.userInfo = this.$parent.globalData.userInfo;
+    var qrdata = {};
+    qrdata.userid = self.userInfo.openid;
+    qrdata.englishName = self.userInfo.englishName;
+    qrdata.prize = self.userInfo.winningInfo.prize;
+    qrdata.prizepic = self.userInfo.winningInfo.prizepic;
+    self.qrCodeData = JSON.stringify(qrdata);
+    console.log('qrData==>', self.qrCodeData);
+  }
+}
+</script>

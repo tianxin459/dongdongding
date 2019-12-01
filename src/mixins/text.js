@@ -3,7 +3,7 @@ import wepy from 'wepy'
 export default class text extends wepy.mixin {
     computed = {
         Lang() {
-            return this.text[wepy.getStorageSync('cache*&^Lang') || 0];
+            return this.text[wepy.getStorageSync('cache*&^Lang') || 1];
         }
     }
     methods = {

@@ -10,7 +10,10 @@
 <template>
   <view class="container">
     <header></header>
-    <view class="body">
+    <view class="body" wx:if="{{!showLoading}}">
+      <text>Please Login through QiYe Weixin</text>
+    </view>
+    <view class="body" wx:if="{{showLoading}}">
       <loading></loading>
       <!-- <wux-loading id="wux-loading" /> -->
       <!-- <wux-spin class="loading" wux-class="spin" size="large" /> -->
@@ -43,7 +46,8 @@ export default class PreLoad extends wepy.page {
   components = {};
   data = {
     code: '',
-    showReload: false
+    showReload: false,
+    showLoading: true
   };
   methods = {
     reload(e) {
@@ -58,41 +62,6 @@ export default class PreLoad extends wepy.page {
       WxOpenId: this.$parent.globalData.userInfo.openid
     };
     self.goNextBaseOnConfiguration(true);
-
-    // --------------------leave for transaction start ----------------------
-    // console.log('balanceRequest', balanceRequest);
-    // var url = 'https://wtf.chinacloudsites.cn/api/WxUser';
-    // wepy.request({
-    //   url: url,
-    //   method: 'POST',
-    //   data: balanceRequest,
-    //   header: {
-    //     'content-type': 'application/json' // 默认值
-    //   },
-    //   success: function(resp) {
-    //     console.log('get balanceData', resp);
-    //     if (!resp.data.item) {
-    //       console.error('balance have no item, go to registration');
-    //       // self.$redirect('./register');
-    //       self.goNextBaseOnConfiguration(false);
-    //     } else {
-    //       self.$parent.saveCacheApp('isRegisted', true); // cache isRegisted
-    //       self.$parent.globalData.user.balance = resp.data.item.balance;
-    //       self.$parent.globalData.user.englishName = resp.data.item.englishName;
-
-    //       let redirectData = userInfo;
-    //       redirectData.balance = resp.data.item.balance;
-    //       redirectData.englishName = resp.data.item.englishName;
-    //       wepy.setStorageSync(this.globalData.CacheName_UserInfo, redirectData);
-    //       self.goNextBaseOnConfiguration(true);
-    //     }
-    //   },
-    //   fail: function(err) {
-    //     console.error(err);
-    //     self.$redirect('./transfer-fail');
-    //   }
-    //});
-    // --------------------leave for transaction end ----------------------
   }
 
   goNextBaseOnConfiguration(isRegistered) {
@@ -120,22 +89,76 @@ export default class PreLoad extends wepy.page {
         // self.$redirect('./index');
         break;
       case '3':
-        if (isRegistered) {
-          console.log(
-            'self.$parent.getCacheApp(ischeckin',
-            self.$parent.getCacheApp('isCheckedIn')
-          );
-          if (self.$parent.getCacheApp('isCheckedIn')) {
-            self.$redirect('./index');
-          } else {
-            self.$redirect('./checkin');
-          }
-        } else self.$redirect('./block');
+        // self.$redirect('./winPrize');
+        self.$redirect('./scanQR');
+        break;
+      case '4':
+        self.$redirect('./endGame');
         break;
       default:
         self.$redirect('./index');
         break;
     }
+  }
+  async LoginProcess(sys) {
+    let self = this;
+    console.log('login process');
+    if (sys.environment == 'wxwork') {
+      let userInfo = await self.$parent.getUserInfoAsync();
+      await self.wxworkLogin();
+      console.log('async userinfo ==>', userInfo);
+    } else {
+      // 普通登陆----------------------------
+      self.$parent.getConfig(false, config => {
+        if (config.enableNormalLogin == 'true') {
+          self.normalLogin();
+        } else {
+          self.showLoading = false;
+          self.$apply();
+        }
+      });
+    }
+  }
+  qyWeixinLogin() {
+    let self = this;
+    return new Promise((resolved, rejected) => {
+      wx.qy.getEnterpriseUserInfo({
+        success: function(res) {
+          var userInfo = res.userInfo;
+          var name = userInfo.name;
+          var gender = userInfo.gender;
+          self.$parent.globalData.userInfo.nickName = name;
+          self.$parent.globalData.userInfo.englishName = name + '';
+          self.$parent.saveCacheUser(self.$parent.globalData.userInfo);
+          resolved(self.$parent.globalData.userInfo);
+        },
+        fail: rejected
+      });
+    });
+  }
+
+  checkPrizeWinning(qyid) {
+    let self = this;
+    return new Promise((resolved, rejected) => {
+      let urlCheckPrize = 'https://ellist.cn/wmtan/api/db/winner/' + qyid;
+      wepy.request({
+        url: urlCheckPrize,
+        method: 'GET',
+        success: function(resp) {
+          console.log(resp.data);
+          if (!Array.isArray(resp.data) || resp.data.length > 0) {
+            self.$parent.globalData.userInfo.winningInfo = resp.data[0];
+            console.log('userInfo===>', self.$parent.globalData.userInfo);
+          } else {
+            self.$parent.globalData.userInfo.winningInfo = {};
+          }
+          console.log('qy id==>', qyid);
+          resolved(self.$parent.globalData.userInfo.winningInfo);
+          // self.goLogin(qyid);
+        },
+        fail: rejected
+      });
+    });
   }
 
   goLogin(openid) {
@@ -144,14 +167,8 @@ export default class PreLoad extends wepy.page {
       info => {
         info.openid = openid;
         self.$parent.globalData.userInfo.openid = openid;
-        // console.log('preload=>getuserinfo', info);
-        if (self.$parent.globalData.userInfo == null) {
-          self.$redirect('./register');
-        } else {
-          self.userInfo = info;
-          // login with wx code
-          self.Login(info);
-        }
+        self.$parent.saveCacheUser(self.$parent.globalData.userInfo);
+        self.goNextBaseOnConfiguration(true);
       },
       err => {
         console.error('get userinfo failure', err);
@@ -170,23 +187,12 @@ export default class PreLoad extends wepy.page {
 
     self.$apply();
 
+    let sys = wx.getSystemInfoSync();
+    self.LoginProcess(sys);
     console.log('preloainding===>');
-
-    wepy.getSystemInfo({
-      success: function(sys) {
-        console.log('getsys info==>', sys);
-        if (sys.environment == 'wxwork') {
-          self.wxworkLogin();
-        } else {
-          // 普通登陆----------------------------
-          self.normalLogin();
-        }
-      }
-    });
-    // console.log('this.$parent.globalData.enviroment', env);
   }
 
-  wxworkLogin() {
+  async wxworkLogin() {
     let self = this;
     // 企业微信登陆----------------------------
     wx.qy.login({
@@ -194,36 +200,22 @@ export default class PreLoad extends wepy.page {
         console.log('wxwork==>', res);
         let urlLogin =
           'https://ellist.cn/wmtan/api/client/wxqylogin/' + res.code;
+        console.log('code===>', res.code);
         wepy.request({
           url: urlLogin,
           method: 'GET',
           success: function(resp) {
             console.log('wxqylogin===>', resp);
-            let qyid = resp;
-            wx.qy.getAvatar({
-              success: function(res2) {
-                var avatar = res2.avatar;
-                console.log('wxqylogin avatar===>', avatar);
-                self.$parent.globalData.userInfo.avatarUrl = avatar;
-              },
-              fail: function(res) {
-                console.log(res.fail_reason);
-              }
+            let qyid = resp.data;
+
+            let p1 = self.qyWeixinLogin();
+            let p2 = self.checkPrizeWinning(qyid);
+
+            Promise.all([p1, p2]).then(() => {
+              self.goLogin(qyid);
             });
-            wx.qy.getEnterpriseUserInfo({
-              success: function(res) {
-                var userInfo = res.userInfo;
-                var name = userInfo.name;
-                var gender = userInfo.gender;
-                self.$parent.globalData.userInfo.name = name;
-                console.log('qy userInfo', userInfo);
-              }
-            });
-            self.goLogin(qyid);
           },
-          fail: function(err) {
-            console.error(err);
-          }
+          fail: console.error
         });
       }
     });
@@ -249,15 +241,6 @@ export default class PreLoad extends wepy.page {
           method: 'GET',
           success: function(resp) {
             console.log('wxLogin.openid===>', resp.data);
-            // console.log(
-            //   'self.$parent.globalData.userInfo',
-            //   self.$parent.globalData.userInfo
-            // );
-            // self.$parent.globalData.userInfo.openid = resp.data;
-            // console.log(
-            //   'webuser.openid====>',
-            //   self.$parent.globalData.userInfo.openid
-            // );
             self.goLogin(resp.data);
           },
           fail: function(err) {
