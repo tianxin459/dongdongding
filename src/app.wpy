@@ -59,7 +59,7 @@ export default class extends wepy.app {
       backgroundTextStyle: 'light',
       backgroundColor: '#7a2c2d',
       navigationBarBackgroundColor: '#fd8023',
-      navigationBarTitleText: 'Walmart 2020',
+      navigationBarTitleText: 'Shake Shake Shake',
       navigationBarTextStyle: 'white'
     }
   };
@@ -154,17 +154,17 @@ export default class extends wepy.app {
       console.log('app=>onSocketOpen');
       self.wsSend('{"protocol":"json","version":1}');
 
-      self.getUserInfo(info => {
-        self.userInfo = info;
-        let body = {
-          type: 1,
-          target: 'Register',
-          // arguments: [self.userInfo.nickName, self.userInfo.avatarUrl]
-          arguments: [self.userInfo.openid, self.userInfo.avatarUrl]
-        };
-        console.log('app => register user', body);
-        self.wsSend(JSON.stringify(body));
-      }, console.error);
+      // self.getUserInfo(info => {
+      //   self.userInfo = info;
+      //   let body = {
+      //     type: 1,
+      //     target: 'Register',
+      //     // arguments: [self.userInfo.nickName, self.userInfo.avatarUrl]
+      //     arguments: [self.userInfo.openid, self.userInfo.avatarUrl]
+      //   };
+      //   console.log('app => register user', body);
+      //   self.wsSend(JSON.stringify(body));
+      // }, console.error);
 
       wx.onSocketMessage(function(res) {
         //接收消息回调

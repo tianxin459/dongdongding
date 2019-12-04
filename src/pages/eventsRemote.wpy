@@ -9,7 +9,8 @@
 .btnCommand {
   width: 90%;
   margin: 10px;
-  height: 100px;
+  height: 70px;
+
   border-radius: 10px;
 }
 .actions-btn-container {
@@ -41,6 +42,12 @@
       background: linear-gradient(180deg, #157a6e, #499f68);
     }
   }
+}
+.filter-container {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  margin: 20px;
 }
 .btnDraw {
   height: 100px;
@@ -91,11 +98,18 @@
       <text>Lucky Draw</text>
     </button>
     <view class="prize-container">
-      <repeat for="{{prizeConfig}}" key="index" index="key" item="val">
+      <repeat for="{{filteredPrize}}" key="index" index="key" item="val">
         <button class="btnCommand button button-raised button-inverse button-pill prize-{{val.level}}" data-target="{{val}}" data-tag="{{val.command}}" data-display="{{val.display}}" data-id="{{val.id}}" @tap="sendPrizeCommandShortcut">
-          <text>{{val.display}}</text>
+          <text>{{val.title}}</text>
         </button>
       </repeat>
+    </view>
+    <view class="filter-container">
+      <button data-tag="1" @tap="filterPrize">1</button>
+      <button data-tag="2" @tap="filterPrize">2</button>
+      <button data-tag="3" @tap="filterPrize">3</button>
+      <button data-tag="4" @tap="filterPrize">4</button>
+      <button data-tag="5" @tap="filterPrize">5</button>
     </view>
 
     <button class="btnCommand button button-raised button-primary button-pill btnReset" data-tag="" @tap="resetPrizeObj">
@@ -113,6 +127,14 @@ export default class EventsRemote extends wepy.page {
     header: Header,
     chatbox: ChatBox
   };
+  computed = {
+    filteredPrize() {
+      if (!this.filterStr) return this.prizeConfig;
+      return this.prizeConfig.filter(
+        x => Math.floor(x.id / 10) == this.filterStr
+      );
+    }
+  };
   data = {
     CacheKey_Prize: '#$%Prize',
     userInfo: {},
@@ -121,6 +143,7 @@ export default class EventsRemote extends wepy.page {
     showButtonText: false,
     showtext: false,
     prizeConfig: {},
+    filterStr: '',
     prizeConfig2: [
       {
         id: 11,
@@ -136,7 +159,7 @@ export default class EventsRemote extends wepy.page {
         level: 2,
         title: 'Prize21',
         command: 'cmd#@$switchtoprize:21:1',
-        display: 'Prize 2 round 1'
+        display: 'Prize 2'
       },
       {
         id: 22,
@@ -144,7 +167,7 @@ export default class EventsRemote extends wepy.page {
         level: 2,
         title: 'Prize22',
         command: 'cmd#@$switchtoprize:22:1',
-        display: 'Prize 2 round 2'
+        display: 'Prize 2'
       },
       {
         id: 23,
@@ -152,7 +175,7 @@ export default class EventsRemote extends wepy.page {
         level: 2,
         title: 'Prize23',
         command: 'cmd#@$switchtoprize:23:1',
-        display: 'Prize 2 round 3'
+        display: 'Prize 2'
       },
       {
         id: 31,
@@ -160,7 +183,7 @@ export default class EventsRemote extends wepy.page {
         level: 3,
         title: 'Prize31',
         command: 'cmd#@$switchtoprize:31:4',
-        display: 'Prize 3 round 1'
+        display: 'Prize 3'
       },
       {
         id: 32,
@@ -168,7 +191,7 @@ export default class EventsRemote extends wepy.page {
         level: 3,
         title: 'Prize32',
         command: 'cmd#@$switchtoprize:32:4',
-        display: 'Prize 3 round 2'
+        display: 'Prize 3'
       },
       {
         id: 41,
@@ -176,7 +199,7 @@ export default class EventsRemote extends wepy.page {
         level: 4,
         title: 'Prize41',
         command: 'cmd#@$switchtoprize:41:12',
-        display: 'Prize 4 round 1'
+        display: 'Prize 4'
       },
       {
         id: 42,
@@ -184,7 +207,7 @@ export default class EventsRemote extends wepy.page {
         level: 4,
         title: 'Prize42',
         command: 'cmd#@$switchtoprize:42:12',
-        display: 'Prize 4round 2'
+        display: 'Prize 4'
       },
       {
         id: 43,
@@ -192,7 +215,7 @@ export default class EventsRemote extends wepy.page {
         level: 4,
         title: 'Prize43',
         command: 'cmd#@$switchtoprize:43:12',
-        display: 'Prize 4 round 3'
+        display: 'Prize 4'
       },
       {
         id: 51,
@@ -200,7 +223,7 @@ export default class EventsRemote extends wepy.page {
         level: 5,
         title: 'Prize51',
         command: 'cmd#@$switchtoprize:51:15',
-        display: 'Prize 5 round 1'
+        display: 'Prize 5'
       },
       {
         id: 52,
@@ -208,7 +231,7 @@ export default class EventsRemote extends wepy.page {
         level: 5,
         title: 'Prize52',
         command: 'cmd#@$switchtoprize:52:15',
-        display: 'Prize 5 round 2'
+        display: 'Prize 5'
       },
       {
         id: 53,
@@ -216,7 +239,7 @@ export default class EventsRemote extends wepy.page {
         level: 5,
         title: 'Prize53',
         command: 'cmd#@$switchtoprize:53:15',
-        display: 'Prize 5 round 3'
+        display: 'Prize 5'
       },
       {
         id: 54,
@@ -224,7 +247,7 @@ export default class EventsRemote extends wepy.page {
         level: 5,
         title: 'Prize54',
         command: 'cmd#@$switchtoprize:54:15',
-        display: 'Prize 5 round 4'
+        display: 'Prize 5'
       }
     ]
   };
@@ -277,11 +300,20 @@ export default class EventsRemote extends wepy.page {
       prizeObj.enable = false;
       prizeObj.command = '';
       prizeObj.display = '- - -';
+      prizeObj.title = '- - -';
       console.log(prizeObj);
       this.prizeText = display;
       console.log(shortcut);
       this.sendCommand(shortcut);
       this.savePrizeConfig(this.prizeConfig);
+      this.$apply();
+    },
+    filterPrize(e) {
+      this.filterStr = e.target.dataset.tag;
+      // let filterOut = this.prizeConfig.filter(
+      //   x => Math.floor(x.id / 10) == this.filterStr
+      // );
+      // console.log(filterOut);
       this.$apply();
     },
     resetPrizeObj() {
@@ -311,6 +343,16 @@ export default class EventsRemote extends wepy.page {
     wx.setStorageSync(self.CacheKey_Prize, prizeObj);
     self.prizeConfig = prizeObj;
     self.$apply();
+  }
+
+  onShow() {
+    wx.setKeepScreenOn({
+      keepScreenOn: true,
+      success: () => {
+        console.log('screen always on');
+      },
+      fail: console.error
+    });
   }
 
   onLoad() {

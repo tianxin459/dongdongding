@@ -89,8 +89,8 @@ export default class PreLoad extends wepy.page {
         // self.$redirect('./index');
         break;
       case '3':
-        // self.$redirect('./winPrize');
-        self.$redirect('./scanQR');
+        self.$redirect('./winPrize');
+        // self.$redirect('./scanQR');
         break;
       case '4':
         self.$redirect('./endGame');
@@ -130,6 +130,7 @@ export default class PreLoad extends wepy.page {
           self.$parent.globalData.userInfo.nickName = name;
           self.$parent.globalData.userInfo.englishName = name + '';
           self.$parent.saveCacheUser(self.$parent.globalData.userInfo);
+
           resolved(self.$parent.globalData.userInfo);
         },
         fail: rejected
@@ -163,11 +164,25 @@ export default class PreLoad extends wepy.page {
 
   goLogin(openid) {
     let self = this;
+
     self.$parent.getUserInfo(
       info => {
         info.openid = openid;
         self.$parent.globalData.userInfo.openid = openid;
         self.$parent.saveCacheUser(self.$parent.globalData.userInfo);
+
+        let body = {
+          type: 1,
+          target: 'Register',
+          // arguments: [self.userInfo.nickName, self.userInfo.avatarUrl]
+          arguments: [
+            self.$parent.globalData.userInfo.openid,
+            self.$parent.globalData.userInfo.avatarUrl
+          ]
+        };
+        console.log('app => register user qy', body);
+        self.$parent.wsSend(JSON.stringify(body));
+
         self.goNextBaseOnConfiguration(true);
       },
       err => {
